@@ -725,6 +725,43 @@ body.modal-open .main-sidebar {
 }
 
 /* ═══════════════════════════════════════════
+   FORM INPUTS — ensure pointer-events work
+   ═══════════════════════════════════════════ */
+/* The aqFadeUp animation on .box locks in transform:translateY(0) via fill-mode:both,
+   creating a stacking context. Force all interactive form elements above it. */
+.content-wrapper input,
+.content-wrapper input[type="radio"],
+.content-wrapper input[type="checkbox"],
+.content-wrapper select,
+.content-wrapper textarea,
+.content-wrapper button {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure radio/checkbox labels and their ::before/::after visuals don't block the input */
+.radio label,
+.checkbox label {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+.radio input[type="radio"],
+.checkbox input[type="checkbox"] {
+    position: absolute !important;
+    opacity: 0;
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    left: -20px;
+    top: 2.5px;
+    z-index: 2;
+    cursor: pointer;
+    pointer-events: auto !important;
+}
+
+/* ═══════════════════════════════════════════
    WELLS
    ═══════════════════════════════════════════ */
 .well {
