@@ -6,7 +6,7 @@ import tw from 'twin.macro';
 import styled, { keyframes } from 'styled-components/macro';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDroplet, faShieldHalved, faServer, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { faTint, faShieldAlt, faServer, faGlobe } from '@fortawesome/free-solid-svg-icons';
 
 /* ── animated background orbs ── */
 const orbFloat = keyframes`
@@ -188,7 +188,7 @@ export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => 
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
-                    <FontAwesomeIcon icon={faDroplet} />
+                    <FontAwesomeIcon icon={faTint} />
                 </LogoBadge>
 
                 <motion.div
@@ -216,7 +216,7 @@ export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => 
 
                 <FeatureRow>
                     {[
-                        { icon: faShieldHalved, label: 'Secure' },
+                        { icon: faShieldAlt, label: 'Secure' },
                         { icon: faServer,       label: 'Managed' },
                         { icon: faGlobe,        label: 'Online' },
                     ].map(({ icon, label }, i) => (

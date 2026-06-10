@@ -7,7 +7,7 @@ import {
     faCog,
     faLayerGroup,
     faSignOutAlt,
-    faDroplet,
+    faTint,
     faBell,
 } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from 'easy-peasy';
@@ -164,7 +164,7 @@ export default () => {
                         animate={{ rotate: [0, 5, -5, 0] }}
                         transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                     >
-                        <FontAwesomeIcon icon={faDroplet} />
+                        <FontAwesomeIcon icon={faTint} />
                     </LogoIcon>
                     <LogoText to={'/'}>{name}</LogoText>
                 </div>
