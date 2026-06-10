@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+﻿import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFileArchive, faFileImport, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { encodePathSegments } from '@/helpers';
 import { differenceInHours, format, formatDistanceToNow } from 'date-fns';
@@ -35,7 +35,18 @@ const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
 }, isEqual);
 
 /* AquiaTheme server rack icon as data URI for server-icon.png preview */
-const AQUIA_ICON = `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#0a0f0a"/><rect x="8" y="14" width="48" height="14" rx="3" fill="#111611" stroke="#08cd00" stroke-width="1.2"/><rect x="8" y="33" width="48" height="14" rx="3" fill="#111611" stroke="#08cd00" stroke-width="1.2"/><rect x="12" y="18" width="22" height="6" rx="1.5" fill="#1a2a1a"/><rect x="12" y="37" width="22" height="6" rx="1.5" fill="#1a2a1a"/><circle cx="40" cy="21" r="2.5" fill="#08cd00"/><circle cx="46" cy="21" r="2.5" fill="#08cd00" opacity="0.4"/><circle cx="40" cy="40" r="2.5" fill="#08cd00" opacity="0.7"/><circle cx="46" cy="40" r="2.5" fill="#08cd00"/></svg>`)}`;
+const AQUIA_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+    + '<rect width="64" height="64" fill="#0a0f0a"/>'
+    + '<rect x="8" y="14" width="48" height="14" rx="3" fill="#111611" stroke="#08cd00" stroke-width="1.2"/>'
+    + '<rect x="8" y="33" width="48" height="14" rx="3" fill="#111611" stroke="#08cd00" stroke-width="1.2"/>'
+    + '<rect x="12" y="18" width="22" height="6" rx="1.5" fill="#1a2a1a"/>'
+    + '<rect x="12" y="37" width="22" height="6" rx="1.5" fill="#1a2a1a"/>'
+    + '<circle cx="40" cy="21" r="2.5" fill="#08cd00"/>'
+    + '<circle cx="46" cy="21" r="2.5" fill="#08cd00" opacity="0.4"/>'
+    + '<circle cx="40" cy="40" r="2.5" fill="#08cd00" opacity="0.7"/>'
+    + '<circle cx="46" cy="40" r="2.5" fill="#08cd00"/>'
+    + '</svg>';
+const AQUIA_ICON = 'data:image/svg+xml;base64,' + btoa(AQUIA_SVG);
 
 const FileObjectRow = ({ file }: { file: FileObject }) => (
     <div
@@ -79,3 +90,5 @@ export default memo(FileObjectRow, (prevProps, nextProps) => {
 
     return isEqual(prevFile, nextFile);
 });
+
+
