@@ -21,6 +21,7 @@ import {
     faDatabase,
     faEdit,
     faFolder,
+    faImage,
     faKey,
     faPaperclip,
     faPassport,
@@ -31,6 +32,7 @@ import {
     faTerminal,
     faUser,
     faWrench,
+    faCommentDots,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Each of the router files is already code split out appropriately — so
@@ -43,6 +45,8 @@ const ScheduleEditContainer = lazy(() => import('@/components/server/schedules/S
 const PluginsContainer = lazy(() => import('@/components/server/plugins/PluginsContainer'));
 const VersionChangerContainer = lazy(() => import('@/components/server/tools/VersionChangerContainer'));
 const PropertiesContainer = lazy(() => import('@/components/server/tools/PropertiesContainer'));
+const MotdContainer = lazy(() => import('@/components/server/tools/MotdContainer'));
+const ServerIconContainer = lazy(() => import('@/components/server/tools/ServerIconContainer'));
 const ServerConfigHub = lazy(() => import('@/components/server/settings/ServerConfigHub'));
 
 interface RouteDefinition {
@@ -165,6 +169,22 @@ export default {
             section: 'CONFIGURATION',
             component: PropertiesContainer,
             iconProp: faSlidersH,
+        },
+        {
+            path: '/motd',
+            permission: 'file.*',
+            name: 'MOTD Maker',
+            section: 'CONFIGURATION',
+            component: MotdContainer,
+            iconProp: faCommentDots,
+        },
+        {
+            path: '/icon',
+            permission: 'file.*',
+            name: 'Server Icon',
+            section: 'CONFIGURATION',
+            component: ServerIconContainer,
+            iconProp: faImage,
         },
         {
             path: '/schedules',
