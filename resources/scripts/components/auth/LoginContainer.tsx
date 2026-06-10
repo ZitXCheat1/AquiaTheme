@@ -10,11 +10,24 @@ import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
+import { motion } from 'framer-motion';
+import styled from 'styled-components/macro';
 
 interface Values {
     username: string;
     password: string;
 }
+
+const AnimatedField = styled(motion.div)``;
+
+const fieldVariants = {
+    hidden:  { opacity: 0, x: -14 },
+    visible: (i: number) => ({
+        opacity: 1,
+        x: 0,
+        transition: { delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+    }),
+};
 
 const LoginContainer = ({ history }: RouteComponentProps) => {
     const ref = useRef<Reaptcha>(null);
@@ -30,16 +43,12 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
     const onSubmit = (values: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes();
 
-        // If there is no token in the state yet, request the token and then abort this submit request
-        // since it will be re-submitted when the recaptcha data is returned by the component.
         if (recaptchaEnabled && !token) {
             ref.current!.execute().catch((error) => {
                 console.error(error);
-
                 setSubmitting(false);
                 clearAndAddHttpError({ error });
             });
-
             return;
         }
 
@@ -50,15 +59,12 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                     window.location = response.intended || '/';
                     return;
                 }
-
                 history.replace('/auth/login/checkpoint', { token: response.confirmationToken });
             })
             .catch((error) => {
                 console.error(error);
-
                 setToken('');
                 if (ref.current) ref.current.reset();
-
                 setSubmitting(false);
                 clearAndAddHttpError({ error });
             });
@@ -74,16 +80,55 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Login to Continue'} css={tw`w-full flex`}>
-                    <Field light type={'text'} label={'Username or Email'} name={'username'} disabled={isSubmitting} />
-                    <div css={tw`mt-6`}>
-                        <Field light type={'password'} label={'Password'} name={'password'} disabled={isSubmitting} />
-                    </div>
-                    <div css={tw`mt-6`}>
-                        <Button type={'submit'} size={'xlarge'} isLoading={isSubmitting} disabled={isSubmitting}>
-                            Login
+                <LoginFormContainer css={tw`w-full flex`}>
+                    <AnimatedField
+                        custom={0}
+                        variants={fieldVariants}
+                        initial={'hidden'}
+                        animate={'visible'}
+                    >
+                        <Field
+                            light
+                            type={'text'}
+                            label={'Username or Email'}
+                            name={'username'}
+                            disabled={isSubmitting}
+                        />
+                    </AnimatedField>
+
+                    <AnimatedField
+                        custom={1}
+                        variants={fieldVariants}
+                        initial={'hidden'}
+                        animate={'visible'}
+                        css={tw`mt-5`}
+                    >
+                        <Field
+                            light
+                            type={'password'}
+                            label={'Password'}
+                            name={'password'}
+                            disabled={isSubmitting}
+                        />
+                    </AnimatedField>
+
+                    <AnimatedField
+                        custom={2}
+                        variants={fieldVariants}
+                        initial={'hidden'}
+                        animate={'visible'}
+                        css={tw`mt-6`}
+                    >
+                        <Button
+                            type={'submit'}
+                            size={'xlarge'}
+                            isLoading={isSubmitting}
+                            disabled={isSubmitting}
+                        >
+                            Sign In
                         </Button>
-                    </div>
+                    </AnimatedField>
+
                     {recaptchaEnabled && (
                         <Reaptcha
                             ref={ref}
@@ -99,14 +144,24 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             }}
                         />
                     )}
-                    <div css={tw`mt-6 text-center`}>
+
+                    <AnimatedField
+                        custom={3}
+                        variants={fieldVariants}
+                        initial={'hidden'}
+                        animate={'visible'}
+                        css={tw`mt-5 text-center`}
+                    >
                         <Link
                             to={'/auth/password'}
-                            css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
+                            css={tw`text-xs tracking-wide no-underline uppercase`}
+                            style={{ color: 'rgba(0,212,255,0.5)', transition: 'color 0.2s' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = '#00d4ff')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,212,255,0.5)')}
                         >
                             Forgot password?
                         </Link>
-                    </div>
+                    </AnimatedField>
                 </LoginFormContainer>
             )}
         </Formik>

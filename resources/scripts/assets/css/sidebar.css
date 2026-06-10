@@ -1,169 +1,333 @@
 /*
-This file is part of NookTheme.
+This file is part of Aquia Theme.
 
-NookTheme is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Aquia Theme is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-NookTheme is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Aquia Theme is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with NookTheme. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Aquia Theme. If not, see <https://www.gnu.org/licenses/>.
 */
 
-:root {
-    --color-primary: #212121;
-    --color-secondary: #3a3636;
-    --color-tertiary: #17171b;
-    --color-quaternary: #757575;
-    --color-quinary: #9e9e9e;
-    --button-color: #212121;
-    --button-color-hover: #424242;
-    --button-color-active: #c72510;
-    --button-color-disabled: #757575;
-    --button-color-text: #9e9e9e;
-    --text-main: #ffffff;
-    --text-secondary: #ffffff;
-    --text-tertiary: #ffffff;
-    --background-color: #212121;
-    --invert: 1000;
-    --sidebar-button-color: white;
-    --sidebar-button-color-hover: #0e0e1d;
-    --card-bg: #353535;
-}
+/* ═══════════════════════════════════════════
+   AQUIA THEME — CSS VARIABLES & KEYFRAMES
+   ═══════════════════════════════════════════ */
 
 :root {
-    --sidebar-size: 220px;
+    /* Palette */
+    --aquia-bg:          #060b18;
+    --aquia-surface:     #0d1530;
+    --aquia-surface2:    #111c3a;
+    --aquia-border:      rgba(0, 212, 255, 0.12);
+    --aquia-accent:      #00d4ff;
+    --aquia-accent2:     #7c3aed;
+    --aquia-glow:        rgba(0, 212, 255, 0.25);
+    --aquia-red:         #ef4444;
+    --aquia-green:       #22c55e;
+    --aquia-yellow:      #eab308;
+
+    /* Text */
+    --text-main:         #e2e8f0;
+    --text-secondary:    #94a3b8;
+    --text-muted:        #475569;
+
+    /* Sidebar */
+    --sidebar-size:      240px;
+    --sidebar-bg:        linear-gradient(180deg, #0a0f1e 0%, #0d1530 60%, #0a0e1a 100%);
+    --sidebar-btn:       rgba(255,255,255,0.06);
+    --sidebar-btn-hover: rgba(0, 212, 255, 0.1);
+    --sidebar-btn-active:#00d4ff;
+
+    /* Button */
+    --button-color:         rgba(0, 212, 255, 0.15);
+    --button-color-hover:   rgba(0, 212, 255, 0.25);
+    --button-color-active:  #00d4ff;
+    --button-color-text:    #00d4ff;
+
+    /* Compat aliases */
+    --color-primary:    #0d1530;
+    --color-secondary:  #111c3a;
+    --color-tertiary:   #060b18;
+    --background-color: #060b18;
+    --card-bg:          #0d1530;
+    --invert:           1000;
 }
+
+/* ═══════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════ */
+
+@keyframes aquiaFadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes aquiaFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes aquiaSlideRight {
+    from { opacity: 0; transform: translateX(-18px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes aquiaGlow {
+    0%, 100% { box-shadow: 0 0 8px var(--aquia-glow); }
+    50%       { box-shadow: 0 0 22px rgba(0, 212, 255, 0.45), 0 0 40px rgba(0,212,255,0.15); }
+}
+
+@keyframes aquiaPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(1.15); }
+}
+
+@keyframes aquiaShimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+}
+
+@keyframes aquiaOrb {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(30px, -20px) scale(1.05); }
+    66%  { transform: translate(-20px, 15px) scale(0.95); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes aquiaRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes aquiaStatusBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════
+   STAGGER HELPERS
+   ═══════════════════════════════════════════ */
+
+.aquia-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.aquia-stagger > *:nth-child(2) { animation-delay: 60ms; }
+.aquia-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.aquia-stagger > *:nth-child(4) { animation-delay: 180ms; }
+.aquia-stagger > *:nth-child(5) { animation-delay: 240ms; }
+.aquia-stagger > *:nth-child(6) { animation-delay: 300ms; }
+.aquia-stagger > *:nth-child(7) { animation-delay: 360ms; }
+.aquia-stagger > *:nth-child(8) { animation-delay: 420ms; }
+.aquia-stagger > *:nth-child(n+9) { animation-delay: 480ms; }
+
+.aquia-fade-up {
+    animation: aquiaFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.aquia-fade-in {
+    animation: aquiaFadeIn 0.35s ease both;
+}
+
+.aquia-slide-right {
+    animation: aquiaSlideRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ═══════════════════════════════════════════
+   GLOBAL BODY / SCROLLBAR
+   ═══════════════════════════════════════════ */
+
+body {
+    background: var(--aquia-bg) !important;
+}
+
+/* ═══════════════════════════════════════════
+   TOPBAR / NAV
+   ═══════════════════════════════════════════ */
+
 .nav-bar {
     display: none;
 }
 
+.topbar {
+    position: sticky;
+    margin-top: 0 !important;
+    top: 0;
+    width: 100%;
+    z-index: 9000;
+    height: 3.5rem;
+    overflow-y: hidden;
+    background: rgba(6, 11, 24, 0.85) !important;
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border-bottom: 1px solid var(--aquia-border);
+    box-shadow: 0 1px 24px rgba(0, 212, 255, 0.07);
+    animation: aquiaFadeIn 0.4s ease both;
+}
+
+.navbar-button {
+    display: none;
+    color: var(--aquia-accent);
+    font-size: 1.3rem;
+    margin-left: 1rem;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.navbar-button:hover {
+    color: white;
+    transform: scale(1.15);
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════════════════ */
+
 .sidebar {
     position: fixed;
     margin: 0;
-    padding: 0;
+    padding: 0.75rem 0.5rem;
     width: var(--sidebar-size);
-    background-color: var(--color-tertiary);
-    overflow: auto;
-    z-index: 9999;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--aquia-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 8999;
     height: calc(100vh - 3.5rem);
+    box-shadow: 4px 0 32px rgba(0,0,0,0.4), inset -1px 0 0 var(--aquia-border);
+    animation: aquiaSlideRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.sidebar a {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    padding: 10px 12px;
+    text-decoration: none;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--aquia-accent), var(--aquia-accent2));
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: 10px;
+}
+
+.sidebar a:hover::before {
+    opacity: 0.08;
+}
+
+.sidebar a:hover {
+    color: var(--text-main);
+    transform: translateX(3px);
+}
+
+.sidebar .active > .icon,
+.sidebar a.active > .icon {
+    background: linear-gradient(135deg, var(--aquia-accent), var(--aquia-accent2));
+    color: white;
+    box-shadow: 0 0 16px var(--aquia-glow);
+    animation: aquiaGlow 2.5s ease-in-out infinite;
+}
+
+.sidebar a:hover:not(.active) > .icon {
+    background: var(--sidebar-btn-hover);
+    color: var(--aquia-accent);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+}
+
+/* ═══════════════════════════════════════════
+   ICON BADGE
+   ═══════════════════════════════════════════ */
+
+.icon {
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sidebar-btn);
+    color: var(--text-secondary);
+    margin-right: 12px;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    font-size: 0.95rem;
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT LAYOUT
+   ═══════════════════════════════════════════ */
+
 .content-container {
-    margin-left: calc(var(--sidebar-size) + 40px);
-    margin-right: 40px;
+    margin-left: calc(var(--sidebar-size) + 32px);
+    margin-right: 32px;
 }
 
 .content-dashboard {
     max-width: 1200px;
 }
 
-.navbar-button {
-    display: none;
+/* ═══════════════════════════════════════════
+   CARDS / ROWS
+   ═══════════════════════════════════════════ */
+
+.aquia-card {
+    background: rgba(13, 21, 48, 0.7);
+    border: 1px solid var(--aquia-border);
+    border-radius: 14px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1),
+                box-shadow 0.25s cubic-bezier(0.22,1,0.36,1),
+                border-color 0.25s;
 }
 
-/* Sidebar links */
-.sidebar a {
-    display: block;
-    color: var(--sidebar-button-color);
-    padding: 16px;
-    text-decoration: none;
+.aquia-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,212,255,0.2);
+    border-color: rgba(0, 212, 255, 0.25);
 }
 
-/* Active/current link */
-.sidebar .active > .icon {
-    background-color: var(--button-color-active);
-    color: white;
-}
+/* ═══════════════════════════════════════════
+   STATUS INDICATORS
+   ═══════════════════════════════════════════ */
 
-.sidebar > a {
-    display: flex;
-    text-align: center;
-    align-items: center;
-}
+.status-online  { background: var(--aquia-green);  animation: aquiaPulse 2s ease-in-out infinite; }
+.status-offline { background: var(--aquia-red);    animation: aquiaPulse 2.5s ease-in-out infinite; }
+.status-pending { background: var(--aquia-yellow); animation: aquiaPulse 1.5s ease-in-out infinite; }
 
-.icon {
-    border-radius: 30%;
-    width: 45px;
-    height: 45px;
-    text-align: center;
-    background-size: 100px;
-    line-height: 30px;
-    background-color: var(--button-color);
-    color: var(--button-color-text);
-    margin-right: 10px;
-}
-
-.sidebar > a > div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Links on mouse-over */
-.sidebar a:hover:not(.active) > .icon {
-    background-color: var(--sidebar-button-color-hover);
-}
-
-.icon {
-    transition: all 0.2s ease-in-out;
-}
-
-/* Page content. The value of the margin-left property should match the value of the sidebar's width property */
-div.content {
-    margin-left: var(--sidebar-size);
-    padding: 1px 16px;
-    height: 1000px;
-}
-
-@media screen and (max-width: 1150px) {
-    .sidebar {
-        position: fixed;
-        width: 100%;
-        left: -1150px;
-        transition: all 0.3s ease-in-out;
-    }
-
-    .content-container {
-        margin-left: 40px;
-        margin-right: 40px;
-    }
-
-    div.content {
-        margin-left: 0;
-        padding: 1px 16px;
-        height: 1000px;
-    }
-
-    .active-nav {
-        left: 0;
-        margin-right: var(--sidebar-size);
-        width: var(--sidebar-size);
-        height: calc(100vh - 3.5rem);
-    }
-
-    .nav-bar {
-        display: flex;
-    }
-
-    .navbar-button {
-        display: inline;
-        font-size: 1.5rem;
-        margin-left: 1rem;
-        cursor: pointer;
-    }
-}
+/* ═══════════════════════════════════════════
+   AVATAR
+   ═══════════════════════════════════════════ */
 
 .avatar {
     margin: 10px;
     width: 200px;
     height: 200px;
-    border-radius: 5%;
+    border-radius: 50%;
+    border: 2px solid var(--aquia-border);
+    box-shadow: 0 0 20px var(--aquia-glow);
 }
 
 .smallAvatar {
-    width: 70px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
+    border: 1.5px solid var(--aquia-border);
+    transition: box-shadow 0.2s;
 }
+
+.smallAvatar:hover {
+    box-shadow: 0 0 12px var(--aquia-glow);
+}
+
+/* ═══════════════════════════════════════════
+   NAV-BAR (mobile top bar)
+   ═══════════════════════════════════════════ */
 
 .nav-bar > * {
     margin: 10px;
@@ -175,18 +339,68 @@ div.content {
 
 .openMenu {
     font-size: 50px;
+    color: var(--aquia-accent);
 }
 
 .openMenu:hover {
     cursor: pointer;
 }
 
-.topbar {
-    position: sticky;
-    margin-top: 0 !important;
-    top: 0;
-    width: 100%;
-    z-index: 100;
-    height: 3.5rem;
-    overflow-y: hidden;
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+
+@media screen and (max-width: 1150px) {
+    .sidebar {
+        position: fixed;
+        width: 260px;
+        left: -300px;
+        transition: left 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                    box-shadow 0.35s;
+    }
+
+    .content-container {
+        margin-left: 24px;
+        margin-right: 24px;
+    }
+
+    .active-nav {
+        left: 0;
+        box-shadow: 8px 0 40px rgba(0,0,0,0.6), 4px 0 0 rgba(0,212,255,0.08);
+    }
+
+    .nav-bar {
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar-button {
+        display: inline;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   LOADING SHIMMER
+   ═══════════════════════════════════════════ */
+
+.aquia-shimmer {
+    background: linear-gradient(
+        90deg,
+        var(--aquia-surface) 25%,
+        rgba(0, 212, 255, 0.06) 50%,
+        var(--aquia-surface) 75%
+    );
+    background-size: 400px 100%;
+    animation: aquiaShimmer 1.4s infinite;
+}
+
+/* ═══════════════════════════════════════════
+   ACCENT DIVIDER
+   ═══════════════════════════════════════════ */
+
+.aquia-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--aquia-accent), transparent);
+    opacity: 0.3;
+    margin: 0.75rem 0;
 }

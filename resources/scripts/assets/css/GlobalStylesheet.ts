@@ -14,7 +14,8 @@ export default createGlobalStyle`
     }
 
     body {
-        ${tw`font-sans bg-neutral-800 text-neutral-200`};
+        ${tw`font-sans text-slate-200`};
+        background: #060b18;
         letter-spacing: 0.015em;
     }
 
@@ -23,7 +24,7 @@ export default createGlobalStyle`
     }
 
     p {
-        ${tw`text-neutral-200 leading-snug font-sans`};
+        ${tw`text-slate-200 leading-snug font-sans`};
     }
 
     form {
@@ -44,34 +45,54 @@ export default createGlobalStyle`
         -moz-appearance: textfield !important;
     }
 
-    /* Scroll Bar Style */
+    /* Page transition */
+    .fade-appear, .fade-enter {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    .fade-appear-active, .fade-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 300ms cubic-bezier(0.22,1,0.36,1), transform 300ms cubic-bezier(0.22,1,0.36,1);
+    }
+    .fade-exit {
+        opacity: 1;
+    }
+    .fade-exit-active {
+        opacity: 0;
+        transition: opacity 150ms ease;
+    }
+
+    /* Scrollbar */
     ::-webkit-scrollbar {
         background: none;
-        width: 16px;
-        height: 16px;
+        width: 8px;
+        height: 8px;
     }
 
     ::-webkit-scrollbar-thumb {
-        border: solid 0 rgb(0 0 0 / 0%);
-        border-right-width: 4px;
-        border-left-width: 4px;
-        -webkit-border-radius: 9px 4px;
-        -webkit-box-shadow: inset 0 0 0 1px #444, inset 0 0 0 4px #444;
+        background: rgba(0, 212, 255, 0.15);
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background-clip: content-box;
     }
 
-    ::-webkit-scrollbar-track-piece {
-        margin: 4px 0;
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 212, 255, 0.3);
+        background-clip: content-box;
     }
 
-    ::-webkit-scrollbar-thumb:horizontal {
-        border-right-width: 0;
-        border-left-width: 0;
-        border-top-width: 4px;
-        border-bottom-width: 4px;
-        -webkit-border-radius: 4px 9px;
+    ::-webkit-scrollbar-track {
+        background: transparent;
     }
 
     ::-webkit-scrollbar-corner {
         background: transparent;
+    }
+
+    /* Selection */
+    ::selection {
+        background: rgba(0, 212, 255, 0.25);
+        color: white;
     }
 `;

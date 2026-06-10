@@ -24,7 +24,7 @@ jobs:
         id: docker_meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/nookure/nooktheme
+          images: ghcr.io/wiskcraft/aquia-theme
           flavor: |
             latest=false
           tags: |

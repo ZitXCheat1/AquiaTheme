@@ -1,5 +1,5 @@
-# Nook Theme
-NookTheme is a free and open source [Pterodactyl theme](https://pterodactyl.io) designed to be simple, clean, and modern.
+# Aquia Theme
+Aquia Theme is a free and open source [Pterodactyl theme](https://pterodactyl.io) designed to be simple, clean, and modern.
 
 ![Image](https://i.imgur.com/AFjHGBr.png)
 
@@ -14,7 +14,7 @@ NookTheme is a free and open source [Pterodactyl theme](https://pterodactyl.io) 
 
 ## Installation
 
-This will update your panel to the latest version of NookTheme panel is based. <br>
+This will update your panel to the latest version of Aquia Theme panel is based. <br>
 You can see the version in the current branch name.
 
 <details>
@@ -73,7 +73,7 @@ the release archive for the most recent version of Pterodactyl, save it in the c
 unpack the archive into your current folder.
 
 ```bash
-curl -L https://github.com/Nookure/NookTheme/releases/latest/download/panel.tar.gz | tar -xzv
+curl -L https://github.com/WiskCraft/AquiaTheme/releases/latest/download/panel.tar.gz | tar -xzv
 ```
 
 Once all of the files are downloaded we need to set the correct permissions on the cache and storage directories to avoid
@@ -150,24 +150,14 @@ php artisan up
 * [Panel Documentation](https://pterodactyl.io/panel/1.0/getting_started.html)
 * [Wings Documentation](https://pterodactyl.io/wings/1.0/installing.html)
 * [Community Guides](https://pterodactyl.io/community/about.html)
-* Or, get additional help [via Discord](https://discord.nookure.com/)
-
-## Star History
-
-<a href="https://star-history.com/#Nookure/NookTheme&Timeline">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Nookure/NookTheme&type=Timeline&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Nookure/NookTheme&type=Timeline" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Nookure/NookTheme&type=Timeline" />
-  </picture>
-</a>
+* Or, get additional help [via Discord](https://discord.wiskcraft.com/)
 
 ## License
 
 Pterodactyl® Copyright © 2015 - 2023 Dane Everitt and contributors.
 
-> Nookure is not affiliated with Pterodactyl® Panel or its contributors.
+> WiskCraft is not affiliated with Pterodactyl® Panel or its contributors.
 
 Pterodactyl code released under the [MIT License](./LICENSE.md).
 
-NookTheme code  edits released under the [GNU GPLv3 License](./NookLicense.md).
+Aquia Theme code edits released under the [GNU GPLv3 License](./NookLicense.md).
