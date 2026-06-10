@@ -4,11 +4,11 @@
 FROM --platform=$TARGETOS/$TARGETARCH node:22-alpine AS frontend
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --network-timeout 300000
+COPY package.json package-lock.json ./
+RUN npm ci --network-timeout=300000
 
 COPY . ./
-RUN yarn run build:production
+RUN npm run build:production
 
 # ─────────────────────────────────────────────────────────────────
 # Stage 1: PHP application
