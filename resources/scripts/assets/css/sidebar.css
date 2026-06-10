@@ -511,3 +511,66 @@ body {
     opacity: 0.2;
     margin: 0.75rem 0;
 }
+
+/* ─── Auth page — field & button overrides ───────────────────── */
+
+/* Input labels */
+#app input[type='text'],
+#app input[type='email'],
+#app input[type='password'] {
+    background: rgba(8, 205, 0, 0.03) !important;
+    border-color: rgba(8, 205, 0, 0.15) !important;
+    color: #ffffff !important;
+    border-radius: 9px !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: border-color 0.18s, box-shadow 0.18s !important;
+}
+#app input[type='text']:focus,
+#app input[type='email']:focus,
+#app input[type='password']:focus {
+    border-color: rgba(8, 205, 0, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(8, 205, 0, 0.07) !important;
+    outline: none !important;
+}
+#app input::placeholder {
+    color: #2a3d2a !important;
+}
+
+/* Field labels */
+#app label {
+    color: #64748b !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* Sign In / submit button */
+#app button[type='submit'] {
+    background: #08cd00 !important;
+    border-color: #08cd00 !important;
+    color: #050d05 !important;
+    font-weight: 700 !important;
+    font-family: 'Inter', sans-serif !important;
+    border-radius: 9px !important;
+    letter-spacing: 0.01em !important;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s !important;
+    box-shadow: 0 4px 20px rgba(8, 205, 0, 0.25) !important;
+}
+#app button[type='submit']:hover:not(:disabled) {
+    background: #07b300 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 24px rgba(8, 205, 0, 0.35) !important;
+}
+#app button[type='submit']:disabled {
+    opacity: 0.5 !important;
+}
+
+/* Flash/alert messages */
+#app [role='alert'],
+#app .flash-message {
+    border-radius: 8px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.8rem !important;
+}

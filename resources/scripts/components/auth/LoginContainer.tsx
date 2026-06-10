@@ -153,9 +153,9 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                         <Link
                             to={'/auth/password'}
                             css={tw`text-xs tracking-wide no-underline uppercase`}
-                            style={{ color: 'rgba(0,212,255,0.5)', transition: 'color 0.2s' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#00d4ff')}
-                            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,212,255,0.5)')}
+                            style={{ color: 'rgba(8,205,0,0.45)', transition: 'color 0.2s' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = '#08cd00')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(8,205,0,0.45)')}
                         >
                             Forgot password?
                         </Link>
