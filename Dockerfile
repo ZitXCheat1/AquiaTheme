@@ -5,7 +5,7 @@ FROM --platform=$TARGETOS/$TARGETARCH node:22-alpine AS frontend
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --network-timeout=300000
+RUN npm ci --legacy-peer-deps --network-timeout=300000
 
 COPY . ./
 RUN npm run build:production
