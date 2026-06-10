@@ -80,7 +80,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer css={tw`w-full flex`}>
+                <LoginFormContainer css={tw`w-full flex flex-col`}>
                     <AnimatedField
                         custom={0}
                         variants={fieldVariants}
@@ -88,7 +88,6 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                         animate={'visible'}
                     >
                         <Field
-                            light
                             type={'text'}
                             label={'Username or Email'}
                             name={'username'}
@@ -104,7 +103,6 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                         css={tw`mt-5`}
                     >
                         <Field
-                            light
                             type={'password'}
                             label={'Password'}
                             name={'password'}

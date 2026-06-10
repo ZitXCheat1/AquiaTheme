@@ -16,10 +16,26 @@ const ButtonStyle = styled.button<Omit<Props, 'isLoading'>>`
     ${(props) =>
         ((!props.isSecondary && !props.color) || props.color === 'primary') &&
         css<Props>`
-            ${(props) => !props.isSecondary && tw`bg-primary-500 border-primary-600 border text-primary-50`};
+            ${(props) => !props.isSecondary && css`
+                background: linear-gradient(135deg, rgba(0,212,255,0.85), rgba(124,58,237,0.85));
+                border-color: rgba(0,212,255,0.4);
+                color: #fff;
+                font-weight: 600;
+                letter-spacing: 0.06em;
+                box-shadow: 0 4px 20px rgba(0,212,255,0.25);
+                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            `};
 
             &:hover:not(:disabled) {
-                ${tw`bg-primary-600 border-primary-700`};
+                background: linear-gradient(135deg, rgba(0,212,255,1), rgba(124,58,237,1));
+                border-color: rgba(0,212,255,0.6);
+                box-shadow: 0 6px 28px rgba(0,212,255,0.4);
+                transform: translateY(-1px);
+            }
+
+            &:active:not(:disabled) {
+                transform: translateY(0);
+                box-shadow: 0 2px 12px rgba(0,212,255,0.2);
             }
         `};
 
