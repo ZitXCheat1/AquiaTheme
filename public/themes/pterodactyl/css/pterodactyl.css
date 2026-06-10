@@ -689,27 +689,40 @@ span[aria-labelledby="select2-pUserId-container"] { padding-left: 2px !important
     border-top: 1px solid var(--aq-border) !important;
 }
 
-.modal,
-.modal-dialog,
+.modal-backdrop {
+    z-index: 1040 !important;
+    pointer-events: none !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+    pointer-events: none !important;
+}
+
+.modal-dialog {
+    pointer-events: auto !important;
+    z-index: 1051 !important;
+    position: relative;
+}
+
 .modal-content,
 .modal-body,
 .modal-header,
-.modal-footer {
+.modal-footer,
+.modal-content *,
+.modal-body *,
+.modal-header *,
+.modal-footer * {
     pointer-events: auto !important;
 }
 
-.modal input,
-.modal textarea,
-.modal select,
-.modal button,
-.modal a {
-    pointer-events: auto !important;
-    position: relative;
-    z-index: 1;
+/* Remove backdrop-filter from boxes to prevent stacking context issues in modals */
+body.modal-open .box,
+body.modal-open .content-wrapper,
+body.modal-open .main-sidebar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
-
-.modal { z-index: 1050 !important; }
-.modal-backdrop { z-index: 1040 !important; }
 
 /* ═══════════════════════════════════════════
    WELLS
