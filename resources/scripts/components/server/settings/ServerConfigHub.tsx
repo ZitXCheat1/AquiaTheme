@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
+import { keyframes } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNetworkWired, faPlayCircle, faCogs, faUser } from '@fortawesome/free-solid-svg-icons';
 import NetworkContainer from '@/components/server/network/NetworkContainer';

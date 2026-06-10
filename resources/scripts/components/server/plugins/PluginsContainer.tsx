@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
+import { keyframes } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faSearch, faDownload, faStar, faExternalLinkAlt,
@@ -32,7 +33,7 @@ const cardIn = keyframes`from{opacity:0;transform:translateY(8px);}to{opacity:1;
 const Page = styled.div`
     padding: 24px;
     min-height: calc(100vh - 3.5rem);
-    color: #e8f5e8;
+    color: #ffffff;
     font-family: 'Inter', sans-serif;
     animation: ${fadeUp} 0.4s cubic-bezier(0.22,1,0.36,1) both;
 `;
@@ -43,7 +44,7 @@ const TopBar = styled.div`
 
 const SearchWrap = styled.div`
     flex: 1; position: relative;
-    svg { position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#3d5c3d;font-size:0.8rem; }
+    svg { position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:0.8rem; }
 `;
 
 const SearchInput = styled.input`
@@ -52,7 +53,7 @@ const SearchInput = styled.input`
     border: 1px solid rgba(8,205,0,0.14);
     border-radius: 8px;
     padding: 9px 12px 9px 33px;
-    color: #e8f5e8;
+    color: #ffffff;
     font-size: 0.825rem;
     font-family: 'Inter', sans-serif;
     outline: none;
@@ -66,7 +67,7 @@ const RefreshBtn = styled.button`
     border-radius: 8px;
     background: #0e140e;
     border: 1px solid rgba(8,205,0,0.14);
-    color: #3d5c3d;
+    color: #94a3b8;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     font-size: 0.8rem;
@@ -95,7 +96,7 @@ const TabBtn = styled.button<{ $active?: boolean }>`
     transition: all 0.15s;
     ${p => p.$active
         ? 'background:#08cd00;color:#0a0f0a;font-weight:700;'
-        : 'background:transparent;color:#3d5c3d;&:hover{color:#7aab78;}'
+        : 'background:transparent;color:#94a3b8;&:hover{color:#7aab78;}'
     }
 `;
 
@@ -132,14 +133,14 @@ const PluginIcon = styled.div`
     width: 42px; height: 42px; border-radius: 8px;
     background: rgba(8,205,0,0.08);
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; overflow: hidden; color: #3d5c3d; font-size: 1rem;
+    flex-shrink: 0; overflow: hidden; color: #94a3b8; font-size: 1rem;
     img { width:100%;height:100%;object-fit:cover;border-radius:8px; }
 `;
 
 const CardInfo = styled.div`flex:1;min-width:0;`;
 
 const CardName = styled.div`
-    font-size: 0.875rem; font-weight: 600; color: #e8f5e8;
+    font-size: 0.875rem; font-weight: 600; color: #ffffff;
     display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
     a { color:inherit;text-decoration:none;&:hover{color:#08cd00;} }
 `;
@@ -154,7 +155,7 @@ const SourceBadge = styled.span<{ $src: string }>`
     ${p => p.$src === 'modpack'  && 'background:rgba(168,85,247,0.1);color:#a855f7;'}
 `;
 
-const CardAuthor = styled.div`font-size:0.72rem;color:#3d5c3d;margin-top:2px;`;
+const CardAuthor = styled.div`font-size:0.72rem;color:#94a3b8;margin-top:2px;`;
 
 const CardDesc = styled.p`
     font-size:0.775rem;color:#4b6b4b;margin:0;line-height:1.5;
@@ -199,8 +200,8 @@ const IIcon = styled.div`
 `;
 
 const IInfo = styled.div`flex:1;min-width:0;`;
-const IName = styled.div`font-size:0.85rem;font-weight:600;color:#e8f5e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
-const IMeta = styled.div`font-size:0.7rem;color:#3d5c3d;margin-top:2px;`;
+const IName = styled.div`font-size:0.85rem;font-weight:600;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
+const IMeta = styled.div`font-size:0.7rem;color:#94a3b8;margin-top:2px;`;
 
 const DelBtn = styled.button`
     width:32px;height:32px;border-radius:7px;
@@ -222,7 +223,7 @@ const Dot = styled.span<{ $d: number }>`
 
 const LoadingState = styled.div`
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:64px 20px;gap:14px;color:#3d5c3d;font-size:0.825rem;
+    padding:64px 20px;gap:14px;color:#94a3b8;font-size:0.825rem;
 `;
 
 const EmptyState = styled.div`

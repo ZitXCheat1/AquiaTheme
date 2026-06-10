@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
+import { keyframes } from 'styled-components';
 import { ServerContext } from '@/state/server';
 import updateStartupVariable from '@/api/server/updateStartupVariable';
 import reinstallServer from '@/api/server/reinstallServer';
@@ -9,74 +10,53 @@ import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-sv
 type Software = 'paper' | 'purpur' | 'vanilla' | 'spigot' | 'fabric' | 'forge';
 
 /* ─── SVG Logos ──────────────────────────────────────────────── */
-const PaperLogo = () => (
-    <svg viewBox="0 0 48 48" fill="none" width="36" height="36">
-        <rect width="48" height="48" rx="10" fill="#1c1c1c"/>
-        <path d="M14 36L24 12L34 36" stroke="#e8e8e8" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M17 28H31" stroke="#e8e8e8" strokeWidth="3" strokeLinecap="round"/>
-    </svg>
-);
-const PurpurLogo = () => (
-    <svg viewBox="0 0 48 48" fill="none" width="36" height="36">
-        <rect width="48" height="48" rx="10" fill="#1e0a30"/>
-        <circle cx="24" cy="24" r="12" fill="none" stroke="#7c3aed" strokeWidth="2"/>
-        <circle cx="24" cy="24" r="7" fill="#7c3aed"/>
-        <circle cx="24" cy="24" r="3" fill="#c4b5fd"/>
-        <circle cx="24" cy="12" r="2" fill="#7c3aed"/>
-        <circle cx="24" cy="36" r="2" fill="#7c3aed"/>
-        <circle cx="12" cy="24" r="2" fill="#7c3aed"/>
-        <circle cx="36" cy="24" r="2" fill="#7c3aed"/>
-    </svg>
-);
-const VanillaLogo = () => (
-    <svg viewBox="0 0 48 48" fill="none" width="36" height="36">
-        <rect width="48" height="48" rx="10" fill="#162008"/>
-        <rect x="10" y="10" width="28" height="28" rx="4" fill="#5b9e3b"/>
-        <rect x="10" y="24" width="28" height="14" fill="#8B6144"/>
-        <rect x="10" y="34" width="28" height="4" rx="4" fill="#7a5538"/>
-        <rect x="10" y="10" width="28" height="6" rx="4" fill="#72c44a" opacity="0.7"/>
-    </svg>
-);
-const SpigotLogo = () => (
-    <svg viewBox="0 0 48 48" fill="none" width="36" height="36">
-        <rect width="48" height="48" rx="10" fill="#1c1000"/>
-        <rect x="12" y="16" width="24" height="9" rx="3" fill="#f59e0b"/>
-        <rect x="19" y="25" width="10" height="9" rx="2" fill="#d97706"/>
-        <rect x="8" y="18" width="7" height="5" rx="2" fill="#f59e0b"/>
-        <ellipse cx="24" cy="37.5" rx="2.5" ry="3.5" fill="#60a5fa" opacity="0.8"/>
-    </svg>
-);
-const FabricLogo = () => (
-    <svg viewBox="0 0 48 48" fill="none" width="36" height="36">
-        <rect width="48" height="48" rx="10" fill="#0d180a"/>
-        <rect x="10" y="10" width="8" height="8" rx="1.5" fill="#bef264" opacity="0.9"/>
-        <rect x="20" y="10" width="8" height="8" rx="1.5" fill="#65a30d" opacity="0.9"/>
-        <rect x="30" y="10" width="8" height="8" rx="1.5" fill="#bef264" opacity="0.9"/>
-        <rect x="10" y="20" width="8" height="8" rx="1.5" fill="#65a30d" opacity="0.9"/>
-        <rect x="20" y="20" width="8" height="8" rx="1.5" fill="#bef264" opacity="0.9"/>
-        <rect x="30" y="20" width="8" height="8" rx="1.5" fill="#65a30d" opacity="0.9"/>
-        <rect x="10" y="30" width="8" height="8" rx="1.5" fill="#bef264" opacity="0.9"/>
-        <rect x="20" y="30" width="8" height="8" rx="1.5" fill="#65a30d" opacity="0.9"/>
-        <rect x="30" y="30" width="8" height="8" rx="1.5" fill="#bef264" opacity="0.9"/>
-    </svg>
-);
-const ForgeLogo = () => (
-    <svg viewBox="0 0 48 48" fill="none" width="36" height="36">
-        <rect width="48" height="48" rx="10" fill="#1a0800"/>
-        <rect x="11" y="26" width="26" height="11" rx="2" fill="#c2410c"/>
-        <path d="M17 26V21C17 18.2 19.2 16 22 16H26C28.8 16 31 18.2 31 21V26" fill="#ea580c"/>
-        <path d="M22 25C22 21 26 19 24 14C27 17 27 23 23 25" fill="#fbbf24" opacity="0.95"/>
-        <rect x="13" y="35" width="22" height="4" rx="2" fill="#9a3412"/>
-    </svg>
-);
+/* Real project logos loaded from CDN */
+const LOGO_URLS: Record<Software, string> = {
+    paper:   'https://docs.papermc.io/img/paper.png',
+    purpur:  'https://raw.githubusercontent.com/PurpurMC/Purpur/ver/1.21/art/purpur-small.png',
+    vanilla: 'https://www.minecraft.net/content/dam/games/minecraft/key-art/MC_JAVA_EDITION_keyart_1200x600_v02.jpg',
+    spigot:  'https://static.spigotmc.org/img/spigot.png',
+    fabric:  'https://fabricmc.net/assets/logo.png',
+    forge:   'https://files.minecraftforge.net/images/forge_logo.png',
+};
 
-const SOFTWARE: { id: Software; label: string; Logo: React.FC; desc: string }[] = [
-    { id: 'paper',   label: 'Paper',   Logo: PaperLogo,   desc: 'High-perf Bukkit fork' },
-    { id: 'purpur',  label: 'Purpur',  Logo: PurpurLogo,  desc: 'Extra patches & features' },
-    { id: 'vanilla', label: 'Vanilla', Logo: VanillaLogo, desc: 'Official Mojang server' },
-    { id: 'spigot',  label: 'Spigot',  Logo: SpigotLogo,  desc: 'CraftBukkit fork' },
-    { id: 'fabric',  label: 'Fabric',  Logo: FabricLogo,  desc: 'Lightweight mod loader' },
-    { id: 'forge',   label: 'Forge',   Logo: ForgeLogo,   desc: 'Classic mod framework' },
+/* Fallback colored squares if CDN fails */
+const LOGO_COLORS: Record<Software, string> = {
+    paper: '#e8e8e8', purpur: '#9333ea', vanilla: '#5b9e3b',
+    spigot: '#f59e0b', fabric: '#bef264', forge: '#c2410c',
+};
+
+const LogoImg = ({ id }: { id: Software }) => {
+    const [err, setErr] = React.useState(false);
+    if (err) {
+        return (
+            <div style={{
+                width: 40, height: 40, borderRadius: 8,
+                background: LOGO_COLORS[id], opacity: 0.85,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.6rem', fontWeight: 700, color: '#0a0f0a',
+            }}>
+                {id[0].toUpperCase()}
+            </div>
+        );
+    }
+    return (
+        <img
+            src={LOGO_URLS[id]}
+            alt={id}
+            onError={() => setErr(true)}
+            style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }}
+        />
+    );
+};
+
+const SOFTWARE: { id: Software; label: string; desc: string; accent: string }[] = [
+    { id: 'paper',   label: 'Paper',   desc: 'High-perf Bukkit fork',    accent: '#e2e8f0' },
+    { id: 'purpur',  label: 'Purpur',  desc: 'Extra patches & features', accent: '#a855f7' },
+    { id: 'vanilla', label: 'Vanilla', desc: 'Official Mojang server',   accent: '#5b9e3b' },
+    { id: 'spigot',  label: 'Spigot',  desc: 'CraftBukkit fork',         accent: '#f59e0b' },
+    { id: 'fabric',  label: 'Fabric',  desc: 'Lightweight mod loader',   accent: '#bef264' },
+    { id: 'forge',   label: 'Forge',   desc: 'Classic mod framework',    accent: '#f97316' },
 ];
 
 /* ─── Keyframes ──────────────────────────────────────────────── */
@@ -102,10 +82,10 @@ const Page = styled.div`
     animation: ${fadeUp} 0.4s cubic-bezier(0.22,1,0.36,1) both;
 `;
 const Heading = styled.h2`
-    font-size: 1.05rem; font-weight: 700; color: #e8f5e8;
+    font-size: 1.05rem; font-weight: 700; color: #ffffff;
     margin: 0 0 4px; letter-spacing: -0.025em;
 `;
-const Sub = styled.p`font-size: 0.775rem; color: #3d5c3d; margin: 0 0 22px;`;
+const Sub = styled.p`font-size: 0.775rem; color: #94a3b8; margin: 0 0 22px;`;
 const Grid = styled.div`
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px;
 `;
@@ -125,8 +105,8 @@ const Tick = styled.div`
     background:#08cd00;display:flex;align-items:center;justify-content:center;
     font-size:0.5rem;color:#0a0f0a;font-weight:900;
 `;
-const SwName = styled.div`font-size:0.78rem;font-weight:700;color:#e8f5e8;letter-spacing:-0.01em;`;
-const SwDesc = styled.div`font-size:0.63rem;color:#3d5c3d;line-height:1.3;text-align:center;`;
+const SwName = styled.div`font-size:0.78rem;font-weight:700;color:#ffffff;letter-spacing:-0.01em;`;
+const SwDesc = styled.div`font-size:0.63rem;color:#94a3b8;line-height:1.3;text-align:center;`;
 const Card = styled.div`
     background:#0e140e;border:1px solid rgba(8,205,0,0.1);border-radius:12px;padding:18px;margin-bottom:12px;
 `;
@@ -228,10 +208,10 @@ export default function VersionChangerContainer() {
             <Sub>Switch your server software and Minecraft version with one click.</Sub>
 
             <Grid>
-                {SOFTWARE.map(({ id, label, Logo, desc }, i) => (
+                {SOFTWARE.map(({ id, label, desc }, i) => (
                     <SoftCard key={id} $sel={sw===id} $delay={i*45} onClick={()=>setSw(id)}>
                         {sw===id && <Tick>✓</Tick>}
-                        <Logo/>
+                        <LogoImg id={id}/>
                         <div><SwName>{label}</SwName><SwDesc>{desc}</SwDesc></div>
                     </SoftCard>
                 ))}

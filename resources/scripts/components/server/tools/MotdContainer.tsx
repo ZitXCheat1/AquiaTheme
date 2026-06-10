@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import styled, { keyframes, css } from 'styled-components/macro';
+import styled from 'styled-components/macro';
+import { keyframes, css } from 'styled-components';
 import { ServerContext } from '@/state/server';
 import getFileContents from '@/api/server/files/getFileContents';
 import saveFileContents from '@/api/server/files/saveFileContents';
@@ -77,14 +78,14 @@ const Page = styled.div`
     max-width: 780px;
     font-family: 'Inter', sans-serif;
     animation: ${fadeUp} 0.4s cubic-bezier(0.22,1,0.36,1) both;
-    color: #e8f5e8;
+    color: #ffffff;
 `;
 
 const Heading = styled.h2`
-    font-size: 1.05rem; font-weight: 700; color: #e8f5e8;
+    font-size: 1.05rem; font-weight: 700; color: #ffffff;
     margin: 0 0 4px; letter-spacing: -0.025em;
 `;
-const Sub = styled.p`font-size:0.775rem;color:#3d5c3d;margin:0 0 24px;`;
+const Sub = styled.p`font-size:0.775rem;color:#94a3b8;margin:0 0 24px;`;
 
 const Card = styled.div<{ $delay?: number }>`
     background: #0e140e;
@@ -95,32 +96,37 @@ const Card = styled.div<{ $delay?: number }>`
     animation: ${fadeUp} 0.4s cubic-bezier(0.22,1,0.36,1) both;
     animation-delay: ${p => p.$delay || 0}ms;
 `;
-const CardTitle = styled.div`font-size:0.75rem;font-weight:700;color:#3d5c3d;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;`;
+const CardTitle = styled.div`font-size:0.75rem;font-weight:700;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;`;
 
-/* MC Preview */
+/* MC Preview — mimics Java Edition server list */
 const McPreview = styled.div`
-    background: #1a1a1a;
-    border: 2px solid #3a3a3a;
-    border-radius: 4px;
-    padding: 10px 14px;
-    font-family: 'Minecraft', 'Courier New', monospace;
+    background: #16191d;
+    border: 1px solid #2a2d33;
+    border-radius: 3px;
+    padding: 0;
+    font-family: 'Courier New', monospace;
     font-size: 13px;
-    line-height: 1.6;
-    min-height: 72px;
-    position: relative;
+    line-height: 1.5;
     overflow: hidden;
-    &::before {
-        content: '';
-        position: absolute; inset: 0;
-        background: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 16px,
-            rgba(255,255,255,0.015) 16px,
-            rgba(255,255,255,0.015) 17px
-        );
-        pointer-events: none;
-    }
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 2px 12px rgba(0,0,0,0.6);
+`;
+
+const McPreviewHeader = styled.div`
+    background: #1d2026;
+    border-bottom: 1px solid #2a2d33;
+    padding: 5px 12px;
+    font-size: 10px;
+    color: #4a4e57;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    &::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #555; }
+    &::after { content: 'Multiplayer (Play with friends)'; color: #4a4e57; }
+`;
+
+const McPreviewBody = styled.div`
+    padding: 0 4px;
 `;
 
 const McLine = styled.div`display:flex;flex-wrap:wrap;align-items:baseline;`;
@@ -134,26 +140,43 @@ const McSpan = styled.span<{ $color?: string; $bold?: boolean; $italic?: boolean
 `;
 
 const McServerRow = styled.div`
-    display: flex; align-items: flex-start; gap: 10px; padding: 6px 0;
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid #1d2026;
+    cursor: default;
+    &:hover { background: rgba(255,255,255,0.055); }
 `;
 const McIcon = styled.div`
-    width: 56px; height: 56px; border-radius: 4px;
-    background: #2a2a2a; border: 1px solid #3a3a3a;
+    width: 64px; height: 64px;
     flex-shrink: 0; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-    color: #555; font-size: 0.7rem; text-align: center;
     img { width:100%;height:100%;object-fit:cover;image-rendering:pixelated; }
 `;
-const McRight = styled.div`flex:1;min-width:0;`;
-const McServerName = styled.div`font-size:13px;color:#ffffff;font-weight:bold;margin-bottom:4px;font-family:'Courier New',monospace;`;
-const McPlayers = styled.div`font-size:11px;color:#555555;font-family:'Courier New',monospace;`;
+const McRight = styled.div`flex:1;min-width:0;padding-top:2px;`;
+const McServerName = styled.div`
+    font-size: 14px; color: #ffffff; margin-bottom: 2px;
+    font-family: 'Courier New', monospace; text-shadow: 1px 1px 0 #3f3f3f;
+`;
+const McPlayers = styled.div`font-size:11px;color:#555555;font-family:'Courier New',monospace;margin-top:3px;`;
+const McPingArea = styled.div`
+    display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+    padding-top: 2px; flex-shrink: 0;
+`;
+const McPingBars = styled.div`
+    display: flex; align-items: flex-end; gap: 1.5px; height: 12px;
+`;
+const McBar = styled.div<{ $h: number; $active?: boolean }>`
+    width: 3px; height: ${p => p.$h}px;
+    background: ${p => p.$active ? '#55ff55' : '#555'};
+    border-radius: 1px;
+`;
 
 /* Input area */
 const TextareaWrap = styled.div`position:relative;`;
 const Textarea = styled.textarea`
     width: 100%; min-height: 80px;
     background: #0a0f0a; border: 1px solid rgba(8,205,0,0.14);
-    border-radius: 8px; color: #e8f5e8;
+    border-radius: 8px; color: #ffffff;
     font-size: 0.85rem; font-family: 'Inter', sans-serif;
     padding: 10px 12px; outline: none; resize: vertical;
     transition: border-color 0.15s; line-height: 1.6;
@@ -186,7 +209,7 @@ const FmtBtn = styled.button<{ $css?: string }>`
     color: #7aab78; font-size: 0.75rem; font-weight: 700;
     cursor: pointer; transition: all 0.12s;
     ${p => p.$css ? css`${p.$css};` : ''}
-    &:hover { border-color: rgba(8,205,0,0.3); color: #e8f5e8; }
+    &:hover { border-color: rgba(8,205,0,0.3); color: #ffffff; }
 `;
 
 const Row = styled.div`display:flex;align-items:center;gap:10px;flex-wrap:wrap;`;
@@ -197,7 +220,7 @@ const Btn = styled.button<{ $variant?: 'primary' | 'ghost' }>`
     font-size: 0.8rem; font-weight: 600; font-family: 'Inter', sans-serif;
     cursor: pointer; transition: all 0.15s;
     ${p => p.$variant === 'ghost'
-        ? 'background:#0e140e;border:1px solid rgba(8,205,0,0.14);color:#3d5c3d;&:hover{border-color:rgba(8,205,0,0.3);color:#7aab78;}'
+        ? 'background:#0e140e;border:1px solid rgba(8,205,0,0.14);color:#94a3b8;&:hover{border-color:rgba(8,205,0,0.3);color:#7aab78;}'
         : 'background:#08cd00;border:none;color:#0a0f0a;&:hover:not(:disabled){background:#07b300;}&:disabled{opacity:0.4;cursor:default;}'
     }
 `;
@@ -221,6 +244,22 @@ const PRESETS = [
     { label: 'SMP', value: '§2§l⚡ §r§aSurvival §8| §71.21 §8| §aBedrock + Java' },
     { label: 'Duels', value: '§c§lDuels §r§8| §eRank up §8| §b1v1 §8| §fplay.server.net' },
 ];
+
+/* ─── AquiaTheme default server icon as data URI ─────────────── */
+const AQUIA_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#0a0f0a"/>
+  <rect x="8" y="14" width="48" height="14" rx="3" fill="#111611" stroke="#08cd00" stroke-width="1.2"/>
+  <rect x="8" y="33" width="48" height="14" rx="3" fill="#111611" stroke="#08cd00" stroke-width="1.2"/>
+  <rect x="12" y="18" width="22" height="6" rx="1.5" fill="#1a2a1a"/>
+  <rect x="12" y="37" width="22" height="6" rx="1.5" fill="#1a2a1a"/>
+  <circle cx="40" cy="21" r="2.5" fill="#08cd00"/>
+  <circle cx="46" cy="21" r="2.5" fill="#08cd00" opacity="0.4"/>
+  <circle cx="40" cy="40" r="2.5" fill="#08cd00" opacity="0.7"/>
+  <circle cx="46" cy="40" r="2.5" fill="#08cd00"/>
+  <rect x="13" y="19.5" width="10" height="3" rx="1" fill="#08cd00" opacity="0.2"/>
+  <rect x="13" y="38.5" width="10" height="3" rx="1" fill="#08cd00" opacity="0.2"/>
+</svg>`;
+const AQUIA_ICON_URI = `data:image/svg+xml;base64,${btoa(AQUIA_ICON_SVG)}`;
 
 /* ─── Component ──────────────────────────────────────────────── */
 export default function MotdContainer() {
@@ -302,25 +341,35 @@ export default function MotdContainer() {
 
             {/* Live Preview */}
             <Card $delay={0}>
-                <CardTitle>Live Preview</CardTitle>
+                <CardTitle>Live Preview — Minecraft Server List</CardTitle>
                 <McPreview>
-                    <McServerRow>
-                        <McIcon>
-                            {serverIcon ? <img src={serverIcon} alt='icon'/> : 'No Icon'}
-                        </McIcon>
-                        <McRight>
-                            <McServerName>A Minecraft Server</McServerName>
-                            {lines.map((line, i) => (
-                                <McLine key={i}>{renderLine(line)}</McLine>
-                            ))}
-                            <McPlayers>● 0/20</McPlayers>
-                        </McRight>
-                        <div style={{fontSize:'11px',color:'#555',fontFamily:'Courier New',textAlign:'right',lineHeight:1.6}}>
-                            <div>0/20</div>
-                            <div style={{fontSize:'9px',marginTop:'2px'}}>■■■■□</div>
-                        </div>
-                    </McServerRow>
+                    <McPreviewHeader/>
+                    <McPreviewBody>
+                        <McServerRow>
+                            <McIcon>
+                                <img src={serverIcon || AQUIA_ICON_URI} alt='icon'/>
+                            </McIcon>
+                            <McRight>
+                                <McServerName>WiskCraft Network</McServerName>
+                                {lines.map((line, i) => (
+                                    <McLine key={i}>{renderLine(line)}</McLine>
+                                ))}
+                                <McPlayers style={{color:'#aaaaaa'}}>0/20 players</McPlayers>
+                            </McRight>
+                            <McPingArea>
+                                <McPingBars>
+                                    {[4, 6, 8, 10, 12].map((h, i) => (
+                                        <McBar key={i} $h={h} $active={i < 5}/>
+                                    ))}
+                                </McPingBars>
+                                <div style={{fontSize:'10px',color:'#aaaaaa',fontFamily:'Courier New'}}>0ms</div>
+                            </McPingArea>
+                        </McServerRow>
+                    </McPreviewBody>
                 </McPreview>
+                <div style={{fontSize:'0.68rem',color:'#3d5c3d',marginTop:'6px',fontStyle:'italic'}}>
+                    This is how your server appears in the Minecraft Java server list.
+                </div>
             </Card>
 
             {/* Editor */}

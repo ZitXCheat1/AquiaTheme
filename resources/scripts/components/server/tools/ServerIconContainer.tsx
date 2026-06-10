@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
+import { keyframes } from 'styled-components';
 import { ServerContext } from '@/state/server';
 import getFileUploadUrl from '@/api/server/files/getFileUploadUrl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,8 +19,8 @@ const Page = styled.div`
     animation: ${fadeUp} 0.4s cubic-bezier(0.22,1,0.36,1) both;
     color: #e8f5e8;
 `;
-const Heading = styled.h2`font-size:1.05rem;font-weight:700;color:#e8f5e8;margin:0 0 4px;letter-spacing:-0.025em;`;
-const Sub = styled.p`font-size:0.775rem;color:#3d5c3d;margin:0 0 24px;`;
+const Heading = styled.h2`font-size:1.05rem;font-weight:700;color:#ffffff;margin:0 0 4px;letter-spacing:-0.025em;`;
+const Sub = styled.p`font-size:0.775rem;color:#94a3b8;margin:0 0 24px;`;
 
 const Card = styled.div<{ $delay?: number }>`
     background: #0e140e;
