@@ -22,7 +22,6 @@ import {
     faEdit,
     faFolder,
     faKey,
-    faNetworkWired,
     faPaperclip,
     faPassport,
     faPlayCircle,
@@ -31,6 +30,7 @@ import {
     faSlidersH,
     faTerminal,
     faUser,
+    faWrench,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Each of the router files is already code split out appropriately — so
@@ -43,6 +43,7 @@ const ScheduleEditContainer = lazy(() => import('@/components/server/schedules/S
 const PluginsContainer = lazy(() => import('@/components/server/plugins/PluginsContainer'));
 const VersionChangerContainer = lazy(() => import('@/components/server/tools/VersionChangerContainer'));
 const PropertiesContainer = lazy(() => import('@/components/server/tools/PropertiesContainer'));
+const ServerConfigHub = lazy(() => import('@/components/server/settings/ServerConfigHub'));
 
 interface RouteDefinition {
     path: string;
@@ -138,10 +139,8 @@ export default {
         {
             path: '/network',
             permission: 'allocation.*',
-            name: 'Network',
-            section: 'MANAGEMENT',
+            name: undefined,
             component: NetworkContainer,
-            iconProp: faNetworkWired,
         },
         {
             path: '/plugins',
@@ -185,18 +184,22 @@ export default {
         {
             path: '/users',
             permission: 'user.*',
-            name: 'Users',
-            section: 'CONFIGURATION',
+            name: undefined,
             component: UsersContainer,
-            iconProp: faUser,
         },
         {
             path: '/startup',
             permission: 'startup.*',
-            name: 'Startup',
-            section: 'CONFIGURATION',
+            name: undefined,
             component: StartupContainer,
-            iconProp: faPlayCircle,
+        },
+        {
+            path: '/config',
+            permission: null,
+            name: 'Server Config',
+            section: 'CONFIGURATION',
+            component: ServerConfigHub,
+            iconProp: faWrench,
         },
         {
             path: '/settings',
