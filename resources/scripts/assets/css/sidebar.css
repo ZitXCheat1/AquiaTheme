@@ -158,40 +158,88 @@
 .aq-barwave-bar:nth-child(4) { animation-delay: 0.15s;  }
 .aq-barwave-bar:nth-child(5) { animation-delay: 0s;     }
 
-/* ─── Sidebar hide/show toggle (logo click) ─────────────────── */
+/* ─── Sidebar icon-only collapse (logo click) ───────────────── */
 
-@keyframes aqSidebarSlideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to   { transform: translateX(-100%); opacity: 0; }
+:root { --sidebar-collapsed-size: 54px; }
+
+/* Collapsed: narrow sidebar, icons only */
+html.sidebar-collapsed .sidebar {
+    width: var(--sidebar-collapsed-size);
+    transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-@keyframes aqSidebarSlideIn {
-    from { transform: translateX(-100%); opacity: 0; }
-    to   { transform: translateX(0); opacity: 1; }
-}
-@keyframes aqContentExpand {
-    from { margin-left: calc(var(--sidebar-size) + 24px); }
-    to   { margin-left: 24px; }
-}
-@keyframes aqContentShrink {
-    from { margin-left: 24px; }
-    to   { margin-left: calc(var(--sidebar-size) + 24px); }
+html:not(.sidebar-collapsed) .sidebar {
+    width: var(--sidebar-size);
+    transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* When sidebar-hidden class is on <html> */
-html.sidebar-hidden .sidebar {
-    animation: aqSidebarSlideOut 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+/* Hide labels */
+html.sidebar-collapsed .sidebar .nav-label {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, max-width 0.3s cubic-bezier(0.22,1,0.36,1);
+    white-space: nowrap;
+}
+html:not(.sidebar-collapsed) .sidebar .nav-label {
+    opacity: 1;
+    max-width: 160px;
+    overflow: hidden;
+    transition: opacity 0.25s ease 0.05s, max-width 0.3s cubic-bezier(0.22,1,0.36,1);
+    white-space: nowrap;
+}
+
+/* Hide section headers */
+html.sidebar-collapsed .sidebar-section {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, height 0.3s ease, padding 0.3s ease;
+}
+html:not(.sidebar-collapsed) .sidebar-section {
+    opacity: 1;
+    transition: opacity 0.25s ease 0.05s, height 0.3s ease, padding 0.3s ease;
+}
+
+/* Center icons when collapsed */
+html.sidebar-collapsed .sidebar a {
+    justify-content: center;
+    padding: 8px 0;
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+html.sidebar-collapsed .sidebar .icon {
+    margin-right: 0;
+    transition: margin-right 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+html.sidebar-collapsed .sidebar {
+    overflow: visible; /* allow tooltips to show */
+}
+
+/* Tooltip on hover when collapsed */
+html.sidebar-collapsed .sidebar a[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: calc(var(--sidebar-collapsed-size) + 8px);
+    top: 50%; transform: translateY(-50%);
+    background: #111611;
+    border: 1px solid rgba(8,205,0,0.2);
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 9999;
     pointer-events: none;
+    animation: aqTabSlideDown 0.15s ease both;
 }
-html:not(.sidebar-hidden) .sidebar {
-    animation: aqSidebarSlideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+/* Content area adjusts */
+html.sidebar-collapsed .content-container {
+    margin-left: calc(var(--sidebar-collapsed-size) + 16px) !important;
+    transition: margin-left 0.3s cubic-bezier(0.22,1,0.36,1);
 }
-html.sidebar-hidden .content-container {
-    margin-left: 24px !important;
-    transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-}
-html:not(.sidebar-hidden) .content-container {
-    margin-left: calc(var(--sidebar-size) + 24px) !important;
-    transition: margin-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+html:not(.sidebar-collapsed) .content-container {
+    transition: margin-left 0.3s cubic-bezier(0.22,1,0.36,1);
 }
 
 /* ─── Tab content slide-in animation ───────────────────────── */
@@ -388,6 +436,37 @@ body {
     transition: box-shadow 0.2s;
 }
 .smallAvatar:hover { box-shadow: 0 0 10px var(--aq-glow); }
+
+/* ─── File row stagger animations ───────────────────────────── */
+
+@keyframes aqFileRowIn {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Applied by JS or component — stagger each row */
+.aq-file-row {
+    animation: aqFileRowIn 0.28s cubic-bezier(0.22,1,0.36,1) both;
+}
+.aq-file-row:nth-child(1)  { animation-delay: 0ms; }
+.aq-file-row:nth-child(2)  { animation-delay: 25ms; }
+.aq-file-row:nth-child(3)  { animation-delay: 50ms; }
+.aq-file-row:nth-child(4)  { animation-delay: 75ms; }
+.aq-file-row:nth-child(5)  { animation-delay: 100ms; }
+.aq-file-row:nth-child(6)  { animation-delay: 125ms; }
+.aq-file-row:nth-child(7)  { animation-delay: 150ms; }
+.aq-file-row:nth-child(8)  { animation-delay: 175ms; }
+.aq-file-row:nth-child(9)  { animation-delay: 200ms; }
+.aq-file-row:nth-child(n+10) { animation-delay: 220ms; }
+
+/* server-icon.png file gets AquiaTheme logo preview */
+.aq-file-icon-preview {
+    width: 28px; height: 28px;
+    border-radius: 4px;
+    object-fit: cover;
+    image-rendering: pixelated;
+    border: 1px solid rgba(8,205,0,0.2);
+}
 
 /* ─── Nav-bar (mobile) ───────────────────────────────────────── */
 

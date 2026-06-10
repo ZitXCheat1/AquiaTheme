@@ -12,7 +12,7 @@
         <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
         <link rel="manifest" href="/favicons/manifest.json">
         <link rel="shortcut icon" href="/favicons/favicon.ico">
-        <meta name="theme-color" content="#00d4ff">
+        <meta name="theme-color" content="#08cd00">
 
         @include('layouts.scripts')
 
@@ -33,8 +33,164 @@
             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 
             <style>
-                body, .skin-blue .sidebar-menu > li > a, .box-header .box-title,
-                .content-header > h1, .main-footer { font-family: 'Inter', system-ui, sans-serif !important; }
+                /* ─── AquiaTheme Admin — Green Edition ─── */
+                :root {
+                    --aq-accent: #08cd00;
+                    --aq-bg: #0a0f0a;
+                    --aq-surface: #111611;
+                    --aq-surface2: #162016;
+                    --aq-border: rgba(8,205,0,0.12);
+                    --aq-glow: rgba(8,205,0,0.18);
+                }
+
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+                body, * { font-family: 'Inter', system-ui, sans-serif !important; }
+
+                /* Wipe all AdminLTE blue */
+                body, .wrapper, .content-wrapper, .main-footer { background: #0a0f0a !important; }
+
+                /* Top navbar */
+                .main-header .navbar,
+                .main-header .logo {
+                    background: rgba(10,15,10,0.96) !important;
+                    border-bottom: 1px solid rgba(8,205,0,0.12) !important;
+                    backdrop-filter: blur(16px);
+                }
+                .main-header .logo { border-right: 1px solid rgba(8,205,0,0.1) !important; }
+                .main-header .logo:hover { background: rgba(8,205,0,0.04) !important; }
+                .skin-blue .main-header .navbar .nav > li > a,
+                .skin-blue .main-header .navbar .nav > li > a:hover { color: #94a3b8 !important; }
+                .skin-blue .main-header .navbar .nav > li > a:hover { color: #08cd00 !important; }
+                .main-header .navbar .nav > li > a { transition: color 0.15s; }
+                .main-header .sidebar-toggle { color: #08cd00 !important; }
+                .main-header .sidebar-toggle:hover { background: rgba(8,205,0,0.07) !important; }
+
+                /* Sidebar */
+                .main-sidebar,
+                .skin-blue .main-sidebar { background: #0c110c !important; border-right: 1px solid rgba(8,205,0,0.1) !important; }
+                .skin-blue .sidebar-menu > li > a { color: #94a3b8 !important; border-radius: 8px; margin: 1px 6px; transition: all 0.18s; }
+                .skin-blue .sidebar-menu > li > a:hover,
+                .skin-blue .sidebar-menu > li.active > a { background: rgba(8,205,0,0.08) !important; color: #ffffff !important; }
+                .skin-blue .sidebar-menu > li.active > a { border-left: 3px solid #08cd00 !important; }
+                .skin-blue .sidebar-menu > li > a > .fa,
+                .skin-blue .sidebar-menu > li > a > i { color: #4d7a4d !important; width: 20px; }
+                .skin-blue .sidebar-menu > li.active > a > .fa,
+                .skin-blue .sidebar-menu > li.active > a > i { color: #08cd00 !important; }
+                .skin-blue .treeview-menu > li > a { color: #64748b !important; }
+                .skin-blue .treeview-menu > li.active > a { color: #08cd00 !important; }
+                .sidebar-menu .header {
+                    color: #3d5c3d !important;
+                    font-size: 0.6rem !important;
+                    letter-spacing: 0.1em !important;
+                    text-transform: uppercase !important;
+                    font-weight: 700 !important;
+                    padding: 14px 16px 5px !important;
+                }
+
+                /* Boxes / Cards */
+                .box { background: #111611 !important; border: 1px solid rgba(8,205,0,0.1) !important; border-radius: 10px !important; box-shadow: none !important; }
+                .box-header { background: transparent !important; border-bottom: 1px solid rgba(8,205,0,0.08) !important; }
+                .box-header .box-title { color: #ffffff !important; font-weight: 600 !important; }
+                .box-footer { background: transparent !important; border-top: 1px solid rgba(8,205,0,0.08) !important; }
+                .box.box-primary { border-top: 2px solid #08cd00 !important; }
+                .box.box-success { border-top: 2px solid #4ade80 !important; }
+                .box.box-danger  { border-top: 2px solid #ef4444 !important; }
+                .box.box-warning { border-top: 2px solid #eab308 !important; }
+                .box.box-info    { border-top: 2px solid #3b82f6 !important; }
+
+                /* Tables */
+                .table, table { color: #e2e8f0 !important; }
+                .table > thead > tr > th { color: #94a3b8 !important; border-bottom: 1px solid rgba(8,205,0,0.1) !important; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600; }
+                .table > tbody > tr > td { border-top: 1px solid rgba(8,205,0,0.06) !important; color: #e2e8f0 !important; }
+                .table-hover > tbody > tr:hover { background: rgba(8,205,0,0.04) !important; }
+                .table-striped > tbody > tr:nth-of-type(odd) { background: rgba(8,205,0,0.02) !important; }
+
+                /* Forms */
+                .form-control {
+                    background: #0a0f0a !important;
+                    border: 1px solid rgba(8,205,0,0.15) !important;
+                    border-radius: 7px !important;
+                    color: #ffffff !important;
+                    transition: border-color 0.15s !important;
+                    box-shadow: none !important;
+                }
+                .form-control:focus { border-color: rgba(8,205,0,0.4) !important; box-shadow: 0 0 0 3px rgba(8,205,0,0.06) !important; }
+                .form-control::placeholder { color: #3d5c3d !important; }
+                label { color: #94a3b8 !important; font-weight: 500 !important; font-size: 0.82rem !important; }
+                .control-label { color: #ffffff !important; }
+                .help-block { color: #64748b !important; font-size: 0.75rem !important; }
+                select.form-control option { background: #0a0f0a; color: #ffffff; }
+
+                /* Buttons */
+                .btn-primary, .btn-success { background: #08cd00 !important; border-color: #07b300 !important; color: #0a0f0a !important; font-weight: 700 !important; border-radius: 7px !important; }
+                .btn-primary:hover, .btn-success:hover { background: #07b300 !important; transform: translateY(-1px); }
+                .btn-default { background: #111611 !important; border: 1px solid rgba(8,205,0,0.15) !important; color: #94a3b8 !important; border-radius: 7px !important; }
+                .btn-default:hover { border-color: rgba(8,205,0,0.35) !important; color: #fff !important; }
+                .btn-danger { background: #ef4444 !important; border-color: #dc2626 !important; color: #fff !important; border-radius: 7px !important; }
+                .btn-warning { background: #eab308 !important; border-color: #ca8a04 !important; color: #0a0f0a !important; border-radius: 7px !important; }
+                .btn-info    { background: #3b82f6 !important; border-color: #2563eb !important; color: #fff !important; border-radius: 7px !important; }
+                .btn { transition: all 0.15s !important; }
+
+                /* Badges / Labels */
+                .label-primary, .badge-primary { background: rgba(8,205,0,0.15) !important; color: #08cd00 !important; border: 1px solid rgba(8,205,0,0.2) !important; }
+                .label-success { background: rgba(74,222,128,0.12) !important; color: #4ade80 !important; }
+                .label-danger  { background: rgba(239,68,68,0.12) !important; color: #ef4444 !important; }
+                .label-warning { background: rgba(234,179,8,0.12) !important; color: #eab308 !important; }
+
+                /* Alerts */
+                .alert { border-radius: 8px !important; border: none !important; }
+                .alert-success { background: rgba(8,205,0,0.09) !important; color: #4ade80 !important; border-left: 3px solid #08cd00 !important; }
+                .alert-danger  { background: rgba(239,68,68,0.09) !important; color: #ef4444 !important; border-left: 3px solid #ef4444 !important; }
+                .alert-warning { background: rgba(234,179,8,0.09) !important; color: #eab308 !important; border-left: 3px solid #eab308 !important; }
+                .alert-info    { background: rgba(59,130,246,0.09) !important; color: #60a5fa !important; border-left: 3px solid #3b82f6 !important; }
+
+                /* Pagination */
+                .pagination > li > a { background: #111611 !important; border-color: rgba(8,205,0,0.1) !important; color: #94a3b8 !important; border-radius: 6px !important; margin: 0 2px; }
+                .pagination > .active > a { background: #08cd00 !important; border-color: #08cd00 !important; color: #0a0f0a !important; }
+                .pagination > li > a:hover { background: rgba(8,205,0,0.08) !important; color: #fff !important; }
+
+                /* Content header */
+                .content-header > h1 { color: #ffffff !important; font-weight: 700 !important; font-size: 1.25rem !important; }
+                .content-header > .breadcrumb { background: transparent !important; color: #64748b !important; }
+                .content-header > .breadcrumb > li.active { color: #08cd00 !important; }
+
+                /* Footer */
+                .main-footer { background: #0a0f0a !important; border-top: 1px solid rgba(8,205,0,0.08) !important; color: #3d5c3d !important; }
+                .main-footer a { color: #08cd00 !important; }
+
+                /* Scrollbar */
+                ::-webkit-scrollbar { width: 6px; height: 6px; }
+                ::-webkit-scrollbar-track { background: transparent; }
+                ::-webkit-scrollbar-thumb { background: rgba(8,205,0,0.2); border-radius: 3px; }
+                ::-webkit-scrollbar-thumb:hover { background: rgba(8,205,0,0.4); }
+
+                /* Select2 */
+                .select2-container--default .select2-selection--single,
+                .select2-container--default .select2-selection--multiple {
+                    background: #0a0f0a !important;
+                    border: 1px solid rgba(8,205,0,0.15) !important;
+                    border-radius: 7px !important;
+                    color: #fff !important;
+                }
+                .select2-dropdown { background: #111611 !important; border: 1px solid rgba(8,205,0,0.2) !important; border-radius: 8px !important; }
+                .select2-results__option { color: #e2e8f0 !important; }
+                .select2-results__option--highlighted { background: rgba(8,205,0,0.1) !important; color: #ffffff !important; }
+                .select2-container--default .select2-selection--single .select2-selection__rendered { color: #ffffff !important; }
+                .select2-search--dropdown .select2-search__field { background: #0a0f0a !important; border: 1px solid rgba(8,205,0,0.2) !important; color: #fff !important; border-radius: 5px !important; }
+
+                /* Nav tabs */
+                .nav-tabs { border-bottom: 1px solid rgba(8,205,0,0.1) !important; }
+                .nav-tabs > li > a { color: #64748b !important; border: none !important; border-radius: 6px 6px 0 0 !important; transition: all 0.15s; }
+                .nav-tabs > li > a:hover { background: rgba(8,205,0,0.05) !important; color: #94a3b8 !important; }
+                .nav-tabs > li.active > a { background: rgba(8,205,0,0.1) !important; color: #08cd00 !important; border-bottom: 2px solid #08cd00 !important; }
+                .tab-content { padding-top: 16px !important; }
+
+                /* Misc */
+                .user-panel { border-bottom: 1px solid rgba(8,205,0,0.08) !important; }
+                @keyframes aqFadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+                @keyframes aqPulse { 0%,100% { opacity:0.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.3); } }
+                .content .box { animation: aqFadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both; }
             </style>
         @show
     </head>
@@ -46,10 +202,10 @@
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
                     <span class="logo-mini">
-                        <i class="fa-solid fa-droplet" style="color:#00d4ff"></i>
+                        <i class="fa-solid fa-server" style="color:#08cd00"></i>
                     </span>
                     <span class="logo-lg">
-                        <i class="fa-solid fa-droplet" style="color:#00d4ff; margin-right:7px;"></i>
+                        <i class="fa-solid fa-droplet" style="color:#08cd00; margin-right:7px;"></i>
                         <strong>{{ config('app.name', 'Aquia Panel') }}</strong>
                     </span>
                 </a>
@@ -66,7 +222,7 @@
                             <li class="hidden-xs">
                                 <a href="#" style="cursor:default; pointer-events:none; opacity:0.6;">
                                     <small>
-                                        <i class="fa-solid fa-code-branch" style="color:#00d4ff; margin-right:4px;"></i>
+                                        <i class="fa-solid fa-code-branch" style="color:#08cd00; margin-right:4px;"></i>
                                         v{{ config('app.fork-version', '1.0') }}
                                     </small>
                                 </a>
@@ -77,7 +233,7 @@
                                 <a href="{{ route('account') }}" class="dropdown-toggle" style="display:flex; align-items:center; gap:8px;">
                                     <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(Auth::user()->email)) }}?s=160"
                                          class="user-image" alt="Avatar"
-                                         style="width:28px; height:28px; border-radius:50%; border:2px solid rgba(0,212,255,0.3);">
+                                         style="width:28px; height:28px; border-radius:50%; border:2px solid rgba(8,205,0,0.3);">
                                     <span class="hidden-xs" style="font-size:0.85rem;">{{ Auth::user()->name_first }}</span>
                                 </a>
                             </li>
@@ -110,7 +266,7 @@
                 <section class="sidebar">
 
                     {{-- User panel --}}
-                    <div class="user-panel" style="padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(0,212,255,0.08); margin-bottom:8px;">
+                    <div class="user-panel" style="padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(8,205,0,0.08); margin-bottom:8px;">
                         <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(Auth::user()->email)) }}?s=160"
                              style="width:38px; height:38px; border-radius:50%; border:2px solid rgba(0,212,255,0.25);" alt="avatar">
                         <div>
@@ -127,7 +283,7 @@
                     <ul class="sidebar-menu">
                         {{-- Basic Administration --}}
                         <li class="header">
-                            <i class="fa-solid fa-shield-halved" style="margin-right:6px; color:rgba(0,212,255,0.4);"></i>
+                            <i class="fa-solid fa-shield-halved" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
                             Administration
                         </li>
 
@@ -154,7 +310,7 @@
 
                         {{-- Management --}}
                         <li class="header">
-                            <i class="fa-solid fa-layer-group" style="margin-right:6px; color:rgba(0,212,255,0.4);"></i>
+                            <i class="fa-solid fa-layer-group" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
                             Management
                         </li>
 
@@ -195,7 +351,7 @@
 
                         {{-- Service Management --}}
                         <li class="header">
-                            <i class="fa-solid fa-cubes" style="margin-right:6px; color:rgba(0,212,255,0.4);"></i>
+                            <i class="fa-solid fa-cubes" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
                             Services
                         </li>
 
@@ -215,8 +371,8 @@
                     </ul>
 
                     {{-- Sidebar footer --}}
-                    <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 16px; border-top:1px solid rgba(0,212,255,0.08); font-size:0.7rem; color:#334155; text-align:center;">
-                        <i class="fa-solid fa-droplet" style="color:rgba(0,212,255,0.3); margin-right:4px;"></i>
+                    <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 16px; border-top:1px solid rgba(8,205,0,0.08); font-size:0.7rem; color:#334155; text-align:center;">
+                        <i class="fa-solid fa-droplet" style="color:rgba(8,205,0,0.3); margin-right:4px;"></i>
                         Aquia Theme v{{ config('app.fork-version', '1.0') }}
                     </div>
                 </section>
@@ -282,7 +438,7 @@
                 Copyright &copy; 2022 &ndash; {{ date('Y') }}
                 <a href="https://wiskcraft.com/" style="color:var(--aq-accent);">Aquia Theme</a>.
                 &nbsp;&bull;&nbsp;
-                <a href="https://pterodactyl.io/" style="color:rgba(0,212,255,0.4); font-size:0.8em;">Pterodactyl</a>
+                <a href="https://pterodactyl.io/" style="color:rgba(8,205,0,0.4); font-size:0.8em;">Pterodactyl</a>
             </footer>
         </div>
 
@@ -332,7 +488,7 @@
 
                     /* Hover ripple on nav buttons */
                     $('.main-header .nav > li > a').on('mouseenter', function() {
-                        $(this).css('color', '#00d4ff');
+                        $(this).css('color', '#08cd00');
                     }).on('mouseleave', function() {
                         $(this).css('color', '');
                     });

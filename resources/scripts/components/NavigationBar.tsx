@@ -26,11 +26,11 @@ const NavWrapper = styled(motion.div)`
     overflow: hidden;
 `;
 
-/* Sidebar toggle state — persisted on window so other components can read it */
-let _sidebarHidden = false;
+/* Sidebar toggle — collapse to icons-only, persisted on <html> class */
+let _sidebarCollapsed = false;
 function toggleSidebar() {
-    _sidebarHidden = !_sidebarHidden;
-    document.documentElement.classList.toggle('sidebar-hidden', _sidebarHidden);
+    _sidebarCollapsed = !_sidebarCollapsed;
+    document.documentElement.classList.toggle('sidebar-collapsed', _sidebarCollapsed);
 }
 
 /* Server-node geometric logo */

@@ -97,7 +97,7 @@ export default () => {
                                                 <div className='icon'>
                                                     <FontAwesomeIcon icon={route.iconProp as IconProp} />
                                                 </div>
-                                                {route.name}
+                                                <span className='nav-label'>{route.name}</span>
                                             </NavLink>
                                         </Can>
                                     ) : (
@@ -105,7 +105,7 @@ export default () => {
                                             <div className='icon'>
                                                 <FontAwesomeIcon icon={route.iconProp as IconProp} />
                                             </div>
-                                            {route.name}
+                                            <span className='nav-label'>{route.name}</span>
                                         </NavLink>
                                     );
                                     rendered.push(link);
@@ -118,7 +118,7 @@ export default () => {
                                             <div className='icon'>
                                                 <FontAwesomeIcon icon={faExternalLinkAlt} />
                                             </div>
-                                            Admin
+                                            <span className='nav-label'>Admin</span>
                                         </a>
                                     );
                                 }

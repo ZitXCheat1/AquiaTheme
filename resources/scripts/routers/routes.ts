@@ -181,10 +181,8 @@ export default {
         {
             path: '/icon',
             permission: 'file.*',
-            name: 'Server Icon',
-            section: 'CONFIGURATION',
+            name: undefined,
             component: ServerIconContainer,
-            iconProp: faImage,
         },
         {
             path: '/schedules',
