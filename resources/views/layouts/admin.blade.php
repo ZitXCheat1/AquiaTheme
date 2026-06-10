@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -33,7 +33,7 @@
             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 
             <style>
-                /* ─── AquiaTheme Admin — Green Edition ─── */
+                /* â”€â”€â”€ AquiaTheme Admin â€” Green Edition â”€â”€â”€ */
                 :root {
                     --aq-accent: #08cd00;
                     --aq-bg: #0a0f0a;
@@ -198,7 +198,7 @@
     <body class="hold-transition skin-blue fixed sidebar-mini">
         <div class="wrapper">
 
-            {{-- ─────── TOP NAVBAR ─────── --}}
+            {{-- â”€â”€â”€â”€â”€â”€â”€ TOP NAVBAR â”€â”€â”€â”€â”€â”€â”€ --}}
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
                     <span class="logo-mini">
@@ -261,7 +261,7 @@
                 </nav>
             </header>
 
-            {{-- ─────── SIDEBAR ─────── --}}
+            {{-- â”€â”€â”€â”€â”€â”€â”€ SIDEBAR â”€â”€â”€â”€â”€â”€â”€ --}}
             <aside class="main-sidebar">
                 <section class="sidebar">
 
@@ -289,21 +289,21 @@
 
                         <li class="{{ Route::currentRouteName() !== 'admin.index' ?: 'active' }}">
                             <a href="{{ route('admin.index') }}">
-                                <i class="fa fa-fw fa-home"></i>
+                                <i class="fa-solid fa-fw fa-house"></i>
                                 <span>Overview</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.settings') ?: 'active' }}">
                             <a href="{{ route('admin.settings') }}">
-                                <i class="fa fa-fw fa-gear"></i>
+                                <i class="fa-solid fa-fw fa-gear"></i>
                                 <span>Settings</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.api') ?: 'active' }}">
                             <a href="{{ route('admin.api.index') }}">
-                                <i class="fa fa-fw fa-plug"></i>
+                                <i class="fa-solid fa-fw fa-plug"></i>
                                 <span>Application API</span>
                             </a>
                         </li>
@@ -316,35 +316,35 @@
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.databases') ?: 'active' }}">
                             <a href="{{ route('admin.databases') }}">
-                                <i class="fa fa-fw fa-database"></i>
+                                <i class="fa-solid fa-fw fa-database"></i>
                                 <span>Databases</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.locations') ?: 'active' }}">
                             <a href="{{ route('admin.locations') }}">
-                                <i class="fa fa-fw fa-globe"></i>
+                                <i class="fa-solid fa-fw fa-globe"></i>
                                 <span>Locations</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nodes') ?: 'active' }}">
                             <a href="{{ route('admin.nodes') }}">
-                                <i class="fa fa-fw fa-sitemap"></i>
+                                <i class="fa-solid fa-fw fa-diagram-project"></i>
                                 <span>Nodes</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
                             <a href="{{ route('admin.servers') }}">
-                                <i class="fa fa-fw fa-server"></i>
+                                <i class="fa-solid fa-fw fa-server"></i>
                                 <span>Servers</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.users') ?: 'active' }}">
                             <a href="{{ route('admin.users') }}">
-                                <i class="fa fa-fw fa-users"></i>
+                                <i class="fa-solid fa-fw fa-users"></i>
                                 <span>Users</span>
                             </a>
                         </li>
@@ -357,14 +357,14 @@
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">
-                                <i class="fa fa-fw fa-hard-drive"></i>
+                                <i class="fa-solid fa-fw fa-hard-drive"></i>
                                 <span>Mounts</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
                             <a href="{{ route('admin.nests') }}">
-                                <i class="fa fa-fw fa-th-large"></i>
+                                <i class="fa-solid fa-fw fa-boxes-stacked"></i>
                                 <span>Nests</span>
                             </a>
                         </li>
@@ -378,7 +378,7 @@
                 </section>
             </aside>
 
-            {{-- ─────── CONTENT ─────── --}}
+            {{-- â”€â”€â”€â”€â”€â”€â”€ CONTENT â”€â”€â”€â”€â”€â”€â”€ --}}
             <div class="content-wrapper">
                 <section class="content-header">
                     @yield('content-header')
@@ -421,7 +421,7 @@
                 </section>
             </div>
 
-            {{-- ─────── FOOTER ─────── --}}
+            {{-- â”€â”€â”€â”€â”€â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€ --}}
             <footer class="main-footer">
                 <div class="pull-right small text-gray" style="margin-right:10px; margin-top:-5px; line-height:1.8;">
                     <span>
@@ -523,3 +523,4 @@
         @show
     </body>
 </html>
+

@@ -10,6 +10,34 @@ import { ServerContext } from '@/state/server';
 import loadDirectory, { FileObject } from '@/api/server/files/loadDirectory';
 import deleteFiles from '@/api/server/files/deleteFiles';
 
+/* ─── Grass Block missing icon ───────────────────────────────── */
+const GrassBlockIcon = () => (
+    <svg viewBox="0 0 64 64" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+        {/* Top face */}
+        <polygon points="32,4 60,20 32,36 4,20" fill="#5d9e2f"/>
+        <polygon points="32,6 58,21 32,34 6,21" fill="#6abf38"/>
+        {/* Side face left */}
+        <polygon points="4,20 32,36 32,60 4,44" fill="#8B6144"/>
+        <polygon points="6,21 30,36 30,58 6,43" fill="#7a5538" opacity="0.6"/>
+        {/* Side face right */}
+        <polygon points="60,20 32,36 32,60 60,44" fill="#7a5032"/>
+        {/* Dirt shade */}
+        <polygon points="32,36 32,60 60,44 60,20" fill="#6b4427" opacity="0.3"/>
+        {/* Grass highlight */}
+        <polygon points="32,4 60,20 32,36 4,20" fill="#78d43a" opacity="0.25"/>
+    </svg>
+);
+
+/* ─── Cube wireframe loader ──────────────────────────────────── */
+const CubeLoader = () => (
+    <svg viewBox="0 0 48 48" width="32" height="32" xmlns="http://www.w3.org/2000/svg" style={{ animation: 'aqSpin 2s linear infinite' }}>
+        <polygon points="24,4 44,15 44,33 24,44 4,33 4,15" fill="none" stroke="#08cd00" strokeWidth="1.5" opacity="0.6"/>
+        <line x1="24" y1="4" x2="24" y2="24" stroke="#08cd00" strokeWidth="1" opacity="0.4"/>
+        <line x1="44" y1="15" x2="24" y2="24" stroke="#08cd00" strokeWidth="1" opacity="0.4"/>
+        <line x1="4"  y1="15" x2="24" y2="24" stroke="#08cd00" strokeWidth="1" opacity="0.4"/>
+    </svg>
+);
+
 /* ─── Types ─────────────────────────────────────────────────── */
 interface Plugin {
     id: string;
@@ -416,8 +444,8 @@ export default function PluginsContainer() {
 
                     {loading ? (
                         <LoadingState>
-                            <Dots><Dot $d={0}/><Dot $d={0.16}/><Dot $d={0.32}/></Dots>
-                            {isModpackTab ? 'Searching modpacks...' : 'Searching plugins...'}
+                            <CubeLoader/>
+                            <span style={{marginLeft: 10}}>{isModpackTab ? 'Searching modpacks...' : 'Searching plugins...'}</span>
                         </LoadingState>
                     ) : results.length === 0 ? (
                         <EmptyState>
@@ -455,9 +483,10 @@ function PluginCard({ plugin, isInstalled, onInstall, delay }: {
             <CardTop>
                 <PluginIcon>
                     {plugin.icon
-                        ? <img src={plugin.icon} alt={plugin.name} onError={e => {(e.target as HTMLImageElement).style.display='none';}}/>
-                        : <FontAwesomeIcon icon={faPlug}/>
+                        ? <img src={plugin.icon} alt={plugin.name} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style'); }}/>
+                        : null
                     }
+                    {!plugin.icon && <GrassBlockIcon/>}
                 </PluginIcon>
                 <CardInfo>
                     <CardName>
