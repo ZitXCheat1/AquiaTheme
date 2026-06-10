@@ -365,6 +365,7 @@ export default function PluginsContainer() {
                 </TabBtn>
             </TabRow>
 
+            <div key={tab} className='aq-tab-content'>
             {tab === 'installed' ? (
                 loadingInstalled ? (
                     <LoadingState>
@@ -437,6 +438,7 @@ export default function PluginsContainer() {
                     )}
                 </>
             )}
+            </div>
         </Page>
     );
 }

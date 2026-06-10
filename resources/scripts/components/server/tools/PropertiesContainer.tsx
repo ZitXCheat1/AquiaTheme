@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import getFileContents from '@/api/server/files/getFileContents';
@@ -7,7 +7,7 @@ import getFileUploadUrl from '@/api/server/files/getFileUploadUrl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSync, faSave, faImage, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
-/* ─── Property type detection ───────────────────────────────── */
+/* â”€â”€â”€ Property type detection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 type PropType = 'boolean' | 'enum' | 'number' | 'string';
 
 const ENUM_PROPS: Record<string, string[]> = {
@@ -65,10 +65,10 @@ function serializeProperties(original: string, updated: Record<string, string>):
     }).join('\n');
 }
 
-/* ─── Styled ─────────────────────────────────────────────────── */
+/* â”€â”€â”€ Styled â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const Page = styled.div`
     padding: 24px;
-    color: #e2e8f0;
+    color: #ffffff;
 `;
 
 const TopBar = styled.div`
@@ -86,15 +86,15 @@ const SearchWrap = styled.div`
 
 const SearchInput = styled.input`
     width: 100%;
-    background: #13131f;
-    border: 1px solid rgba(99, 102, 241, 0.18);
+    background: #0e140e;
+    border: 1px solid rgba(8, 205, 0, 0.18);
     border-radius: 8px;
     padding: 9px 12px 9px 34px;
-    color: #e2e8f0;
+    color: #ffffff;
     font-size: 0.875rem;
     outline: none;
     &::placeholder { color: #374151; }
-    &:focus { border-color: rgba(99, 102, 241, 0.45); }
+    &:focus { border-color: rgba(8, 205, 0, 0.45); }
 `;
 
 const Btn = styled.button<{ variant?: 'primary' | 'ghost' | 'danger' }>`
@@ -111,14 +111,14 @@ const Btn = styled.button<{ variant?: 'primary' | 'ghost' | 'danger' }>`
     white-space: nowrap;
 
     ${p => p.variant === 'primary' ? `
-        background: #6366f1; border-color: #6366f1; color: white;
-        &:hover { background: #5558e8; }
+        background: #08cd00; border-color: #08cd00; color: white;
+        &:hover { background: #07b300; }
     ` : p.variant === 'danger' ? `
         background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: #ef4444;
         &:hover { background: rgba(239,68,68,0.18); }
     ` : `
-        background: #13131f; border-color: rgba(99,102,241,0.18); color: #94a3b8;
-        &:hover { border-color: rgba(99,102,241,0.35); color: #e2e8f0; }
+        background: #0e140e; border-color: rgba(8,205,0,0.18); color: #94a3b8;
+        &:hover { border-color: rgba(8,205,0,0.35); color: #ffffff; }
     `}
 
     &:disabled { opacity: 0.4; cursor: default; }
@@ -131,8 +131,8 @@ const Grid = styled.div`
 `;
 
 const PropCard = styled.div`
-    background: #13131f;
-    border: 1px solid rgba(99, 102, 241, 0.1);
+    background: #0e140e;
+    border: 1px solid rgba(8, 205, 0, 0.1);
     border-radius: 10px;
     padding: 14px 16px;
     display: flex;
@@ -140,7 +140,7 @@ const PropCard = styled.div`
     justify-content: space-between;
     gap: 12px;
     transition: border-color 0.15s;
-    &:hover { border-color: rgba(99, 102, 241, 0.22); }
+    &:hover { border-color: rgba(8, 205, 0, 0.22); }
 `;
 
 const PropLeft = styled.div`
@@ -151,7 +151,7 @@ const PropLeft = styled.div`
 const PropKey = styled.div`
     font-size: 0.8rem;
     font-weight: 500;
-    color: #e2e8f0;
+    color: #ffffff;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -160,7 +160,7 @@ const PropKey = styled.div`
 const ExtLink = styled.a`
     color: #374151;
     font-size: 0.65rem;
-    &:hover { color: #818cf8; }
+    &:hover { color: #4ade80; }
 `;
 
 const PropValue = styled.div`
@@ -184,17 +184,17 @@ const ToggleInput = styled.input`
     width: 0;
     height: 0;
 
-    &:checked + span { background: #6366f1; }
+    &:checked + span { background: #08cd00; }
     &:checked + span::before { transform: translateX(18px); }
 `;
 
 const ToggleSlider = styled.span`
     position: absolute;
     inset: 0;
-    background: #1f2937;
+    background: #111611;
     border-radius: 20px;
     transition: background 0.15s;
-    border: 1px solid rgba(99,102,241,0.2);
+    border: 1px solid rgba(8,205,0,0.2);
 
     &::before {
         content: '';
@@ -226,23 +226,23 @@ const EnumBtn = styled.button<{ active?: boolean }>`
     transition: all 0.12s;
 
     ${p => p.active
-        ? 'background: #6366f1; border-color: #6366f1; color: white;'
-        : 'background: #1a1a2b; border-color: rgba(99,102,241,0.15); color: #64748b; &:hover { border-color: rgba(99,102,241,0.3); color: #94a3b8; }'
+        ? 'background: #08cd00; border-color: #08cd00; color: white;'
+        : 'background: #0a0f0a; border-color: rgba(8,205,0,0.15); color: #64748b; &:hover { border-color: rgba(8,205,0,0.3); color: #94a3b8; }'
     }
 `;
 
 /* Input */
 const PropInput = styled.input`
-    background: #1a1a2b;
-    border: 1px solid rgba(99, 102, 241, 0.18);
+    background: #0a0f0a;
+    border: 1px solid rgba(8, 205, 0, 0.18);
     border-radius: 6px;
-    color: #e2e8f0;
+    color: #ffffff;
     font-size: 0.78rem;
     padding: 5px 10px;
     outline: none;
     width: 130px;
     transition: border-color 0.15s;
-    &:focus { border-color: rgba(99, 102, 241, 0.45); }
+    &:focus { border-color: rgba(8, 205, 0, 0.45); }
 `;
 
 const SavedBadge = styled.div`
@@ -262,8 +262,8 @@ const Empty = styled.div`
 
 /* Icon Changer card */
 const IconCard = styled.div`
-    background: #13131f;
-    border: 1px solid rgba(99, 102, 241, 0.14);
+    background: #0e140e;
+    border: 1px solid rgba(8, 205, 0, 0.14);
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 16px;
@@ -276,8 +276,8 @@ const IconPreview = styled.div`
     width: 64px;
     height: 64px;
     border-radius: 10px;
-    background: #1a1a2b;
-    border: 1px solid rgba(99,102,241,0.18);
+    background: #0a0f0a;
+    border: 1px solid rgba(8,205,0,0.18);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -288,11 +288,11 @@ const IconPreview = styled.div`
 
 const IconInfo = styled.div`
     flex: 1;
-    h4 { font-size: 0.875rem; font-weight: 600; color: #e2e8f0; margin: 0 0 4px; }
+    h4 { font-size: 0.875rem; font-weight: 600; color: #ffffff; margin: 0 0 4px; }
     p { font-size: 0.75rem; color: #4b5563; margin: 0 0 10px; }
 `;
 
-/* ─── Component ──────────────────────────────────────────────── */
+/* â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export default function PropertiesContainer() {
     const uuid = ServerContext.useStoreState((s) => s.server.data!.uuid);
     const [rawContent, setRawContent] = useState('');
@@ -408,7 +408,7 @@ export default function PropertiesContainer() {
                 </IconPreview>
                 <IconInfo>
                     <h4>Server Icon</h4>
-                    <p>Upload a PNG image. It will be automatically resized to 64×64.</p>
+                    <p>Upload a PNG image. It will be automatically resized to 64Ã—64.</p>
                     <input
                         ref={iconInputRef}
                         type='file'
@@ -447,10 +447,10 @@ export default function PropertiesContainer() {
                                             rel='noopener noreferrer'
                                             title='Wiki'
                                         >
-                                            ↗
+                                            â†—
                                         </ExtLink>
                                     </PropKey>
-                                    <PropValue>{value || '—'}</PropValue>
+                                    <PropValue>{value || 'â€”'}</PropValue>
                                 </PropLeft>
 
                                 {type === 'boolean' ? (
@@ -489,3 +489,4 @@ export default function PropertiesContainer() {
         </Page>
     );
 }
+

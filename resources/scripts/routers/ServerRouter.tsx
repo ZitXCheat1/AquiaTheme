@@ -130,7 +130,7 @@ export default () => {
                     <InstallListener />
                     <TransferListener />
                     <WebsocketHandler />
-                    <div style={{ marginLeft: 'var(--sidebar-size, 230px)', minHeight: 'calc(100vh - 3.5rem)', transition: 'margin-left 0.3s' }}>
+                    <div className='content-container' style={{ marginLeft: 'calc(var(--sidebar-size, 230px) + 24px)', minHeight: 'calc(100vh - 3.5rem)', paddingRight: '24px', transition: 'margin-left 0.32s cubic-bezier(0.22,1,0.36,1)' }}>
                         {inConflictState && (!rootAdmin || (rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
                             <ConflictStateRenderer />
                         ) : (

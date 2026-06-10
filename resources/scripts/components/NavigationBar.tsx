@@ -26,6 +26,13 @@ const NavWrapper = styled(motion.div)`
     overflow: hidden;
 `;
 
+/* Sidebar toggle state — persisted on window so other components can read it */
+let _sidebarHidden = false;
+function toggleSidebar() {
+    _sidebarHidden = !_sidebarHidden;
+    document.documentElement.classList.toggle('sidebar-hidden', _sidebarHidden);
+}
+
 /* Server-node geometric logo */
 const LogoMark = () => (
     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -116,7 +123,13 @@ export default () => {
                     </div>
                 )}
 
-                <div id={'logo'} className={'flex items-center'} style={{ gap: 0 }}>
+                <div
+                    id={'logo'}
+                    className={'flex items-center'}
+                    style={{ gap: 0, cursor: showSidebar ? 'pointer' : 'default' }}
+                    onClick={showSidebar ? toggleSidebar : undefined}
+                    title={showSidebar ? 'Toggle sidebar' : undefined}
+                >
                     <LogoMark />
                     <LogoText to={'/'}>{name}</LogoText>
                 </div>

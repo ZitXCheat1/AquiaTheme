@@ -41,7 +41,11 @@ const Tab = styled.button<{ $active?: boolean }>`
     svg { font-size: 0.75rem; }
 `;
 
-const Content = styled.div``;
+const Content = styled.div`
+    animation: none;
+`;
+
+/* Key trick — re-mount content on tab change so animation replays */
 
 type TabId = 'network' | 'users' | 'startup' | 'settings';
 
@@ -65,7 +69,8 @@ export default function ServerConfigHub() {
                     </Tab>
                 ))}
             </TabStrip>
-            <Content>
+            {/* key forces remount on tab change → replays the CSS animation */}
+            <Content key={active} className='aq-tab-content'>
                 {active === 'network'  && <NetworkContainer/>}
                 {active === 'users'    && <UsersContainer/>}
                 {active === 'startup'  && <StartupContainer/>}

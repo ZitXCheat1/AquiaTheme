@@ -158,6 +158,53 @@
 .aq-barwave-bar:nth-child(4) { animation-delay: 0.15s;  }
 .aq-barwave-bar:nth-child(5) { animation-delay: 0s;     }
 
+/* ─── Sidebar hide/show toggle (logo click) ─────────────────── */
+
+@keyframes aqSidebarSlideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to   { transform: translateX(-100%); opacity: 0; }
+}
+@keyframes aqSidebarSlideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes aqContentExpand {
+    from { margin-left: calc(var(--sidebar-size) + 24px); }
+    to   { margin-left: 24px; }
+}
+@keyframes aqContentShrink {
+    from { margin-left: 24px; }
+    to   { margin-left: calc(var(--sidebar-size) + 24px); }
+}
+
+/* When sidebar-hidden class is on <html> */
+html.sidebar-hidden .sidebar {
+    animation: aqSidebarSlideOut 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+    pointer-events: none;
+}
+html:not(.sidebar-hidden) .sidebar {
+    animation: aqSidebarSlideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html.sidebar-hidden .content-container {
+    margin-left: 24px !important;
+    transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html:not(.sidebar-hidden) .content-container {
+    margin-left: calc(var(--sidebar-size) + 24px) !important;
+    transition: margin-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Tab content slide-in animation ───────────────────────── */
+
+@keyframes aqTabSlideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.aq-tab-content {
+    animation: aqTabSlideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* ─── Global body ───────────────────────────────────────────── */
 
 body {
