@@ -26,6 +26,7 @@ import {
     faPaperclip,
     faPassport,
     faPlayCircle,
+    faPlug,
     faTerminal,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
@@ -37,6 +38,7 @@ import {
 // for the server dashboard when they're only needed for specific instances.
 const FileEditContainer = lazy(() => import('@/components/server/files/FileEditContainer'));
 const ScheduleEditContainer = lazy(() => import('@/components/server/schedules/ScheduleEditContainer'));
+const PluginsContainer = lazy(() => import('@/components/server/plugins/PluginsContainer'));
 
 interface RouteDefinition {
     path: string;
@@ -50,6 +52,7 @@ interface RouteDefinition {
 
 interface ServerRouteDefinition extends RouteDefinition {
     permission: string | string[] | null;
+    section?: string;
 }
 
 interface Routes {
@@ -92,6 +95,7 @@ export default {
             path: '/',
             permission: null,
             name: 'Console',
+            section: 'GENERAL',
             component: ServerConsole,
             exact: true,
             iconProp: faTerminal,
@@ -100,6 +104,7 @@ export default {
             path: '/files',
             permission: 'file.*',
             name: 'Files',
+            section: 'MANAGEMENT',
             component: FileManagerContainer,
             iconProp: faFolder,
         },
@@ -114,13 +119,39 @@ export default {
             path: '/databases',
             permission: 'database.*',
             name: 'Databases',
+            section: 'MANAGEMENT',
             component: DatabasesContainer,
             iconProp: faDatabase,
+        },
+        {
+            path: '/backups',
+            permission: 'backup.*',
+            name: 'Backups',
+            section: 'MANAGEMENT',
+            component: BackupContainer,
+            iconProp: faBackward,
+        },
+        {
+            path: '/network',
+            permission: 'allocation.*',
+            name: 'Network',
+            section: 'MANAGEMENT',
+            component: NetworkContainer,
+            iconProp: faNetworkWired,
+        },
+        {
+            path: '/plugins',
+            permission: null,
+            name: 'Plugins',
+            section: 'MANAGEMENT',
+            component: PluginsContainer,
+            iconProp: faPlug,
         },
         {
             path: '/schedules',
             permission: 'schedule.*',
             name: 'Schedules',
+            section: 'CONFIGURATION',
             component: ScheduleContainer,
             iconProp: faClock,
         },
@@ -135,27 +166,15 @@ export default {
             path: '/users',
             permission: 'user.*',
             name: 'Users',
+            section: 'CONFIGURATION',
             component: UsersContainer,
             iconProp: faUser,
-        },
-        {
-            path: '/backups',
-            permission: 'backup.*',
-            name: 'Backups',
-            component: BackupContainer,
-            iconProp: faBackward,
-        },
-        {
-            path: '/network',
-            permission: 'allocation.*',
-            name: 'Network',
-            component: NetworkContainer,
-            iconProp: faNetworkWired,
         },
         {
             path: '/startup',
             permission: 'startup.*',
             name: 'Startup',
+            section: 'CONFIGURATION',
             component: StartupContainer,
             iconProp: faPlayCircle,
         },
@@ -163,6 +182,7 @@ export default {
             path: '/settings',
             permission: ['settings.*', 'file.sftp'],
             name: 'Settings',
+            section: 'CONFIGURATION',
             component: SettingsContainer,
             iconProp: faCogs,
         },
@@ -170,6 +190,7 @@ export default {
             path: '/activity',
             permission: 'activity.*',
             name: 'Activity',
+            section: 'CONFIGURATION',
             component: ServerActivityLogContainer,
             iconProp: faPaperclip,
         },

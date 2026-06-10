@@ -9,15 +9,15 @@
    CUSTOM PROPERTIES
    ═══════════════════════════════════════════ */
 :root {
-    --aq-bg:          #060b18;
-    --aq-surface:     #0d1530;
-    --aq-surface2:    #111c3a;
-    --aq-surface3:    #0a1225;
-    --aq-border:      rgba(0, 212, 255, 0.10);
-    --aq-border2:     rgba(0, 212, 255, 0.20);
-    --aq-accent:      #00d4ff;
-    --aq-accent2:     #7c3aed;
-    --aq-glow:        rgba(0, 212, 255, 0.22);
+    --aq-bg:          #0d0d17;
+    --aq-surface:     #13131f;
+    --aq-surface2:    #1a1a2b;
+    --aq-surface3:    #111118;
+    --aq-border:      rgba(99, 102, 241, 0.12);
+    --aq-border2:     rgba(99, 102, 241, 0.22);
+    --aq-accent:      #6366f1;
+    --aq-accent2:     #818cf8;
+    --aq-glow:        rgba(99, 102, 241, 0.2);
     --aq-text:        #cbd5e1;
     --aq-text-muted:  #64748b;
     --aq-text-dim:    #334155;
@@ -27,7 +27,7 @@
     --aq-blue:        #3b82f6;
     --aq-radius:      10px;
     --aq-radius-sm:   6px;
-    --aq-shadow:      0 4px 24px rgba(0,0,0,0.4);
+    --aq-shadow:      0 2px 12px rgba(0,0,0,0.3);
 }
 
 /* ═══════════════════════════════════════════

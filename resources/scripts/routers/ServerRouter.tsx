@@ -76,10 +76,22 @@ export default () => {
                 <>
                     <CSSTransition timeout={150} classNames={'fade'} appear in>
                         <Sidebar>
-                            {routes.server
-                                .filter((route) => !!route.name)
-                                .map((route) =>
-                                    route.permission ? (
+                            {(() => {
+                                const sections = ['GENERAL', 'MANAGEMENT', 'CONFIGURATION'];
+                                const namedRoutes = routes.server.filter((r) => !!r.name);
+                                const rendered: React.ReactNode[] = [];
+                                let lastSection = '';
+
+                                namedRoutes.forEach((route) => {
+                                    const section = route.section || '';
+                                    if (section && section !== lastSection && sections.includes(section)) {
+                                        rendered.push(
+                                            <div key={`section-${section}`} className='sidebar-section'>{section}</div>
+                                        );
+                                        lastSection = section;
+                                    }
+
+                                    const link = route.permission ? (
                                         <Can key={route.path} action={route.permission} matchAny>
                                             <NavLink to={to(route.path, true)} exact={route.exact}>
                                                 <div className='icon'>
@@ -93,19 +105,26 @@ export default () => {
                                             <div className='icon'>
                                                 <FontAwesomeIcon icon={route.iconProp as IconProp} />
                                             </div>
-                                            {route.name}{' '}
+                                            {route.name}
                                         </NavLink>
-                                    )
-                                )}
-                            {rootAdmin && (
-                                // eslint-disable-next-line react/jsx-no-target-blank
-                                <a href={`/admin/servers/view/${serverId}`} target={'_blank'}>
-                                    <div className='icon'>
-                                        <FontAwesomeIcon icon={faExternalLinkAlt} />
-                                    </div>
-                                    Admin
-                                </a>
-                            )}
+                                    );
+                                    rendered.push(link);
+                                });
+
+                                if (rootAdmin) {
+                                    rendered.push(
+                                        // eslint-disable-next-line react/jsx-no-target-blank
+                                        <a key='admin-link' href={`/admin/servers/view/${serverId}`} target={'_blank'}>
+                                            <div className='icon'>
+                                                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                            </div>
+                                            Admin
+                                        </a>
+                                    );
+                                }
+
+                                return rendered;
+                            })()}
                         </Sidebar>
                     </CSSTransition>
                     <InstallListener />

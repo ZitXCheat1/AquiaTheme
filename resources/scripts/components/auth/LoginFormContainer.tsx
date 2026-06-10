@@ -3,164 +3,118 @@ import { Form } from 'formik';
 import { breakpoint } from '@/theme';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import tw from 'twin.macro';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTint, faShieldAlt, faServer, faGlobe } from '@fortawesome/free-solid-svg-icons';
-
-/* ── animated background orbs ── */
-const orbFloat = keyframes`
-    0%   { transform: translate(0, 0) scale(1); }
-    33%  { transform: translate(40px, -30px) scale(1.08); }
-    66%  { transform: translate(-25px, 20px) scale(0.94); }
-    100% { transform: translate(0, 0) scale(1); }
-`;
-
-const gridShimmer = keyframes`
-    0%   { opacity: 0.03; }
-    50%  { opacity: 0.07; }
-    100% { opacity: 0.03; }
-`;
 
 const Scene = styled.div`
     min-height: 100vh;
     width: 100%;
-    background: #060b18;
+    background: #0d0d17;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
 
-    /* dot grid overlay */
     &::before {
         content: '';
         position: absolute;
         inset: 0;
-        background-image: radial-gradient(rgba(0,212,255,0.18) 1px, transparent 1px);
-        background-size: 28px 28px;
-        animation: ${gridShimmer} 5s ease-in-out infinite;
+        background-image: radial-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px);
+        background-size: 32px 32px;
         pointer-events: none;
     }
 `;
 
-const Orb = styled.div<{ size: number; top: string; left: string; color: string; delay: string; duration: string }>`
+const Glow = styled.div<{ top: string; left: string; size: number; color: string }>`
     position: absolute;
     width: ${p => p.size}px;
     height: ${p => p.size}px;
     top: ${p => p.top};
     left: ${p => p.left};
-    background: radial-gradient(circle at 40% 40%, ${p => p.color}, transparent 70%);
+    background: radial-gradient(circle, ${p => p.color}, transparent 70%);
     border-radius: 50%;
-    filter: blur(${p => Math.floor(p.size * 0.28)}px);
-    animation: ${orbFloat} ${p => p.duration} ease-in-out infinite;
-    animation-delay: ${p => p.delay};
+    filter: blur(${p => Math.round(p.size * 0.35)}px);
     pointer-events: none;
-    opacity: 0.55;
+    opacity: 0.4;
 `;
 
-const GlassCard = styled(motion.div)`
+const Card = styled(motion.div)`
     position: relative;
     z-index: 10;
-    background: rgba(13, 21, 48, 0.75);
-    border: 1px solid rgba(0, 212, 255, 0.18);
-    border-radius: 20px;
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    box-shadow:
-        0 24px 64px rgba(0,0,0,0.6),
-        0 0 0 1px rgba(0,212,255,0.06),
-        inset 0 1px 0 rgba(255,255,255,0.06);
+    background: #13131f;
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 16px;
     width: 100%;
-    max-width: 440px;
-    padding: 40px 36px;
+    max-width: 420px;
+    padding: 36px 32px;
     margin: 16px;
 `;
 
 const LogoBadge = styled(motion.div)`
-    width: 64px;
-    height: 64px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(124,58,237,0.2));
-    border: 1px solid rgba(0,212,255,0.3);
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.6rem;
-    color: #00d4ff;
-    box-shadow: 0 0 24px rgba(0,212,255,0.25);
-    margin: 0 auto 20px;
+    margin: 0 auto 18px;
 `;
+
+const LogoSvg = () => (
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 19L13 7L19 19" stroke="#6366f1" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9 15.5H17" stroke="#6366f1" strokeWidth="2.2" strokeLinecap="round"/>
+    </svg>
+);
 
 const Title = styled.h1`
     text-align: center;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: 700;
+    color: #e2e8f0;
     margin: 0 0 4px;
-    background: linear-gradient(90deg, #00d4ff, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    letter-spacing: -0.01em;
 `;
 
 const Subtitle = styled.p`
     text-align: center;
-    color: #64748b;
-    font-size: 0.82rem;
-    margin: 0 0 28px;
-    letter-spacing: 0.04em;
+    color: #4b5563;
+    font-size: 0.78rem;
+    margin: 0 0 24px;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
 `;
 
 const Divider = styled.div`
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.25), transparent);
-    margin: 24px 0;
-`;
-
-const FeatureRow = styled.div`
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 24px;
-`;
-
-const FeaturePill = styled(motion.div)`
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.72rem;
-    color: #475569;
-    letter-spacing: 0.03em;
-
-    svg {
-        color: rgba(0,212,255,0.5);
-        font-size: 0.75rem;
-    }
+    background: rgba(99, 102, 241, 0.12);
+    margin: 20px 0;
 `;
 
 const Footer = styled.p`
     text-align: center;
-    color: #334155;
-    font-size: 0.72rem;
-    margin-top: 24px;
+    color: #2d2d40;
+    font-size: 0.7rem;
+    margin-top: 20px;
 
     a {
-        color: rgba(0,212,255,0.5);
+        color: rgba(99, 102, 241, 0.5);
         text-decoration: none;
-        transition: color 0.2s;
+        transition: color 0.15s;
 
         &:hover {
-            color: #00d4ff;
+            color: #6366f1;
         }
     }
 `;
 
-/* Layout container for breakpoints */
 const Container = styled.div`
     width: 100%;
     ${breakpoint('xl')`
-        max-width: 460px;
+        max-width: 440px;
     `};
 `;
 
@@ -170,42 +124,38 @@ type Props = React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, 
 
 export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => (
     <Scene>
-        {/* Background orbs */}
-        <Orb size={500} top={'-10%'}  left={'-15%'} color={'rgba(0,212,255,0.35)'}  delay={'0s'}    duration={'18s'} />
-        <Orb size={400} top={'60%'}   left={'70%'}  color={'rgba(124,58,237,0.4)'}  delay={'-6s'}   duration={'22s'} />
-        <Orb size={300} top={'30%'}   left={'55%'}  color={'rgba(0,212,255,0.2)'}   delay={'-12s'}  duration={'15s'} />
-        <Orb size={250} top={'75%'}   left={'-5%'}  color={'rgba(124,58,237,0.25)'} delay={'-3s'}   duration={'20s'} />
+        <Glow top={'-10%'} left={'-10%'} size={500} color={'rgba(99,102,241,0.3)'} />
+        <Glow top={'60%'} left={'65%'} size={400} color={'rgba(129,140,248,0.2)'} />
 
         <Container>
-            <GlassCard
-                initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            <Card
+                initial={{ opacity: 0, y: 20, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
-                {/* Logo */}
                 <LogoBadge
-                    initial={{ scale: 0.6, opacity: 0 }}
+                    initial={{ scale: 0.7, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ delay: 0.1, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 >
-                    <FontAwesomeIcon icon={faTint} />
+                    <LogoSvg />
                 </LogoBadge>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.22, duration: 0.4 }}
+                    transition={{ delay: 0.18, duration: 0.35 }}
                 >
-                    <Title>Aquia Panel</Title>
+                    <Title>AquiaTheme</Title>
                     <Subtitle>Game Server Management</Subtitle>
                 </motion.div>
 
                 <FlashMessageRender css={tw`mb-4`} />
 
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
+                    transition={{ delay: 0.25, duration: 0.35 }}
                 >
                     <Form {...props} ref={ref}>
                         {props.children}
@@ -214,29 +164,28 @@ export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => 
 
                 <Divider />
 
-                <FeatureRow>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4, duration: 0.3 }}
+                    style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}
+                >
                     {[
-                        { icon: faShieldAlt, label: 'Secure' },
-                        { icon: faServer,       label: 'Managed' },
-                        { icon: faGlobe,        label: 'Online' },
-                    ].map(({ icon, label }, i) => (
-                        <FeaturePill
-                            key={label}
-                            initial={{ opacity: 0, y: 6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 + i * 0.07, duration: 0.35 }}
-                        >
-                            <FontAwesomeIcon icon={icon} />
+                        { label: 'Secure' },
+                        { label: 'Managed' },
+                        { label: 'Always Online' },
+                    ].map(({ label }) => (
+                        <span key={label} style={{ fontSize: '0.7rem', color: '#374151', letterSpacing: '0.04em' }}>
                             {label}
-                        </FeaturePill>
+                        </span>
                     ))}
-                </FeatureRow>
-            </GlassCard>
+                </motion.div>
+            </Card>
 
             <Footer>
                 &copy; {new Date().getFullYear()}&nbsp;
                 <a rel={'noopener nofollow noreferrer'} href={'https://wiskcraft.com'} target={'_blank'}>
-                    Aquia Theme
+                    AquiaTheme
                 </a>
                 &nbsp;&mdash;&nbsp;
                 <a rel={'noopener nofollow noreferrer'} href={'https://pterodactyl.io'} target={'_blank'}>

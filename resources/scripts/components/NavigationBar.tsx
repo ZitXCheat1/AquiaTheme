@@ -7,31 +7,21 @@ import {
     faCog,
     faLayerGroup,
     faSignOutAlt,
-    faTint,
-    faBell,
 } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import SearchContainer from '@/components/dashboard/search/SearchContainer';
 import tw from 'twin.macro';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import http from '@/api/http';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import Avatar from '@/components/Avatar';
 import { motion } from 'framer-motion';
 
-const glowPulse = keyframes`
-    0%, 100% { text-shadow: 0 0 8px rgba(0,212,255,0.4); }
-    50%       { text-shadow: 0 0 20px rgba(0,212,255,0.8), 0 0 40px rgba(0,212,255,0.3); }
-`;
-
 const NavWrapper = styled(motion.div)`
-    background: rgba(6, 11, 24, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-    box-shadow: 0 1px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.04);
+    background: #111118;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.14);
     position: sticky;
     top: 0;
     z-index: 9000;
@@ -39,74 +29,36 @@ const NavWrapper = styled(motion.div)`
     overflow-y: hidden;
 `;
 
+const LogoMark = () => (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="7" fill="#6366f1"/>
+        <path d="M9 20L14 8L19 20" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10.5 16.5H17.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+);
+
 const LogoText = styled(Link)`
-    ${tw`text-xl font-medium px-4 no-underline transition-colors duration-200`};
-    background: linear-gradient(90deg, #00d4ff, #7c3aed, #00d4ff);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerText 4s linear infinite, ${glowPulse} 3s ease-in-out infinite;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-
-    @keyframes shimmerText {
-        0%   { background-position: 0% center; }
-        100% { background-position: 200% center; }
-    }
-`;
-
-const LogoIcon = styled(motion.span)`
-    color: #00d4ff;
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
+    ${tw`text-base font-semibold px-3 no-underline`};
+    color: #e2e8f0;
+    letter-spacing: 0.01em;
 `;
 
 const NavButton = styled(motion.div)`
     ${tw`flex items-center h-full cursor-pointer`};
-    padding: 0 14px;
+    padding: 0 12px;
     color: #64748b;
-    position: relative;
-    transition: color 0.2s;
+    transition: color 0.15s;
 
     &:hover {
         color: #e2e8f0;
-    }
-
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, #00d4ff, #7c3aed);
-        border-radius: 2px 2px 0 0;
-        transition: width 0.2s cubic-bezier(0.22,1,0.36,1);
-    }
-
-    &:hover::after,
-    &.active-link::after {
-        width: 70%;
-    }
-
-    svg {
-        transition: transform 0.2s, color 0.2s;
-    }
-
-    &:hover svg {
-        transform: scale(1.15);
-        color: #00d4ff;
     }
 `;
 
 const NavDivider = styled.div`
     width: 1px;
-    height: 20px;
-    background: rgba(0, 212, 255, 0.12);
-    margin: 0 4px;
+    height: 18px;
+    background: rgba(99, 102, 241, 0.14);
+    margin: 0 2px;
 `;
 
 const onTriggerNavButton = () => {
@@ -139,33 +91,27 @@ export default () => {
 
     return (
         <NavWrapper
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
             <SpinnerOverlay visible={isLoggingOut} />
             <div className={'mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px]'}>
 
                 {/* Mobile hamburger */}
                 {showSidebar && (
-                    <motion.div
-                        whileTap={{ scale: 0.9 }}
+                    <div
                         className='navbar-button'
                         onClick={onTriggerNavButton}
-                        style={{ cursor: 'pointer', color: '#00d4ff', fontSize: '1.2rem', marginLeft: '1rem' }}
+                        style={{ cursor: 'pointer', color: '#6366f1', fontSize: '1.1rem', marginLeft: '1rem' }}
                     >
                         <FontAwesomeIcon icon={faBars} />
-                    </motion.div>
+                    </div>
                 )}
 
                 {/* Logo */}
-                <div id={'logo'} className={'flex-1 flex items-center'}>
-                    <LogoIcon
-                        animate={{ rotate: [0, 5, -5, 0] }}
-                        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                        <FontAwesomeIcon icon={faTint} />
-                    </LogoIcon>
+                <div id={'logo'} className={'flex-1 flex items-center pl-4'}>
+                    <LogoMark />
                     <LogoText to={'/'}>{name}</LogoText>
                 </div>
 
@@ -176,8 +122,8 @@ export default () => {
                     <NavDivider />
 
                     <Tooltip placement={'bottom'} content={'Dashboard'}>
-                        <NavButton whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
-                            <NavLink to={'/'} exact css={tw`flex items-center h-full no-underline`} activeClassName={'active-link'}>
+                        <NavButton whileTap={{ scale: 0.95 }}>
+                            <NavLink to={'/'} exact css={tw`flex items-center h-full no-underline text-current`} activeClassName={'active-link'}>
                                 <FontAwesomeIcon icon={faLayerGroup} />
                             </NavLink>
                         </NavButton>
@@ -185,7 +131,7 @@ export default () => {
 
                     {rootAdmin && (
                         <Tooltip placement={'bottom'} content={'Admin Panel'}>
-                            <NavButton whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
+                            <NavButton whileTap={{ scale: 0.95 }}>
                                 <a href={'/admin'} rel={'noreferrer'} css={tw`flex items-center h-full no-underline text-current`}>
                                     <FontAwesomeIcon icon={faCog} />
                                 </a>
@@ -196,7 +142,7 @@ export default () => {
                     <NavDivider />
 
                     <Tooltip placement={'bottom'} content={'Account'}>
-                        <NavButton whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
+                        <NavButton whileTap={{ scale: 0.95 }}>
                             <NavLink to={'/account'} css={tw`flex items-center h-full no-underline text-current`}>
                                 <span className={'flex items-center w-6 h-6'}>
                                     <Avatar.User />
@@ -206,11 +152,7 @@ export default () => {
                     </Tooltip>
 
                     <Tooltip placement={'bottom'} content={'Sign Out'}>
-                        <NavButton
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.96 }}
-                            onClick={onTriggerLogout}
-                        >
+                        <NavButton whileTap={{ scale: 0.95 }} onClick={onTriggerLogout}>
                             <FontAwesomeIcon icon={faSignOutAlt} />
                         </NavButton>
                     </Tooltip>

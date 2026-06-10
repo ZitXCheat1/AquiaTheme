@@ -14,13 +14,13 @@ You should have received a copy of the GNU General Public License along with Aqu
 
 :root {
     /* Palette */
-    --aquia-bg:          #060b18;
-    --aquia-surface:     #0d1530;
-    --aquia-surface2:    #111c3a;
-    --aquia-border:      rgba(0, 212, 255, 0.12);
-    --aquia-accent:      #00d4ff;
-    --aquia-accent2:     #7c3aed;
-    --aquia-glow:        rgba(0, 212, 255, 0.25);
+    --aquia-bg:          #0d0d17;
+    --aquia-surface:     #13131f;
+    --aquia-surface2:    #1a1a2b;
+    --aquia-border:      rgba(99, 102, 241, 0.14);
+    --aquia-accent:      #6366f1;
+    --aquia-accent2:     #818cf8;
+    --aquia-glow:        rgba(99, 102, 241, 0.2);
     --aquia-red:         #ef4444;
     --aquia-green:       #22c55e;
     --aquia-yellow:      #eab308;
@@ -28,27 +28,27 @@ You should have received a copy of the GNU General Public License along with Aqu
     /* Text */
     --text-main:         #e2e8f0;
     --text-secondary:    #94a3b8;
-    --text-muted:        #475569;
+    --text-muted:        #4b5563;
 
     /* Sidebar */
     --sidebar-size:      240px;
-    --sidebar-bg:        linear-gradient(180deg, #0a0f1e 0%, #0d1530 60%, #0a0e1a 100%);
-    --sidebar-btn:       rgba(255,255,255,0.06);
-    --sidebar-btn-hover: rgba(0, 212, 255, 0.1);
-    --sidebar-btn-active:#00d4ff;
+    --sidebar-bg:        #111118;
+    --sidebar-btn:       rgba(255,255,255,0.05);
+    --sidebar-btn-hover: rgba(99, 102, 241, 0.1);
+    --sidebar-btn-active:#6366f1;
 
     /* Button */
-    --button-color:         rgba(0, 212, 255, 0.15);
-    --button-color-hover:   rgba(0, 212, 255, 0.25);
-    --button-color-active:  #00d4ff;
-    --button-color-text:    #00d4ff;
+    --button-color:         rgba(99, 102, 241, 0.15);
+    --button-color-hover:   rgba(99, 102, 241, 0.25);
+    --button-color-active:  #6366f1;
+    --button-color-text:    #6366f1;
 
     /* Compat aliases */
-    --color-primary:    #0d1530;
-    --color-secondary:  #111c3a;
-    --color-tertiary:   #060b18;
-    --background-color: #060b18;
-    --card-bg:          #0d1530;
+    --color-primary:    #13131f;
+    --color-secondary:  #1a1a2b;
+    --color-tertiary:   #0d0d17;
+    --background-color: #0d0d17;
+    --card-bg:          #13131f;
     --invert:           1000;
 }
 
@@ -182,7 +182,7 @@ body {
 .sidebar {
     position: fixed;
     margin: 0;
-    padding: 0.75rem 0.5rem;
+    padding: 0.5rem 0.5rem;
     width: var(--sidebar-size);
     background: var(--sidebar-bg);
     border-right: 1px solid var(--aquia-border);
@@ -190,7 +190,6 @@ body {
     overflow-x: hidden;
     z-index: 8999;
     height: calc(100vh - 3.5rem);
-    box-shadow: 4px 0 32px rgba(0,0,0,0.4), inset -1px 0 0 var(--aquia-border);
     animation: aquiaSlideRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -210,34 +209,57 @@ body {
 .sidebar a::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, var(--aquia-accent), var(--aquia-accent2));
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--aquia-accent);
+    border-radius: 0 3px 3px 0;
     opacity: 0;
-    transition: opacity 0.2s;
-    border-radius: 10px;
+    transition: opacity 0.15s;
 }
 
-.sidebar a:hover::before {
-    opacity: 0.08;
+.sidebar a.active::before {
+    opacity: 1;
 }
 
 .sidebar a:hover {
     color: var(--text-main);
-    transform: translateX(3px);
+    background: rgba(99, 102, 241, 0.07);
+}
+
+.sidebar a.active {
+    color: var(--text-main);
+    background: rgba(99, 102, 241, 0.1);
 }
 
 .sidebar .active > .icon,
 .sidebar a.active > .icon {
-    background: linear-gradient(135deg, var(--aquia-accent), var(--aquia-accent2));
-    color: white;
-    box-shadow: 0 0 16px var(--aquia-glow);
-    animation: aquiaGlow 2.5s ease-in-out infinite;
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--aquia-accent);
 }
 
 .sidebar a:hover:not(.active) > .icon {
     background: var(--sidebar-btn-hover);
     color: var(--aquia-accent);
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR SECTION LABELS
+   ═══════════════════════════════════════════ */
+
+.sidebar-section {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 14px 12px 4px;
+    user-select: none;
+}
+
+.sidebar-section:first-child {
+    padding-top: 6px;
 }
 
 /* ═══════════════════════════════════════════

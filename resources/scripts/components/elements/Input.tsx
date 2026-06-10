@@ -42,8 +42,8 @@ const inputStyle = css<Props>`
     resize: none;
     ${tw`appearance-none outline-none w-full min-w-0`};
     ${tw`p-3 rounded text-sm transition-all duration-150`};
-    background: rgba(0, 212, 255, 0.04);
-    border: 1.5px solid rgba(0, 212, 255, 0.18);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(99, 102, 241, 0.18);
     color: #e2e8f0;
     box-shadow: none;
 
@@ -62,15 +62,15 @@ const inputStyle = css<Props>`
     }
 
     &:hover:not(:disabled):not(:read-only) {
-        border-color: rgba(0, 212, 255, 0.35);
-        background: rgba(0, 212, 255, 0.07);
+        border-color: rgba(99, 102, 241, 0.35);
+        background: rgba(99, 102, 241, 0.05);
     }
 
     &:not(:disabled):not(:read-only):focus {
-        border-color: rgba(0, 212, 255, 0.55);
-        background: rgba(0, 212, 255, 0.08);
-        box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.12);
-        ${(props) => props.hasError && 'border-color: rgba(239,68,68,0.6); box-shadow: 0 0 0 3px rgba(239,68,68,0.12);'};
+        border-color: rgba(99, 102, 241, 0.55);
+        background: rgba(99, 102, 241, 0.06);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        ${(props) => props.hasError && 'border-color: rgba(239,68,68,0.6); box-shadow: 0 0 0 3px rgba(239,68,68,0.1);'};
     }
 
     &:disabled {

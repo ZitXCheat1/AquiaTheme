@@ -17,25 +17,21 @@ const ButtonStyle = styled.button<Omit<Props, 'isLoading'>>`
         ((!props.isSecondary && !props.color) || props.color === 'primary') &&
         css<Props>`
             ${(props) => !props.isSecondary && css`
-                background: linear-gradient(135deg, rgba(0,212,255,0.85), rgba(124,58,237,0.85));
-                border-color: rgba(0,212,255,0.4);
+                background: #6366f1;
+                border-color: #6366f1;
                 color: #fff;
                 font-weight: 600;
-                letter-spacing: 0.06em;
-                box-shadow: 0 4px 20px rgba(0,212,255,0.25);
-                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                letter-spacing: 0.04em;
             `};
 
             &:hover:not(:disabled) {
-                background: linear-gradient(135deg, rgba(0,212,255,1), rgba(124,58,237,1));
-                border-color: rgba(0,212,255,0.6);
-                box-shadow: 0 6px 28px rgba(0,212,255,0.4);
-                transform: translateY(-1px);
+                background: #5558e8;
+                border-color: #5558e8;
             }
 
             &:active:not(:disabled) {
-                transform: translateY(0);
-                box-shadow: 0 2px 12px rgba(0,212,255,0.2);
+                background: #4a4dd4;
+                border-color: #4a4dd4;
             }
         `};
 

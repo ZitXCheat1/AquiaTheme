@@ -15,7 +15,7 @@ export default createGlobalStyle`
 
     body {
         ${tw`font-sans text-gray-200`};
-        background: #060b18;
+        background: #0d0d17;
         letter-spacing: 0.015em;
     }
 
@@ -71,14 +71,14 @@ export default createGlobalStyle`
     }
 
     ::-webkit-scrollbar-thumb {
-        background: rgba(0, 212, 255, 0.15);
+        background: rgba(99, 102, 241, 0.2);
         border-radius: 8px;
         border: 2px solid transparent;
         background-clip: content-box;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: rgba(0, 212, 255, 0.3);
+        background: rgba(99, 102, 241, 0.4);
         background-clip: content-box;
     }
 
@@ -92,7 +92,7 @@ export default createGlobalStyle`
 
     /* Selection */
     ::selection {
-        background: rgba(0, 212, 255, 0.25);
+        background: rgba(99, 102, 241, 0.3);
         color: white;
     }
 `;
