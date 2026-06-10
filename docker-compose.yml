@@ -1,0 +1,110 @@
+version: "3.9"
+
+# ──────────────────────────────────────────────────
+#  Aquia Theme — docker-compose.yml
+#  Edit every value marked <CHANGE_ME> before running
+# ──────────────────────────────────────────────────
+
+x-common:
+  db: &db-env
+    MYSQL_ROOT_PASSWORD: &root-pass "<CHANGE_ME_ROOT_PASSWORD>"
+    MYSQL_PASSWORD:      &db-pass   "<CHANGE_ME_DB_PASSWORD>"
+    MYSQL_DATABASE: panel
+    MYSQL_USER:     pterodactyl
+
+  panel: &panel-env
+    APP_URL:            "https://<YOUR_DOMAIN>"
+    APP_TIMEZONE:       "UTC"
+    APP_SERVICE_AUTHOR: "noreply@<YOUR_DOMAIN>"
+    # LE_EMAIL: "admin@<YOUR_DOMAIN>"   # uncomment for Let's Encrypt
+
+  mail: &mail-env
+    MAIL_FROM:       "noreply@<YOUR_DOMAIN>"
+    MAIL_DRIVER:     "smtp"
+    MAIL_HOST:       "mail"
+    MAIL_PORT:       "1025"
+    MAIL_USERNAME:   ""
+    MAIL_PASSWORD:   ""
+    MAIL_ENCRYPTION: "true"
+
+services:
+
+  database:
+    image: mariadb:11
+    restart: unless-stopped
+    networks: [aquia]
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      <<: *db-env
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  cache:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks: [aquia]
+    volumes:
+      - cache_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  panel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: aquia-theme:latest
+    restart: unless-stopped
+    networks: [aquia]
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      database: { condition: service_healthy }
+      cache:    { condition: service_healthy }
+    volumes:
+      - panel_var:/app/var/
+      - panel_nginx:/etc/nginx/http.d/
+      - panel_certs:/etc/letsencrypt/
+      - panel_logs:/app/storage/logs/
+    environment:
+      <<: [*panel-env, *mail-env]
+      DB_PASSWORD:  *db-pass
+      DB_HOST:      database
+      DB_PORT:      "3306"
+      APP_ENV:      production
+      APP_ENVIRONMENT_ONLY: "false"
+      CACHE_DRIVER:   redis
+      SESSION_DRIVER: redis
+      QUEUE_DRIVER:   redis
+      REDIS_HOST:     cache
+      HASHIDS_LENGTH: "8"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+networks:
+  aquia:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+
+volumes:
+  db_data:
+  cache_data:
+  panel_var:
+  panel_nginx:
+  panel_certs:
+  panel_logs:
