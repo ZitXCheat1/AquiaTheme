@@ -8,7 +8,13 @@ import {
     faExternalLinkAlt,
     faFilter,
     faSync,
+    faTrash,
+    faPlug,
+    faBoxOpen,
 } from '@fortawesome/free-solid-svg-icons';
+import { ServerContext } from '@/state/server';
+import loadDirectory, { FileObject } from '@/api/server/files/loadDirectory';
+import deleteFiles from '@/api/server/files/deleteFiles';
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface Plugin {
@@ -328,6 +334,99 @@ const LoadingRow = styled.div`
     gap: 10px;
 `;
 
+/* Tab bar */
+const TabBar = styled.div`
+    display: flex;
+    gap: 2px;
+    margin-bottom: 18px;
+    background: #13131f;
+    border: 1px solid rgba(99,102,241,0.14);
+    border-radius: 10px;
+    padding: 4px;
+    width: fit-content;
+`;
+
+const Tab = styled.button<{ active?: boolean }>`
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+
+    ${p => p.active
+        ? 'background: #6366f1; color: white;'
+        : 'background: transparent; color: #64748b; &:hover { color: #94a3b8; }'
+    }
+`;
+
+/* Installed plugin row */
+const InstalledRow = styled.div`
+    background: #13131f;
+    border: 1px solid rgba(99,102,241,0.12);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+    &:hover { border-color: rgba(99,102,241,0.25); }
+`;
+
+const InstalledIcon = styled.div`
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: rgba(99,102,241,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6366f1;
+    font-size: 1rem;
+    flex-shrink: 0;
+`;
+
+const InstalledInfo = styled.div`
+    flex: 1;
+    min-width: 0;
+`;
+
+const InstalledName = styled.div`
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #e2e8f0;
+`;
+
+const InstalledMeta = styled.div`
+    font-size: 0.72rem;
+    color: #4b5563;
+    margin-top: 2px;
+`;
+
+const DeleteBtn = styled.button`
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #ef4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+    flex-shrink: 0;
+
+    &:hover { background: rgba(239,68,68,0.18); }
+    &:disabled { opacity: 0.4; cursor: default; }
+`;
+
 /* ─── Helpers ────────────────────────────────────────────────── */
 const fmt = (n: number): string => {
     if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -353,6 +452,8 @@ const PLATFORMS = ['Modrinth', 'Hangar', 'Spigot'];
 
 /* ─── Main component ─────────────────────────────────────────── */
 export default function PluginsContainer() {
+    const uuid = ServerContext.useStoreState((s) => s.server.data!.uuid);
+    const [tab, setTab] = useState<'browse' | 'installed'>('browse');
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [platforms, setPlatforms] = useState<string[]>(['Modrinth', 'Hangar']);
@@ -361,6 +462,9 @@ export default function PluginsContainer() {
     const [results, setResults] = useState<Plugin[]>([]);
     const [loading, setLoading] = useState(false);
     const [installed, setInstalled] = useState<Record<string, string>>({});
+    const [installedFiles, setInstalledFiles] = useState<FileObject[]>([]);
+    const [loadingInstalled, setLoadingInstalled] = useState(false);
+    const [deletingFile, setDeletingFile] = useState<string | null>(null);
 
     /* debounce query */
     useEffect(() => {
@@ -454,48 +558,124 @@ export default function PluginsContainer() {
         fetchAll();
     }, [fetchAll]);
 
+    const loadInstalledPlugins = useCallback(async () => {
+        setLoadingInstalled(true);
+        try {
+            const files = await loadDirectory(uuid, '/plugins');
+            setInstalledFiles(files.filter(f => f.isFile && f.name.endsWith('.jar')));
+        } catch {
+            setInstalledFiles([]);
+        } finally {
+            setLoadingInstalled(false);
+        }
+    }, [uuid]);
+
+    useEffect(() => {
+        if (tab === 'installed') loadInstalledPlugins();
+    }, [tab, loadInstalledPlugins]);
+
+    const handleDelete = async (name: string) => {
+        setDeletingFile(name);
+        try {
+            await deleteFiles(uuid, '/plugins', [name]);
+            setInstalledFiles(f => f.filter(p => p.name !== name));
+        } finally {
+            setDeletingFile(null);
+        }
+    };
+
+    const formatBytes = (b: number) => {
+        if (b >= 1048576) return `${(b / 1048576).toFixed(1)} MiB`;
+        if (b >= 1024) return `${(b / 1024).toFixed(1)} KiB`;
+        return `${b} B`;
+    };
+
     return (
         <Page>
             <MainArea>
-                <TopBar>
-                    <SearchWrap>
+                <TabBar>
+                    <Tab active={tab === 'browse'} onClick={() => setTab('browse')}>
                         <FontAwesomeIcon icon={faSearch} />
-                        <SearchInput
-                            type='text'
-                            placeholder='Search for a plugin...'
-                            value={query}
-                            onChange={e => setQuery(e.target.value)}
-                        />
-                    </SearchWrap>
-                    <ActionBtn variant='ghost' onClick={fetchAll} disabled={loading}>
-                        <FontAwesomeIcon icon={faSync} spin={loading} />
-                    </ActionBtn>
-                    <ActionBtn variant='primary'>
-                        <FontAwesomeIcon icon={faFilter} />
+                        Browse
+                    </Tab>
+                    <Tab active={tab === 'installed'} onClick={() => setTab('installed')}>
+                        <FontAwesomeIcon icon={faBoxOpen} />
                         Installed Plugins
-                    </ActionBtn>
-                </TopBar>
+                        {installedFiles.length > 0 && (
+                            <span style={{ background: 'rgba(99,102,241,0.25)', color: '#818cf8', borderRadius: '10px', padding: '1px 7px', fontSize: '0.68rem' }}>
+                                {installedFiles.length}
+                            </span>
+                        )}
+                    </Tab>
+                </TabBar>
 
-                {loading ? (
-                    <LoadingRow>
-                        <FontAwesomeIcon icon={faSync} spin />
-                        Searching plugins...
-                    </LoadingRow>
-                ) : results.length === 0 ? (
-                    <EmptyState>
-                        No plugins found. Try a different search or select more platforms.
-                    </EmptyState>
+                {tab === 'installed' ? (
+                    loadingInstalled ? (
+                        <LoadingRow><FontAwesomeIcon icon={faSync} spin /> Loading plugins...</LoadingRow>
+                    ) : installedFiles.length === 0 ? (
+                        <EmptyState>No .jar files found in /plugins directory.</EmptyState>
+                    ) : (
+                        <div>
+                            {installedFiles.map(file => (
+                                <InstalledRow key={file.name}>
+                                    <InstalledIcon><FontAwesomeIcon icon={faPlug} /></InstalledIcon>
+                                    <InstalledInfo>
+                                        <InstalledName>{file.name.replace('.jar', '')}</InstalledName>
+                                        <InstalledMeta>{file.name} &bull; {formatBytes(file.size)}</InstalledMeta>
+                                    </InstalledInfo>
+                                    <DeleteBtn
+                                        onClick={() => handleDelete(file.name)}
+                                        disabled={deletingFile === file.name}
+                                        title='Delete plugin'
+                                    >
+                                        {deletingFile === file.name
+                                            ? <FontAwesomeIcon icon={faSync} spin />
+                                            : <FontAwesomeIcon icon={faTrash} />
+                                        }
+                                    </DeleteBtn>
+                                </InstalledRow>
+                            ))}
+                        </div>
+                    )
                 ) : (
-                    <Grid>
-                        {results.map(plugin => (
-                            <PluginCard
-                                key={plugin.id}
-                                plugin={plugin}
-                                isInstalled={!!installed[plugin.id]}
-                                onInstall={(version) => setInstalled(p => ({ ...p, [plugin.id]: version }))}
-                            />
-                        ))}
-                    </Grid>
+                    <>
+                        <TopBar>
+                            <SearchWrap>
+                                <FontAwesomeIcon icon={faSearch} />
+                                <SearchInput
+                                    type='text'
+                                    placeholder='Search for a plugin...'
+                                    value={query}
+                                    onChange={e => setQuery(e.target.value)}
+                                />
+                            </SearchWrap>
+                            <ActionBtn variant='ghost' onClick={fetchAll} disabled={loading}>
+                                <FontAwesomeIcon icon={faSync} spin={loading} />
+                            </ActionBtn>
+                        </TopBar>
+
+                        {loading ? (
+                            <LoadingRow>
+                                <FontAwesomeIcon icon={faSync} spin />
+                                Searching plugins...
+                            </LoadingRow>
+                        ) : results.length === 0 ? (
+                            <EmptyState>
+                                No plugins found. Try a different search or select more platforms.
+                            </EmptyState>
+                        ) : (
+                            <Grid>
+                                {results.map(plugin => (
+                                    <PluginCard
+                                        key={plugin.id}
+                                        plugin={plugin}
+                                        isInstalled={!!installed[plugin.id]}
+                                        onInstall={(version) => setInstalled(p => ({ ...p, [plugin.id]: version }))}
+                                    />
+                                ))}
+                            </Grid>
+                        )}
+                    </>
                 )}
             </MainArea>
 

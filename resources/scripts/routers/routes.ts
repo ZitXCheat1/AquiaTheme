@@ -27,6 +27,8 @@ import {
     faPassport,
     faPlayCircle,
     faPlug,
+    faScroll,
+    faSlidersH,
     faTerminal,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
@@ -39,6 +41,8 @@ import {
 const FileEditContainer = lazy(() => import('@/components/server/files/FileEditContainer'));
 const ScheduleEditContainer = lazy(() => import('@/components/server/schedules/ScheduleEditContainer'));
 const PluginsContainer = lazy(() => import('@/components/server/plugins/PluginsContainer'));
+const VersionChangerContainer = lazy(() => import('@/components/server/tools/VersionChangerContainer'));
+const PropertiesContainer = lazy(() => import('@/components/server/tools/PropertiesContainer'));
 
 interface RouteDefinition {
     path: string;
@@ -146,6 +150,22 @@ export default {
             section: 'MANAGEMENT',
             component: PluginsContainer,
             iconProp: faPlug,
+        },
+        {
+            path: '/version',
+            permission: 'startup.*',
+            name: 'Version Changer',
+            section: 'CONFIGURATION',
+            component: VersionChangerContainer,
+            iconProp: faScroll,
+        },
+        {
+            path: '/properties',
+            permission: 'file.*',
+            name: 'Properties',
+            section: 'CONFIGURATION',
+            component: PropertiesContainer,
+            iconProp: faSlidersH,
         },
         {
             path: '/schedules',
