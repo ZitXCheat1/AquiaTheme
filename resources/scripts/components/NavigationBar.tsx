@@ -186,7 +186,7 @@ export default () => {
                     {rootAdmin && (
                         <Tooltip placement={'bottom'} content={'Admin Panel'}>
                             <NavButton whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
-                                <a href={'/admin'} rel={'noreferrer'} css={tw`flex items-center h-full no-underline text-inherit`}>
+                                <a href={'/admin'} rel={'noreferrer'} css={tw`flex items-center h-full no-underline text-current`}>
                                     <FontAwesomeIcon icon={faCog} />
                                 </a>
                             </NavButton>
@@ -197,7 +197,7 @@ export default () => {
 
                     <Tooltip placement={'bottom'} content={'Account'}>
                         <NavButton whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
-                            <NavLink to={'/account'} css={tw`flex items-center h-full no-underline text-inherit`}>
+                            <NavLink to={'/account'} css={tw`flex items-center h-full no-underline text-current`}>
                                 <span className={'flex items-center w-6 h-6'}>
                                     <Avatar.User />
                                 </span>

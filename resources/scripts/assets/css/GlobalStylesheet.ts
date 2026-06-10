@@ -14,7 +14,7 @@ export default createGlobalStyle`
     }
 
     body {
-        ${tw`font-sans text-slate-200`};
+        ${tw`font-sans text-gray-200`};
         background: #060b18;
         letter-spacing: 0.015em;
     }
@@ -24,7 +24,7 @@ export default createGlobalStyle`
     }
 
     p {
-        ${tw`text-slate-200 leading-snug font-sans`};
+        ${tw`text-gray-200 leading-snug font-sans`};
     }
 
     form {
