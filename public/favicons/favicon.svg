@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#0a0f0a"/>
+  <!-- Outer glow border -->
+  <rect width="32" height="32" rx="7" fill="none" stroke="#08cd00" stroke-width="0.8" opacity="0.4"/>
+
+  <!-- Server rack slot 1 -->
+  <rect x="4" y="7" width="24" height="7" rx="2" fill="#111611" stroke="#08cd00" stroke-width="0.7" opacity="0.9"/>
+  <!-- HDD bay slot 1 -->
+  <rect x="6" y="9" width="11" height="3" rx="1" fill="#1a2a1a"/>
+  <!-- LED indicator row 1 -->
+  <circle cx="21" cy="10.5" r="1.5" fill="#08cd00"/>
+  <circle cx="24.5" cy="10.5" r="1.5" fill="#08cd00" opacity="0.35"/>
+
+  <!-- Server rack slot 2 -->
+  <rect x="4" y="17" width="24" height="7" rx="2" fill="#111611" stroke="#08cd00" stroke-width="0.7" opacity="0.9"/>
+  <!-- HDD bay slot 2 -->
+  <rect x="6" y="19" width="11" height="3" rx="1" fill="#1a2a1a"/>
+  <!-- LED indicator row 2 -->
+  <circle cx="21" cy="20.5" r="1.5" fill="#08cd00" opacity="0.6"/>
+  <circle cx="24.5" cy="20.5" r="1.5" fill="#08cd00"/>
+
+  <!-- Subtle scanline accent -->
+  <line x1="4" y1="15.5" x2="28" y2="15.5" stroke="#08cd00" stroke-width="0.4" opacity="0.15"/>
+</svg>

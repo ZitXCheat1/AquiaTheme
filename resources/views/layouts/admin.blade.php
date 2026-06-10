@@ -7,11 +7,12 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <meta name="_token" content="{{ csrf_token() }}">
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+        <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
         <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
         <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
         <link rel="manifest" href="/favicons/manifest.json">
-        <link rel="shortcut icon" href="/favicons/favicon.ico">
+        <link rel="shortcut icon" href="/favicons/favicon.svg">
         <meta name="theme-color" content="#08cd00">
 
         @include('layouts.scripts')
