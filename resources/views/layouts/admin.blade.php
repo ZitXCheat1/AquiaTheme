@@ -47,6 +47,16 @@
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
                 body, * { font-family: 'Inter', system-ui, sans-serif !important; }
+                body { font-size: 14px !important; }
+                .content-header > h1 { font-size: 1.5rem !important; }
+                .sidebar-menu > li > a { font-size: 0.92rem !important; }
+                .box-header .box-title { font-size: 1rem !important; }
+                .table, .table td, .table th { font-size: 0.9rem !important; }
+                label, .control-label { font-size: 0.88rem !important; }
+                .form-control, select.form-control { font-size: 0.9rem !important; }
+                .btn { font-size: 0.88rem !important; }
+                p, .help-block { font-size: 0.85rem !important; }
+                .nav-tabs > li > a { font-size: 0.88rem !important; }
 
                 /* Wipe all AdminLTE blue */
                 body, .wrapper, .content-wrapper, .main-footer { background: #0a0f0a !important; }
@@ -203,10 +213,10 @@
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
                     <span class="logo-mini">
-                        <i class="fa-solid fa-server" style="color:#08cd00"></i>
+                        <i class="fa fa-server" style="color:#08cd00"></i>
                     </span>
                     <span class="logo-lg">
-                        <i class="fa-solid fa-droplet" style="color:#08cd00; margin-right:7px;"></i>
+                        <i class="fa fa-tint" style="color:#08cd00; margin-right:7px;"></i>
                         <strong>{{ config('app.name', 'Aquia Panel') }}</strong>
                     </span>
                 </a>
@@ -214,7 +224,7 @@
                 <nav class="navbar navbar-static-top">
                     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                         <span class="sr-only">Toggle navigation</span>
-                        <i class="fa-solid fa-bars"></i>
+                        <i class="fa fa-bars"></i>
                     </a>
 
                     <div class="navbar-custom-menu">
@@ -223,7 +233,7 @@
                             <li class="hidden-xs">
                                 <a href="#" style="cursor:default; pointer-events:none; opacity:0.6;">
                                     <small>
-                                        <i class="fa-solid fa-code-branch" style="color:#08cd00; margin-right:4px;"></i>
+                                        <i class="fa fa-code-fork" style="color:#08cd00; margin-right:4px;"></i>
                                         v{{ config('app.fork-version', '1.0') }}
                                     </small>
                                 </a>
@@ -244,7 +254,7 @@
                                 <a href="{{ route('index') }}"
                                    data-toggle="tooltip" data-placement="bottom" title="Exit to Panel"
                                    style="transition:color 0.2s;">
-                                    <i class="fa-solid fa-server" style="font-size:1rem;"></i>
+                                    <i class="fa fa-server" style="font-size:1rem;"></i>
                                 </a>
                             </li>
 
@@ -254,7 +264,7 @@
                                    id="logoutButton"
                                    data-toggle="tooltip" data-placement="bottom" title="Sign Out"
                                    style="transition:color 0.2s;">
-                                    <i class="fa-solid fa-right-from-bracket" style="font-size:1rem;"></i>
+                                    <i class="fa fa-sign-out" style="font-size:1rem;"></i>
                                 </a>
                             </li>
                         </ul>
@@ -269,13 +279,13 @@
                     {{-- User panel --}}
                     <div class="user-panel" style="padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(8,205,0,0.08); margin-bottom:8px;">
                         <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(Auth::user()->email)) }}?s=160"
-                             style="width:38px; height:38px; border-radius:50%; border:2px solid rgba(0,212,255,0.25);" alt="avatar">
+                             style="width:38px; height:38px; border-radius:50%; border:2px solid rgba(8,205,0,0.25);" alt="avatar">
                         <div>
                             <p style="margin:0; font-size:0.82rem; font-weight:600; color:#cbd5e1;">
                                 {{ Auth::user()->name_first }} {{ Auth::user()->name_last }}
                             </p>
                             <p style="margin:0; font-size:0.72rem; color:#475569;">
-                                <i class="fa-solid fa-circle" style="color:#22c55e; font-size:0.5rem; vertical-align:middle; animation:aqPulse 2s ease-in-out infinite;"></i>
+                                <i class="fa fa-circle" style="color:#22c55e; font-size:0.5rem; vertical-align:middle; animation:aqPulse 2s ease-in-out infinite;"></i>
                                 Administrator
                             </p>
                         </div>
@@ -284,88 +294,88 @@
                     <ul class="sidebar-menu">
                         {{-- Basic Administration --}}
                         <li class="header">
-                            <i class="fa-solid fa-shield-halved" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
+                            <i class="fa fa-shield" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
                             Administration
                         </li>
 
                         <li class="{{ Route::currentRouteName() !== 'admin.index' ?: 'active' }}">
                             <a href="{{ route('admin.index') }}">
-                                <i class="fa-solid fa-fw fa-house"></i>
+                                <i class="fa fa-fw fa-home"></i>
                                 <span>Overview</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.settings') ?: 'active' }}">
                             <a href="{{ route('admin.settings') }}">
-                                <i class="fa-solid fa-fw fa-gear"></i>
+                                <i class="fa fa-fw fa-cog"></i>
                                 <span>Settings</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.api') ?: 'active' }}">
                             <a href="{{ route('admin.api.index') }}">
-                                <i class="fa-solid fa-fw fa-plug"></i>
+                                <i class="fa fa-fw fa-plug"></i>
                                 <span>Application API</span>
                             </a>
                         </li>
 
                         {{-- Management --}}
                         <li class="header">
-                            <i class="fa-solid fa-layer-group" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
+                            <i class="fa fa-tasks" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
                             Management
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.databases') ?: 'active' }}">
                             <a href="{{ route('admin.databases') }}">
-                                <i class="fa-solid fa-fw fa-database"></i>
+                                <i class="fa fa-fw fa-database"></i>
                                 <span>Databases</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.locations') ?: 'active' }}">
                             <a href="{{ route('admin.locations') }}">
-                                <i class="fa-solid fa-fw fa-globe"></i>
+                                <i class="fa fa-fw fa-globe"></i>
                                 <span>Locations</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nodes') ?: 'active' }}">
                             <a href="{{ route('admin.nodes') }}">
-                                <i class="fa-solid fa-fw fa-diagram-project"></i>
+                                <i class="fa fa-fw fa-sitemap"></i>
                                 <span>Nodes</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
                             <a href="{{ route('admin.servers') }}">
-                                <i class="fa-solid fa-fw fa-server"></i>
+                                <i class="fa fa-fw fa-server"></i>
                                 <span>Servers</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.users') ?: 'active' }}">
                             <a href="{{ route('admin.users') }}">
-                                <i class="fa-solid fa-fw fa-users"></i>
+                                <i class="fa fa-fw fa-users"></i>
                                 <span>Users</span>
                             </a>
                         </li>
 
                         {{-- Service Management --}}
                         <li class="header">
-                            <i class="fa-solid fa-cubes" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
+                            <i class="fa fa-cubes" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
                             Services
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">
-                                <i class="fa-solid fa-fw fa-hard-drive"></i>
+                                <i class="fa fa-fw fa-hdd-o"></i>
                                 <span>Mounts</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
                             <a href="{{ route('admin.nests') }}">
-                                <i class="fa-solid fa-fw fa-boxes-stacked"></i>
+                                <i class="fa fa-fw fa-th-large"></i>
                                 <span>Nests</span>
                             </a>
                         </li>
@@ -373,7 +383,7 @@
 
                     {{-- Sidebar footer --}}
                     <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 16px; border-top:1px solid rgba(8,205,0,0.08); font-size:0.7rem; color:#334155; text-align:center;">
-                        <i class="fa-solid fa-droplet" style="color:rgba(8,205,0,0.3); margin-right:4px;"></i>
+                        <i class="fa fa-tint" style="color:rgba(8,205,0,0.3); margin-right:4px;"></i>
                         Aquia Theme v{{ config('app.fork-version', '1.0') }}
                     </div>
                 </section>
@@ -391,7 +401,7 @@
                         <div class="col-xs-12">
                             @if (count($errors) > 0)
                                 <div class="alert alert-danger" style="animation: aqFadeUp 0.3s ease both;">
-                                    <i class="fa-solid fa-circle-exclamation" style="margin-right:8px;"></i>
+                                    <i class="fa fa-exclamation-circle" style="margin-right:8px;"></i>
                                     There was an error validating the data provided.
                                     <ul style="margin-top:8px; margin-bottom:0;">
                                         @foreach ($errors->all() as $error)
@@ -405,10 +415,10 @@
                                 @foreach ($messages as $message)
                                     <div class="alert alert-{{ $type }} alert-dismissable" role="alert"
                                          style="animation: aqFadeUp 0.3s ease both;">
-                                        @if($type === 'success') <i class="fa-solid fa-circle-check" style="margin-right:6px;"></i>
-                                        @elseif($type === 'danger') <i class="fa-solid fa-circle-exclamation" style="margin-right:6px;"></i>
-                                        @elseif($type === 'warning') <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i>
-                                        @else <i class="fa-solid fa-circle-info" style="margin-right:6px;"></i>
+                                        @if($type === 'success') <i class="fa fa-check-circle" style="margin-right:6px;"></i>
+                                        @elseif($type === 'danger') <i class="fa fa-exclamation-circle" style="margin-right:6px;"></i>
+                                        @elseif($type === 'warning') <i class="fa fa-exclamation-triangle" style="margin-right:6px;"></i>
+                                        @else <i class="fa fa-info-circle" style="margin-right:6px;"></i>
                                         @endif
                                         {{ $message }}
                                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -426,16 +436,16 @@
             <footer class="main-footer">
                 <div class="pull-right small text-gray" style="margin-right:10px; margin-top:-5px; line-height:1.8;">
                     <span>
-                        <i class="fa-solid fa-{{ $appIsGit ? 'code-branch' : 'code-fork' }}" style="color:rgba(0,212,255,0.5);"></i>
+                        <i class="fa fa-code-fork" style="color:rgba(8,205,0,0.5);"></i>
                         {{ $appVersion }}
                     </span>
                     &nbsp;&bull;&nbsp;
                     <span>
-                        <i class="fa-regular fa-clock" style="color:rgba(0,212,255,0.5);"></i>
+                        <i class="fa fa-clock-o" style="color:rgba(8,205,0,0.5);"></i>
                         {{ round(microtime(true) - LARAVEL_START, 3) }}s
                     </span>
                 </div>
-                <i class="fa-solid fa-droplet" style="color:rgba(0,212,255,0.5); margin-right:5px;"></i>
+                <i class="fa fa-tint" style="color:rgba(8,205,0,0.5); margin-right:5px;"></i>
                 Copyright &copy; 2022 &ndash; {{ date('Y') }}
                 <a href="https://wiskcraft.com/" style="color:var(--aq-accent);">Aquia Theme</a>.
                 &nbsp;&bull;&nbsp;
