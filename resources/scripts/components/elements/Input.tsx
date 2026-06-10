@@ -7,13 +7,15 @@ export interface Props {
 }
 
 const light = css<Props>`
-    ${tw`bg-white border-neutral-200 text-neutral-800`};
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(0,212,255,0.2);
+    color: #e2e8f0;
     &:focus {
-        ${tw`border-primary-400`}
+        border-color: rgba(0,212,255,0.5);
     }
 
     &:disabled {
-        ${tw`bg-neutral-100 border-neutral-200`};
+        opacity: 0.5;
     }
 `;
 
@@ -37,11 +39,17 @@ const checkboxStyle = css<Props>`
 `;
 
 const inputStyle = css<Props>`
-    // Reset to normal styling.
     resize: none;
     ${tw`appearance-none outline-none w-full min-w-0`};
-    ${tw`p-3 border-2 rounded text-sm transition-all duration-150`};
-    ${tw`bg-neutral-600 border-neutral-500 hover:border-neutral-400 text-neutral-200 shadow-none focus:ring-0`};
+    ${tw`p-3 rounded text-sm transition-all duration-150`};
+    background: rgba(0, 212, 255, 0.04);
+    border: 1.5px solid rgba(0, 212, 255, 0.18);
+    color: #e2e8f0;
+    box-shadow: none;
+
+    &::placeholder {
+        color: rgba(148, 163, 184, 0.5);
+    }
 
     & + .input-help {
         ${tw`mt-1 text-xs`};
@@ -50,20 +58,28 @@ const inputStyle = css<Props>`
 
     &:required,
     &:invalid {
-        ${tw`shadow-none`};
+        box-shadow: none;
+    }
+
+    &:hover:not(:disabled):not(:read-only) {
+        border-color: rgba(0, 212, 255, 0.35);
+        background: rgba(0, 212, 255, 0.07);
     }
 
     &:not(:disabled):not(:read-only):focus {
-        ${tw`shadow-md border-primary-300 ring-2 ring-primary-400 ring-opacity-50`};
-        ${(props) => props.hasError && tw`border-red-300 ring-red-200`};
+        border-color: rgba(0, 212, 255, 0.55);
+        background: rgba(0, 212, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.12);
+        ${(props) => props.hasError && 'border-color: rgba(239,68,68,0.6); box-shadow: 0 0 0 3px rgba(239,68,68,0.12);'};
     }
 
     &:disabled {
-        ${tw`opacity-75`};
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
     ${(props) => props.isLight && light};
-    ${(props) => props.hasError && tw`text-red-100 border-red-400 hover:border-red-300`};
+    ${(props) => props.hasError && 'border-color: rgba(239,68,68,0.5); color: #fca5a5;'};
 `;
 
 const Input = styled.input<Props>`
