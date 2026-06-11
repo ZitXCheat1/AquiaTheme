@@ -45,15 +45,15 @@ const options: ChartOptions<'line'> = {
             type: 'linear',
             grid: {
                 display: true,
-                color: theme('colors.gray.700'),
+                color: theme`colors.gray.700`.toString(),
                 drawBorder: false,
             },
             ticks: {
                 display: true,
                 count: 3,
-                color: theme('colors.gray.200'),
+                color: theme`colors.gray.200`.toString(),
                 font: {
-                    family: theme('fontFamily.sans'),
+                    family: theme`fontFamily.sans`.toString(),
                     size: 11,
                     weight: '400',
                 },
@@ -91,8 +91,8 @@ function getEmptyData(label: string, sets = 1, callback?: ChartDatasetCallback |
                         fill: true,
                         label,
                         data: Array(20).fill(-5),
-                        borderColor: theme('colors.cyan.400'),
-                        backgroundColor: hexToRgba(theme('colors.cyan.700'), 0.5),
+                        borderColor: theme`colors.cyan.400`.toString(),
+                        backgroundColor: hexToRgba(theme`colors.cyan.700`.toString(), 0.5),
                     },
                     index
                 )

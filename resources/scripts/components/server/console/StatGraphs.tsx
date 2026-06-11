@@ -35,8 +35,8 @@ export default () => {
             return {
                 ...opts,
                 label: !index ? 'Network In' : 'Network Out',
-                borderColor: !index ? theme('colors.orange.400') : theme('colors.red.400'),
-                backgroundColor: hexToRgba(!index ? theme('colors.orange.700') : theme('colors.red.700'), 0.5),
+                borderColor: !index ? theme`colors.orange.400`.toString() : theme`colors.red.400`.toString(),
+                backgroundColor: hexToRgba(!index ? theme`colors.orange.700`.toString() : theme`colors.red.700`.toString(), 0.5),
             };
         },
     });

@@ -48,7 +48,7 @@ const terminalProps: ITerminalOptions = {
     cursorStyle: 'underline',
     allowTransparency: true,
     fontSize: 12,
-    fontFamily: th('fontFamily.mono'),
+    fontFamily: th`fontFamily.mono`.toString(),
     rows: 30,
     theme: theme,
 };
