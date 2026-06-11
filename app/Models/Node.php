@@ -130,9 +130,14 @@ class Node extends Model implements Identifiable
 
     /**
      * Get the connection address to use when making calls to this node.
+     * WINGS_URL in .env overrides the DB value — useful for Codespace/tunnel setups.
      */
     public function getConnectionAddress(): string
     {
+        if ($url = env('WINGS_URL')) {
+            return rtrim($url, '/');
+        }
+
         return sprintf('%s://%s:%s', $this->scheme, $this->fqdn, $this->daemonListen);
     }
 
