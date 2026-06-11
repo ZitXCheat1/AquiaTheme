@@ -26,8 +26,8 @@
             {!! Theme::css('vendor/animate/animate.min.css?t={cache-version}') !!}
             {!! Theme::css('css/pterodactyl.css?t={cache-version}') !!}
 
-            {{-- Font Awesome 5 Free (jsDelivr) --}}
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+            {{-- Font Awesome 5 Free (local) --}}
+            <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
 
             {{-- Google Fonts: Inter --}}
             <link rel="preconnect" href="https://fonts.googleapis.com">
