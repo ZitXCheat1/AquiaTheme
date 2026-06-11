@@ -167,7 +167,7 @@
                 .pagination > li > a:hover { background: rgba(8,205,0,0.08) !important; color: #fff !important; }
 
                 /* Content header */
-                .content-header > h1 { color: #ffffff !important; font-weight: 700 !important; font-size: 1.25rem !important; }
+                .content-header > h1 { color: #ffffff !important; font-weight: 700 !important; font-size: 1.9rem !important; }
                 .content-header > .breadcrumb { background: transparent !important; color: #64748b !important; }
                 .content-header > .breadcrumb > li.active { color: #08cd00 !important; }
 
@@ -207,6 +207,35 @@
                 @keyframes aqFadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
                 @keyframes aqPulse { 0%,100% { opacity:0.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.3); } }
                 .content .box { animation: aqFadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+
+                /* Strip ALL gradients from header/logo (skin-blue adds them) */
+                .main-header .logo,
+                .main-header .navbar,
+                .skin-blue .main-header .logo,
+                .skin-blue .main-header .navbar,
+                .skin-blue .main-header .logo strong { background-image: none !important; }
+
+                /* Material Icons in sidebar — proper sizing + color + alignment */
+                .skin-blue .sidebar-menu > li > a > span.material-icons {
+                    color: #4d7a4d !important;
+                    font-size: 18px !important;
+                    width: 22px !important;
+                    text-align: center !important;
+                    margin-right: 8px !important;
+                    vertical-align: -4px !important;
+                    display: inline-block !important;
+                    flex-shrink: 0;
+                }
+                .skin-blue .sidebar-menu > li.active > a > span.material-icons,
+                .skin-blue .sidebar-menu > li > a:hover > span.material-icons { color: #08cd00 !important; }
+                .sidebar-menu > li > a { display: flex !important; align-items: center !important; gap: 0 !important; }
+
+                /* AquiaTheme logo text — no gradient, clean */
+                .main-header .logo strong,
+                .main-header .logo strong span { background: none !important; -webkit-background-clip: unset !important; -webkit-text-fill-color: unset !important; }
+
+                /* Bigger sidebar section header icons */
+                .sidebar-menu .header span.material-icons { font-size: 14px !important; vertical-align: -2px !important; }
             </style>
         @show
     </head>
@@ -390,7 +419,7 @@
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">
-                                <span class="material-icons">hard_drive</span>
+                                <span class="material-icons">save</span>
                                 <span>Mounts</span>
                             </a>
                         </li>
