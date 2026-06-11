@@ -32,7 +32,6 @@ import {
     faTerminal,
     faUser,
     faUsers,
-    faWrench,
     faCommentDots,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -48,7 +47,6 @@ const VersionChangerContainer = lazy(() => import('@/components/server/tools/Ver
 const PropertiesContainer = lazy(() => import('@/components/server/tools/PropertiesContainer'));
 const MotdContainer = lazy(() => import('@/components/server/tools/MotdContainer'));
 const ServerIconContainer = lazy(() => import('@/components/server/tools/ServerIconContainer'));
-const ServerConfigHub = lazy(() => import('@/components/server/settings/ServerConfigHub'));
 const PlayerListContainer = lazy(() => import('@/components/server/tools/PlayerListContainer'));
 
 interface RouteDefinition {
@@ -214,12 +212,12 @@ export default {
             component: StartupContainer,
         },
         {
-            path: '/config',
-            permission: null,
-            name: 'Server Config',
+            path: '/settings',
+            permission: ['settings.*', 'file.sftp'],
+            name: 'Settings',
             section: 'CONFIGURATION',
-            component: ServerConfigHub,
-            iconProp: faWrench,
+            component: SettingsContainer,
+            iconProp: faCogs,
         },
         {
             path: '/players',

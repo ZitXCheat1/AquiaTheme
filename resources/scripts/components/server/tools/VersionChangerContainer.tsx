@@ -5,7 +5,7 @@ import { ServerContext } from '@/state/server';
 import updateStartupVariable from '@/api/server/updateStartupVariable';
 import reinstallServer from '@/api/server/reinstallServer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faExclamationTriangle, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 type Software = 'paper' | 'purpur' | 'vanilla' | 'spigot' | 'fabric' | 'forge';
 
@@ -128,9 +128,17 @@ const DangerBox = styled.div`
 `;
 const DangerIcon = styled.div`color:#ef4444;font-size:0.85rem;flex-shrink:0;margin-top:1px;`;
 const CheckRow = styled.label`
-    display:flex;align-items:center;gap:8px;font-size:0.775rem;color:#4b5563;
+    display:flex;align-items:center;gap:10px;font-size:0.775rem;color:#94a3b8;
     cursor:pointer;user-select:none;line-height:1.5;
-    input{accent-color:#ef4444;cursor:pointer;flex-shrink:0;}
+`;
+const CustomCheckbox = styled.div<{ $checked?: boolean }>`
+    width:18px;height:18px;border-radius:5px;flex-shrink:0;
+    border:1.5px solid ${p => p.$checked ? '#ef4444' : 'rgba(239,68,68,0.25)'};
+    background:${p => p.$checked ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.04)'};
+    display:flex;align-items:center;justify-content:center;
+    transition:all 0.15s;
+    svg{opacity:${p => p.$checked ? 1 : 0};transform:scale(${p => p.$checked ? 1 : 0.5});transition:all 0.15s;}
+    &:hover{border-color:rgba(239,68,68,0.5);}
 `;
 const Footer = styled.div`display:flex;align-items:center;justify-content:space-between;margin-top:20px;`;
 const PoweredBy = styled.span`font-size:0.68rem;color:#1e2e1e;`;
@@ -230,7 +238,12 @@ export default function VersionChangerContainer() {
                 <DangerIcon><FontAwesomeIcon icon={faExclamationTriangle}/></DangerIcon>
                 <div>
                     <div style={{fontSize:'0.775rem',fontWeight:700,color:'#ef4444',marginBottom:'7px'}}>Danger Zone</div>
-                    <CheckRow><input type='checkbox' checked={reset} onChange={e=>setReset(e.target.checked)}/> Reset the server and delete all files</CheckRow>
+                    <CheckRow onClick={()=>setReset(!reset)}>
+                        <CustomCheckbox $checked={reset}>
+                            <FontAwesomeIcon icon={faCheck} style={{fontSize:'0.55rem',color:'#ef4444'}}/>
+                        </CustomCheckbox>
+                        Reset the server and delete all files
+                    </CheckRow>
                 </div>
             </DangerBox>
 

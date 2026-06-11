@@ -222,6 +222,35 @@
         </div>
     </div>
 
+    {{-- ===== SERVER TYPE QUICK PICKER ===== --}}
+    <div class="row" id="serverTypeRow">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-th-large" style="margin-right:6px;"></i>Server Type</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <p class="text-muted small" style="margin-bottom:14px;">
+                        <i class="fa fa-magic"></i>
+                        Pick your server software below — the egg and available versions will be configured automatically.
+                        You can still use the <strong>Nest Configuration</strong> section below for manual selection.
+                    </p>
+                    <div id="loaderPickerGrid" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;">
+                        <div id="loaderPickerLoading" class="text-muted">
+                            <i class="fa fa-spinner fa-spin"></i>&nbsp; Scanning available server types…
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- ===== END SERVER TYPE QUICK PICKER ===== --}}
+
     <div class="row">
         <div class="col-md-6">
             <div class="box">
@@ -316,6 +345,64 @@
     @parent
     {!! Theme::js('vendor/lodash/lodash.js') !!}
 
+    <style>
+        .loader-card {
+            cursor: pointer;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 14px 12px 10px;
+            width: 120px;
+            text-align: center;
+            transition: border-color .15s, box-shadow .15s, transform .15s, background .15s;
+            background: #fff;
+            user-select: none;
+        }
+        .loader-card:hover:not(.selected) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.12);
+        }
+        .loader-card.selected {
+            box-shadow: 0 0 0 3px rgba(0,0,0,.15);
+        }
+        .loader-card .lc-logo {
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .loader-card .lc-logo img {
+            max-height: 46px;
+            max-width: 70px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        .loader-card .lc-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        .loader-card .lc-desc {
+            font-size: 10.5px;
+            color: #999;
+            line-height: 1.35;
+        }
+        .version-loading-spinner {
+            display: inline-block;
+            margin-left: 6px;
+        }
+        #appendVariablesTo .version-select-wrapper {
+            position: relative;
+        }
+        #appendVariablesTo .version-badge {
+            display: inline-block;
+            margin-left: 6px;
+            font-size: 10px;
+            vertical-align: middle;
+        }
+    </style>
+
     <script type="application/javascript">
         // Persist 'Service Variables'
         function serviceVariablesUpdated(eggId, ids) {
@@ -342,6 +429,9 @@
 
     <script type="application/javascript">
         $(document).ready(function() {
+            // Build visual loader picker
+            buildServerTypePicker();
+
             // Persist 'Server Owner' select2
             @if (old('owner_id'))
                 $.ajax({

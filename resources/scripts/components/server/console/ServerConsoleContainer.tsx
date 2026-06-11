@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { ServerContext } from '@/state/server';
 import Can from '@/components/elements/Can';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
@@ -18,8 +18,10 @@ const ServerConsoleContainer = () => {
     const description = ServerContext.useStoreState((state) => state.server.data!.description);
     const isInstalling = ServerContext.useStoreState((state) => state.server.isInstalling);
     const isTransferring = ServerContext.useStoreState((state) => state.server.data!.isTransferring);
-    const eggFeatures = ServerContext.useStoreState((state) => state.server.data!.eggFeatures, isEqual);
+    const eggFeaturesRaw = ServerContext.useStoreState((state) => state.server.data!.eggFeatures);
     const isNodeUnderMaintenance = ServerContext.useStoreState((state) => state.server.data!.isNodeUnderMaintenance);
+
+    const eggFeatures = useMemo(() => eggFeaturesRaw || [], [eggFeaturesRaw]);
 
     return (
         <ServerContentBlock title={'Console'}>
@@ -58,7 +60,7 @@ const ServerConsoleContainer = () => {
                     <StatGraphs />
                 </Spinner.Suspense>
             </div>
-            <Features enabled={eggFeatures} />
+            {eggFeatures.length > 0 && <Features enabled={eggFeatures} />}
         </ServerContentBlock>
     );
 };

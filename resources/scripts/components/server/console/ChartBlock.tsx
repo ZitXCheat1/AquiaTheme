@@ -10,12 +10,15 @@ interface ChartBlockProps {
 
 export default ({ title, legend, children }: ChartBlockProps) => (
     <div className={classNames(styles.chart_container, 'group')}>
-        <div className={'flex items-center justify-between px-4 py-2'}>
-            <h3 className={'font-header font-medium transition-colors duration-100 group-hover:text-gray-50'}>
+        <div className={'flex items-center justify-between px-4 py-2.5'}>
+            <h3
+                className={'font-header font-medium text-sm transition-colors duration-100'}
+                style={{ color: '#7aab78' }}
+            >
                 {title}
             </h3>
             {legend && <p className={'text-sm flex items-center'}>{legend}</p>}
         </div>
-        <div className={'z-10 ml-2'}>{children}</div>
+        <div className={'z-10 ml-2 mb-2'}>{children}</div>
     </div>
 );
