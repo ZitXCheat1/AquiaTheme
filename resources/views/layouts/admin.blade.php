@@ -50,19 +50,19 @@
                 /* ── Typography ── */
                 body, *:not(.material-icons) { font-family: 'Inter', system-ui, sans-serif !important; }
                 .material-icons { font-family: 'Material Icons' !important; font-size: 18px; line-height: 1; display: inline-block; }
-                body { font-size: 16px !important; color: var(--text-main) !important; background: var(--aq-bg) !important; }
-                .content-header > h1 { font-size: 1.75rem !important; font-weight: 700 !important; color: var(--text-main) !important; letter-spacing: -0.02em !important; }
-                .content-header > .breadcrumb { font-size: 0.9rem !important; }
-                .box-header .box-title { font-size: 1.1rem !important; font-weight: 600 !important; }
-                .table, .table td, .table th { font-size: 0.95rem !important; }
-                label, .control-label { font-size: 0.92rem !important; font-weight: 500 !important; }
-                .form-control, select.form-control { font-size: 0.95rem !important; height: auto !important; }
-                .btn { font-size: 0.95rem !important; }
-                p, .help-block { font-size: 0.93rem !important; }
-                .nav-tabs > li > a { font-size: 0.95rem !important; }
-                small, .small { font-size: 0.82rem !important; }
-                .main-header .logo strong { font-size: 1.05rem !important; }
-                .navbar-nav > li > a { font-size: 0.93rem !important; }
+                body { font-size: 17px !important; color: var(--text-main) !important; background: var(--aq-bg) !important; }
+                .content-header > h1 { font-size: 2rem !important; font-weight: 700 !important; color: var(--text-main) !important; letter-spacing: -0.02em !important; }
+                .content-header > .breadcrumb { font-size: 1rem !important; }
+                .box-header .box-title { font-size: 1.2rem !important; font-weight: 600 !important; }
+                .table, .table td, .table th { font-size: 1rem !important; }
+                label, .control-label { font-size: 1rem !important; font-weight: 500 !important; }
+                .form-control, select.form-control { font-size: 1rem !important; height: auto !important; }
+                .btn { font-size: 1rem !important; }
+                p, .help-block { font-size: 1rem !important; }
+                .nav-tabs > li > a { font-size: 1rem !important; }
+                small, .small { font-size: 0.88rem !important; }
+                .main-header .logo strong { font-size: 1.1rem !important; }
+                .navbar-nav > li > a { font-size: 1rem !important; }
 
                 /* ── Base backgrounds ── */
                 .wrapper, .content-wrapper, .right-side { background: var(--aq-bg) !important; }
