@@ -50,21 +50,21 @@
                 /* ── Typography ── */
                 body, *:not(.material-icons) { font-family: 'Inter', system-ui, sans-serif !important; }
                 .material-icons { font-family: 'Material Icons' !important; font-size: 18px; line-height: 1; display: inline-block; }
-                html { font-size: 15px !important; }
-                body { font-size: 15px !important; color: var(--text-main) !important; background: var(--aq-bg) !important; }
-                .content-header > h1 { font-size: 2.1rem !important; font-weight: 700 !important; color: var(--text-main) !important; letter-spacing: -0.02em !important; }
-                .content-header > .breadcrumb { font-size: 1.05rem !important; }
-                .box-header .box-title { font-size: 1.3rem !important; font-weight: 600 !important; }
-                .table, .table td, .table th { font-size: 1.05rem !important; }
-                label, .control-label { font-size: 1.05rem !important; font-weight: 500 !important; }
-                .form-control, select.form-control { font-size: 1.05rem !important; height: auto !important; }
-                .btn { font-size: 1.05rem !important; padding: 9px 18px !important; }
-                p, .help-block { font-size: 1.05rem !important; }
-                .nav-tabs > li > a { font-size: 1.05rem !important; }
-                small, .small { font-size: 0.9rem !important; }
-                .main-header .logo strong { font-size: 1.2rem !important; }
-                .navbar-nav > li > a { font-size: 1.05rem !important; }
-                .sidebar-menu > li > a { font-size: 1.05rem !important; }
+                html { font-size: 14px !important; }
+                body { font-size: 14px !important; color: var(--text-main) !important; background: var(--aq-bg) !important; }
+                .content-header > h1 { font-size: 1.6rem !important; font-weight: 700 !important; color: var(--text-main) !important; letter-spacing: -0.02em !important; }
+                .content-header > .breadcrumb { font-size: 0.85rem !important; }
+                .box-header .box-title { font-size: 1.05rem !important; font-weight: 600 !important; }
+                .table, .table td, .table th { font-size: 0.9rem !important; }
+                label, .control-label { font-size: 0.88rem !important; font-weight: 500 !important; }
+                .form-control, select.form-control { font-size: 0.9rem !important; height: auto !important; }
+                .btn { font-size: 0.9rem !important; padding: 8px 16px !important; }
+                p, .help-block { font-size: 0.88rem !important; }
+                .nav-tabs > li > a { font-size: 0.92rem !important; }
+                small, .small { font-size: 0.8rem !important; }
+                .main-header .logo strong { font-size: 1rem !important; }
+                .navbar-nav > li > a { font-size: 0.9rem !important; }
+                .sidebar-menu > li > a { font-size: 0.9rem !important; }
                 td, th, li, span, div, a { font-size: inherit; }
 
                 /* ── Base backgrounds ── */
