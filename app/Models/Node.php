@@ -129,16 +129,29 @@ class Node extends Model implements Identifiable
     ];
 
     /**
-     * Get the connection address to use when making calls to this node.
-     * WINGS_URL in .env overrides the DB value — useful for Codespace/tunnel setups.
+     * Get the connection address for server-side panel→Wings API calls.
+     * WINGS_INTERNAL_URL overrides the DB value (e.g. http://localhost:8080 in Codespace).
      */
     public function getConnectionAddress(): string
+    {
+        if ($url = env('WINGS_INTERNAL_URL')) {
+            return rtrim($url, '/');
+        }
+
+        return sprintf('%s://%s:%s', $this->scheme, $this->fqdn, $this->daemonListen);
+    }
+
+    /**
+     * Get the public-facing address for browser websocket connections.
+     * WINGS_URL overrides (e.g. https://xxx-8080.app.github.dev in Codespace).
+     */
+    public function getPublicAddress(): string
     {
         if ($url = env('WINGS_URL')) {
             return rtrim($url, '/');
         }
 
-        return sprintf('%s://%s:%s', $this->scheme, $this->fqdn, $this->daemonListen);
+        return $this->getConnectionAddress();
     }
 
     /**

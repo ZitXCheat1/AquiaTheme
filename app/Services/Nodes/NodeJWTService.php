@@ -78,7 +78,7 @@ class NodeJWTService
 
         $builder = $config->builder(new TimestampDates())
             ->issuedBy(config('app.url'))
-            ->permittedFor($node->getConnectionAddress())
+            ->permittedFor($node->getPublicAddress())
             ->identifiedBy($identifier)
             ->withHeader('jti', $identifier)
             ->issuedAt(CarbonImmutable::now())
