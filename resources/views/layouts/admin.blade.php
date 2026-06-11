@@ -50,8 +50,8 @@
                 /* ── Typography ── */
                 body, *:not(.material-icons) { font-family: 'Inter', system-ui, sans-serif !important; }
                 .material-icons { font-family: 'Material Icons' !important; font-size: 18px; line-height: 1; display: inline-block; }
-                html { font-size: 18px !important; }
-                body { font-size: 18px !important; color: var(--text-main) !important; background: var(--aq-bg) !important; }
+                html { font-size: 15px !important; }
+                body { font-size: 15px !important; color: var(--text-main) !important; background: var(--aq-bg) !important; }
                 .content-header > h1 { font-size: 2.1rem !important; font-weight: 700 !important; color: var(--text-main) !important; letter-spacing: -0.02em !important; }
                 .content-header > .breadcrumb { font-size: 1.05rem !important; }
                 .box-header .box-title { font-size: 1.3rem !important; font-weight: 600 !important; }
