@@ -36,6 +36,13 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Force all generated URLs to use APP_URL — required when running
+        // behind a reverse proxy (e.g. GitHub Codespaces) where the incoming
+        // Host header is localhost rather than the public domain.
+        if ($appUrl = config('app.url')) {
+            URL::forceRootUrl($appUrl);
+        }
+
         Relation::enforceMorphMap([
             'allocation' => Models\Allocation::class,
             'api_key' => Models\ApiKey::class,
