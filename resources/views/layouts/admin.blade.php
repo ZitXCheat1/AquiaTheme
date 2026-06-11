@@ -318,10 +318,15 @@
                 .nav-tabs-custom { background: var(--aq-surface) !important; border: 1px solid var(--aq-border) !important; border-radius: 12px !important; }
                 .nav-tabs-custom > .nav-tabs { border-bottom: 1px solid var(--aq-border) !important; background: transparent !important; }
                 .nav-tabs-custom > .tab-content { background: transparent !important; }
-                .modal-content { background: var(--aq-surface) !important; border: 1px solid var(--aq-border) !important; border-radius: 14px !important; }
-                .modal-header { border-bottom: 1px solid var(--aq-border) !important; }
-                .modal-footer { border-top: 1px solid var(--aq-border) !important; }
-                .modal-title { color: var(--text-main) !important; }
+                .modal-content { background: #1a221a !important; border: 1px solid rgba(8,205,0,0.25) !important; border-radius: 14px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important; }
+                .modal-header { background: #1f291f !important; border-bottom: 1px solid rgba(8,205,0,0.15) !important; border-radius: 14px 14px 0 0 !important; padding: 16px 20px !important; }
+                .modal-body { background: #1a221a !important; padding: 20px !important; }
+                .modal-footer { background: #1a221a !important; border-top: 1px solid rgba(8,205,0,0.15) !important; border-radius: 0 0 14px 14px !important; padding: 14px 20px !important; }
+                .modal-title { color: var(--text-main) !important; font-size: 1.15rem !important; font-weight: 600 !important; }
+                .modal-body label { color: var(--text-secondary) !important; }
+                .modal-body .form-control { background: #0f150f !important; border-color: rgba(8,205,0,0.2) !important; }
+                .modal-body .form-control:focus { border-color: rgba(8,205,0,0.5) !important; }
+                .modal-backdrop { opacity: 0.7 !important; }
                 hr { border-color: var(--aq-border) !important; }
 
                 /* Pulse animation for online dot */
