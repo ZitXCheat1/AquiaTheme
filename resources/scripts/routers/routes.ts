@@ -228,14 +228,6 @@ export default {
             iconProp: faUsers,
         },
         {
-            path: '/settings',
-            permission: ['settings.*', 'file.sftp'],
-            name: 'Settings',
-            section: 'CONFIGURATION',
-            component: SettingsContainer,
-            iconProp: faCogs,
-        },
-        {
             path: '/activity',
             permission: 'activity.*',
             name: 'Activity',
