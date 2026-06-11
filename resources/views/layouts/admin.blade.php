@@ -46,16 +46,21 @@
 
                 body, *:not(.material-icons) { font-family: 'Inter', system-ui, sans-serif !important; }
                 .material-icons { font-family: 'Material Icons' !important; font-size: 16px; vertical-align: -3px; line-height: 1; display: inline-block; }
-                body { font-size: 15px !important; }
-                .content-header > h1 { font-size: 1.6rem !important; }
-                .sidebar-menu > li > a { font-size: 1rem !important; }
-                .box-header .box-title { font-size: 1.1rem !important; }
-                .table, .table td, .table th { font-size: 0.95rem !important; }
-                label, .control-label { font-size: 0.95rem !important; }
-                .form-control, select.form-control { font-size: 0.95rem !important; }
-                .btn { font-size: 0.95rem !important; }
-                p, .help-block { font-size: 0.92rem !important; }
-                .nav-tabs > li > a { font-size: 0.95rem !important; }
+                body { font-size: 16px !important; }
+                .content-header > h1 { font-size: 1.75rem !important; font-weight: 700 !important; }
+                .content-header > .breadcrumb { font-size: 0.9rem !important; }
+                .sidebar-menu > li > a { font-size: 1.05rem !important; padding: 10px 16px !important; }
+                .sidebar-menu > li.header { font-size: 0.78rem !important; letter-spacing: 0.08em !important; }
+                .box-header .box-title { font-size: 1.15rem !important; font-weight: 600 !important; }
+                .table, .table td, .table th { font-size: 1rem !important; }
+                label, .control-label { font-size: 1rem !important; font-weight: 500 !important; }
+                .form-control, select.form-control { font-size: 1rem !important; padding: 8px 12px !important; height: auto !important; }
+                .btn { font-size: 1rem !important; padding: 8px 16px !important; }
+                p, .help-block { font-size: 0.95rem !important; }
+                .nav-tabs > li > a { font-size: 1rem !important; }
+                small, .small { font-size: 0.88rem !important; }
+                .main-header .logo { font-size: 1.1rem !important; }
+                .navbar-nav > li > a { font-size: 1rem !important; }
 
                 /* Wipe all AdminLTE blue */
                 body, .wrapper, .content-wrapper, .main-footer { background: #0a0f0a !important; }
@@ -210,13 +215,31 @@
 
             {{-- â”€â”€â”€â”€â”€â”€â”€ TOP NAVBAR â”€â”€â”€â”€â”€â”€â”€ --}}
             <header class="main-header">
-                <a href="{{ route('index') }}" class="logo">
-                    <span class="logo-mini">
-                        <span class="material-icons" style="color:#08cd00">dns</span>
+                <a href="{{ route('index') }}" class="logo" style="display:flex; align-items:center; gap:0;">
+                    <span class="logo-mini" style="display:flex; align-items:center; justify-content:center;">
+                        <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="5" width="28" height="9" rx="2.5" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
+                            <rect x="4" y="7.5" width="12" height="4" rx="1" fill="rgba(8,205,0,0.2)"/>
+                            <circle cx="22" cy="9.5" r="2" fill="#08cd00"/>
+                            <circle cx="26.5" cy="9.5" r="2" fill="#08cd00" opacity="0.4"/>
+                            <rect x="2" y="17" width="28" height="9" rx="2.5" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
+                            <rect x="4" y="19.5" width="12" height="4" rx="1" fill="rgba(8,205,0,0.2)"/>
+                            <circle cx="22" cy="21.5" r="2" fill="#08cd00" opacity="0.5"/>
+                            <circle cx="26.5" cy="21.5" r="2" fill="#08cd00"/>
+                        </svg>
                     </span>
-                    <span class="logo-lg">
-                        <span class="material-icons" style="color:#08cd00; margin-right:7px;">water_drop</span>
-                        <strong>{{ config('app.name', 'Aquia Panel') }}</strong>
+                    <span class="logo-lg" style="display:flex; align-items:center; gap:9px;">
+                        <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="5" width="28" height="9" rx="2.5" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
+                            <rect x="4" y="7.5" width="12" height="4" rx="1" fill="rgba(8,205,0,0.2)"/>
+                            <circle cx="22" cy="9.5" r="2" fill="#08cd00"/>
+                            <circle cx="26.5" cy="9.5" r="2" fill="#08cd00" opacity="0.4"/>
+                            <rect x="2" y="17" width="28" height="9" rx="2.5" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
+                            <rect x="4" y="19.5" width="12" height="4" rx="1" fill="rgba(8,205,0,0.2)"/>
+                            <circle cx="22" cy="21.5" r="2" fill="#08cd00" opacity="0.5"/>
+                            <circle cx="26.5" cy="21.5" r="2" fill="#08cd00"/>
+                        </svg>
+                        <strong style="font-size:1.1rem; letter-spacing:-0.02em; color:#ffffff;">Aquia<span style="color:#08cd00;">Theme</span></strong>
                     </span>
                 </a>
 
@@ -381,9 +404,22 @@
                     </ul>
 
                     {{-- Sidebar footer --}}
-                    <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 16px; border-top:1px solid rgba(8,205,0,0.08); font-size:0.7rem; color:#334155; text-align:center;">
-                        <span class="material-icons" style="color:rgba(8,205,0,0.3); margin-right:4px; font-size:13px;">water_drop</span>
-                        Aquia Theme v{{ config('app.fork-version', '1.0') }}
+                    <div style="position:absolute; bottom:0; left:0; right:0; padding:14px 16px; border-top:1px solid rgba(8,205,0,0.08); background:rgba(8,205,0,0.02);">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                            <svg width="18" height="18" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="5" width="28" height="9" rx="2" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
+                                <circle cx="24" cy="9.5" r="1.8" fill="#08cd00"/>
+                                <rect x="2" y="17" width="28" height="9" rx="2" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
+                                <circle cx="24" cy="21.5" r="1.8" fill="#08cd00" opacity="0.5"/>
+                            </svg>
+                            <span style="font-size:0.82rem; font-weight:600; color:#94a3b8;">AquiaTheme</span>
+                            <span style="margin-left:auto; font-size:0.7rem; background:rgba(8,205,0,0.12); color:#08cd00; border-radius:4px; padding:1px 6px; font-weight:600;">v{{ config('app.fork-version', '1.0') }}</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="width:6px; height:6px; border-radius:50%; background:#22c55e; display:inline-block; box-shadow:0 0 6px #22c55e;"></span>
+                            <span style="font-size:0.72rem; color:#475569;">Panel Online</span>
+                            <span style="margin-left:auto; font-size:0.72rem; color:#334155;">Pterodactyl {{ $appVersion }}</span>
+                        </div>
                     </div>
                 </section>
             </aside>
