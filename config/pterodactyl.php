@@ -1,6 +1,12 @@
 <?php
 
 return [
+    // Internal URL the panel uses to call Wings (server-side). Set WINGS_INTERNAL_URL in .env.
+    'wings_internal_url' => env('WINGS_INTERNAL_URL'),
+
+    // Public URL returned to browsers for websocket connections. Set WINGS_URL in .env.
+    'wings_url' => env('WINGS_URL'),
+
     /*
     |--------------------------------------------------------------------------
     | Restricted Environment

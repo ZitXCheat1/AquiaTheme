@@ -130,11 +130,11 @@ class Node extends Model implements Identifiable
 
     /**
      * Get the connection address for server-side panel→Wings API calls.
-     * WINGS_INTERNAL_URL overrides the DB value (e.g. http://localhost:8080 in Codespace).
+     * WINGS_INTERNAL_URL in config overrides the DB value.
      */
     public function getConnectionAddress(): string
     {
-        if ($url = env('WINGS_INTERNAL_URL')) {
+        if ($url = config('pterodactyl.wings_internal_url')) {
             return rtrim($url, '/');
         }
 
@@ -143,11 +143,11 @@ class Node extends Model implements Identifiable
 
     /**
      * Get the public-facing address for browser websocket connections.
-     * WINGS_URL overrides (e.g. https://xxx-8080.app.github.dev in Codespace).
+     * WINGS_URL in config overrides the DB value.
      */
     public function getPublicAddress(): string
     {
-        if ($url = env('WINGS_URL')) {
+        if ($url = config('pterodactyl.wings_url')) {
             return rtrim($url, '/');
         }
 
