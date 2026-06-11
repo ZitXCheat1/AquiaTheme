@@ -61,18 +61,31 @@ const AddBtn = styled.button`
 const SearchWrap = styled.div`position: relative; margin-bottom: 10px;`;
 const SIcon = styled.div`position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#3d5c3d;font-size:0.75rem;pointer-events:none;`;
 const SearchInput = styled(Input)`padding-left: 32px; flex: none; width: 100%;`;
+const PlayerGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+`;
 const PlayerRow = styled.div<{ $delay: number }>`
-    display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-    background: rgba(8,205,0,0.02); border: 1px solid rgba(8,205,0,0.07);
-    border-radius: 9px; margin-bottom: 5px; transition: border-color 0.15s;
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    padding: 16px 12px 12px;
+    background: rgba(8,205,0,0.03); border: 1px solid rgba(8,205,0,0.09);
+    border-radius: 12px; transition: all 0.18s; position: relative;
     animation: ${rowIn} 0.3s cubic-bezier(0.22,1,0.36,1) both;
     animation-delay: ${p => p.$delay}ms;
-    &:hover { border-color: rgba(8,205,0,0.18); }
+    &:hover { border-color: rgba(8,205,0,0.25); background: rgba(8,205,0,0.06); transform: translateY(-2px); }
 `;
-const Avatar = styled.img`width:36px;height:36px;border-radius:7px;image-rendering:pixelated;flex-shrink:0;background:#162016;`;
-const Info = styled.div`flex:1;min-width:0;`;
-const PName = styled.div`font-size:0.85rem;font-weight:600;color:#ffffff;`;
-const PMeta = styled.div`font-size:0.7rem;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
+const AvatarWrap = styled.div`
+    width: 64px; height: 64px; border-radius: 10px;
+    background: #162016; border: 2px solid rgba(8,205,0,0.15);
+    overflow: hidden; margin-bottom: 10px; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+`;
+const Avatar = styled.img`width:64px;height:64px;image-rendering:pixelated;display:block;`;
+const Info = styled.div`flex:1;min-width:0;text-align:center;width:100%;`;
+const PName = styled.div`font-size:0.82rem;font-weight:600;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
+const PMeta = styled.div`font-size:0.65rem;color:#64748b;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
 const RemBtn = styled.button`
     width:30px;height:30px;border-radius:7px;background:rgba(239,68,68,0.07);
     border:1px solid rgba(239,68,68,0.18);color:#ef4444;cursor:pointer;
@@ -217,24 +230,29 @@ export default function PlayerListContainer() {
                     ? <Empty><FontAwesomeIcon icon={faSync} spin/> Loading...</Empty>
                     : filtered.length === 0
                         ? <Empty>No players found.</Empty>
-                        : filtered.map((p, i) => (
-                            <PlayerRow key={p.name} $delay={Math.min(i * 30, 300)}>
-                                <Avatar
-                                    src={'https://mc-heads.net/avatar/' + p.name + '/36'}
-                                    alt={p.name}
-                                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://mc-heads.net/avatar/Steve/36'; }}
-                                />
-                                <Info>
-                                    <PName>{p.name}</PName>
-                                    <PMeta>{p.reason ? p.reason : p.uuid && p.uuid !== '00000000-0000-0000-0000-000000000000' ? p.uuid : 'UUID not set'}</PMeta>
-                                </Info>
-                                {tab === 'ops' && <OpBadge>OP {p.level ?? 4}</OpBadge>}
-                                {tab === 'banned' && <BanBadge>Banned</BanBadge>}
-                                <RemBtn onClick={() => remove(p.name)} title={tab === 'banned' ? 'Unban' : 'Remove'}>
-                                    <FontAwesomeIcon icon={faTimes}/>
-                                </RemBtn>
-                            </PlayerRow>
-                        ))
+                        : <PlayerGrid>
+                            {filtered.map((p, i) => (
+                                <PlayerRow key={p.name} $delay={Math.min(i * 30, 300)}>
+                                    <RemBtn onClick={() => remove(p.name)} title={tab === 'banned' ? 'Unban' : 'Remove'}
+                                        style={{ position: 'absolute', top: 8, right: 8, width: 24, height: 24, fontSize: '0.6rem' }}>
+                                        <FontAwesomeIcon icon={faTimes}/>
+                                    </RemBtn>
+                                    <AvatarWrap>
+                                        <Avatar
+                                            src={'https://mc-heads.net/avatar/' + p.name + '/64'}
+                                            alt={p.name}
+                                            onError={(e) => { (e.target as HTMLImageElement).src = 'https://mc-heads.net/avatar/Steve/64'; }}
+                                        />
+                                    </AvatarWrap>
+                                    <Info>
+                                        <PName>{p.name}</PName>
+                                        <PMeta>{p.reason ? p.reason : p.uuid && p.uuid !== '00000000-0000-0000-0000-000000000000' ? p.uuid : 'No UUID'}</PMeta>
+                                    </Info>
+                                    {tab === 'ops' && <OpBadge style={{ marginTop: 6 }}>OP {p.level ?? 4}</OpBadge>}
+                                    {tab === 'banned' && <BanBadge style={{ marginTop: 6 }}>Banned</BanBadge>}
+                                </PlayerRow>
+                            ))}
+                        </PlayerGrid>
                 }
             </Card>
         </Page>
