@@ -26,12 +26,10 @@
             {!! Theme::css('vendor/animate/animate.min.css?t={cache-version}') !!}
             {!! Theme::css('css/pterodactyl.css?t={cache-version}') !!}
 
-            {{-- Font Awesome 5 Free (local) --}}
-            <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
-
-            {{-- Google Fonts: Inter --}}
+            {{-- Google Fonts: Inter + Material Icons --}}
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
             <style>
                 /* â”€â”€â”€ AquiaTheme Admin â€” Green Edition â”€â”€â”€ */
@@ -46,7 +44,8 @@
 
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-                body, * { font-family: 'Inter', system-ui, sans-serif !important; }
+                body, *:not(.material-icons) { font-family: 'Inter', system-ui, sans-serif !important; }
+                .material-icons { font-family: 'Material Icons' !important; font-size: 16px; vertical-align: -3px; line-height: 1; display: inline-block; }
                 body { font-size: 15px !important; }
                 .content-header > h1 { font-size: 1.6rem !important; }
                 .sidebar-menu > li > a { font-size: 1rem !important; }
@@ -213,10 +212,10 @@
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
                     <span class="logo-mini">
-                        <i class="fas fa-server" style="color:#08cd00"></i>
+                        <span class="material-icons" style="color:#08cd00">dns</span>
                     </span>
                     <span class="logo-lg">
-                        <i class="fas fa-tint" style="color:#08cd00; margin-right:7px;"></i>
+                        <span class="material-icons" style="color:#08cd00; margin-right:7px;">water_drop</span>
                         <strong>{{ config('app.name', 'Aquia Panel') }}</strong>
                     </span>
                 </a>
@@ -224,7 +223,7 @@
                 <nav class="navbar navbar-static-top">
                     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                         <span class="sr-only">Toggle navigation</span>
-                        <i class="fas fa-bars"></i>
+                        <span class="material-icons">menu</span>
                     </a>
 
                     <div class="navbar-custom-menu">
@@ -233,7 +232,7 @@
                             <li class="hidden-xs">
                                 <a href="#" style="cursor:default; pointer-events:none; opacity:0.6;">
                                     <small>
-                                        <i class="fas fa-code-branch" style="color:#08cd00; margin-right:4px;"></i>
+                                        <span class="material-icons" style="color:#08cd00; margin-right:4px; font-size:13px;">call_split</span>
                                         v{{ config('app.fork-version', '1.0') }}
                                     </small>
                                 </a>
@@ -254,7 +253,7 @@
                                 <a href="{{ route('index') }}"
                                    data-toggle="tooltip" data-placement="bottom" title="Exit to Panel"
                                    style="transition:color 0.2s;">
-                                    <i class="fas fa-server" style="font-size:1rem;"></i>
+                                    <span class="material-icons" style="font-size:1rem;">dns</span>
                                 </a>
                             </li>
 
@@ -264,7 +263,7 @@
                                    id="logoutButton"
                                    data-toggle="tooltip" data-placement="bottom" title="Sign Out"
                                    style="transition:color 0.2s;">
-                                    <i class="fas fa-sign-out-alt" style="font-size:1rem;"></i>
+                                    <span class="material-icons" style="font-size:1rem;">logout</span>
                                 </a>
                             </li>
                         </ul>
@@ -285,7 +284,7 @@
                                 {{ Auth::user()->name_first }} {{ Auth::user()->name_last }}
                             </p>
                             <p style="margin:0; font-size:0.72rem; color:#475569;">
-                                <i class="fas fa-circle" style="color:#22c55e; font-size:0.5rem; vertical-align:middle; animation:aqPulse 2s ease-in-out infinite;"></i>
+                                <span class="material-icons" style="color:#22c55e; font-size:8px; vertical-align:middle; animation:aqPulse 2s ease-in-out infinite;">circle</span>
                                 Administrator
                             </p>
                         </div>
@@ -294,88 +293,88 @@
                     <ul class="sidebar-menu">
                         {{-- Basic Administration --}}
                         <li class="header">
-                            <i class="fas fa-shield-alt" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
+                            <span class="material-icons" style="margin-right:6px; color:rgba(8,205,0,0.4); font-size:13px;">security</span>
                             Administration
                         </li>
 
                         <li class="{{ Route::currentRouteName() !== 'admin.index' ?: 'active' }}">
                             <a href="{{ route('admin.index') }}">
-                                <i class="fas fa-fw fa-home"></i>
+                                <span class="material-icons">home</span>
                                 <span>Overview</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.settings') ?: 'active' }}">
                             <a href="{{ route('admin.settings') }}">
-                                <i class="fas fa-fw fa-cog"></i>
+                                <span class="material-icons">settings</span>
                                 <span>Settings</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.api') ?: 'active' }}">
                             <a href="{{ route('admin.api.index') }}">
-                                <i class="fas fa-fw fa-plug"></i>
+                                <span class="material-icons">power</span>
                                 <span>Application API</span>
                             </a>
                         </li>
 
                         {{-- Management --}}
                         <li class="header">
-                            <i class="fas fa-tasks" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
+                            <span class="material-icons" style="margin-right:6px; color:rgba(8,205,0,0.4); font-size:13px;">manage_accounts</span>
                             Management
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.databases') ?: 'active' }}">
                             <a href="{{ route('admin.databases') }}">
-                                <i class="fas fa-fw fa-database"></i>
+                                <span class="material-icons">storage</span>
                                 <span>Databases</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.locations') ?: 'active' }}">
                             <a href="{{ route('admin.locations') }}">
-                                <i class="fas fa-fw fa-globe"></i>
+                                <span class="material-icons">language</span>
                                 <span>Locations</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nodes') ?: 'active' }}">
                             <a href="{{ route('admin.nodes') }}">
-                                <i class="fas fa-fw fa-sitemap"></i>
+                                <span class="material-icons">account_tree</span>
                                 <span>Nodes</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
                             <a href="{{ route('admin.servers') }}">
-                                <i class="fas fa-fw fa-server"></i>
+                                <span class="material-icons">dns</span>
                                 <span>Servers</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.users') ?: 'active' }}">
                             <a href="{{ route('admin.users') }}">
-                                <i class="fas fa-fw fa-users"></i>
+                                <span class="material-icons">group</span>
                                 <span>Users</span>
                             </a>
                         </li>
 
                         {{-- Service Management --}}
                         <li class="header">
-                            <i class="fas fa-cubes" style="margin-right:6px; color:rgba(8,205,0,0.4);"></i>
+                            <span class="material-icons" style="margin-right:6px; color:rgba(8,205,0,0.4); font-size:13px;">widgets</span>
                             Services
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">
-                                <i class="fas fa-fw fa-hdd"></i>
+                                <span class="material-icons">hard_drive</span>
                                 <span>Mounts</span>
                             </a>
                         </li>
 
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
                             <a href="{{ route('admin.nests') }}">
-                                <i class="fas fa-fw fa-th-large"></i>
+                                <span class="material-icons">apps</span>
                                 <span>Nests</span>
                             </a>
                         </li>
@@ -383,7 +382,7 @@
 
                     {{-- Sidebar footer --}}
                     <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 16px; border-top:1px solid rgba(8,205,0,0.08); font-size:0.7rem; color:#334155; text-align:center;">
-                        <i class="fas fa-tint" style="color:rgba(8,205,0,0.3); margin-right:4px;"></i>
+                        <span class="material-icons" style="color:rgba(8,205,0,0.3); margin-right:4px; font-size:13px;">water_drop</span>
                         Aquia Theme v{{ config('app.fork-version', '1.0') }}
                     </div>
                 </section>
@@ -401,7 +400,7 @@
                         <div class="col-xs-12">
                             @if (count($errors) > 0)
                                 <div class="alert alert-danger" style="animation: aqFadeUp 0.3s ease both;">
-                                    <i class="fas fa-exclamation-circle" style="margin-right:8px;"></i>
+                                    <span class="material-icons" style="margin-right:8px;">error</span>
                                     There was an error validating the data provided.
                                     <ul style="margin-top:8px; margin-bottom:0;">
                                         @foreach ($errors->all() as $error)
@@ -415,10 +414,10 @@
                                 @foreach ($messages as $message)
                                     <div class="alert alert-{{ $type }} alert-dismissable" role="alert"
                                          style="animation: aqFadeUp 0.3s ease both;">
-                                        @if($type === 'success') <i class="fas fa-check-circle" style="margin-right:6px;"></i>
-                                        @elseif($type === 'danger') <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>
-                                        @elseif($type === 'warning') <i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i>
-                                        @else <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+                                        @if($type === 'success') <span class="material-icons" style="margin-right:6px;">check_circle</span>
+                                        @elseif($type === 'danger') <span class="material-icons" style="margin-right:6px;">error</span>
+                                        @elseif($type === 'warning') <span class="material-icons" style="margin-right:6px;">warning</span>
+                                        @else <span class="material-icons" style="margin-right:6px;">info</span>
                                         @endif
                                         {{ $message }}
                                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -436,16 +435,16 @@
             <footer class="main-footer">
                 <div class="pull-right small text-gray" style="margin-right:10px; margin-top:-5px; line-height:1.8;">
                     <span>
-                        <i class="fas fa-code-branch" style="color:rgba(8,205,0,0.5);"></i>
+                        <span class="material-icons" style="color:rgba(8,205,0,0.5); font-size:13px;">call_split</span>
                         {{ $appVersion }}
                     </span>
                     &nbsp;&bull;&nbsp;
                     <span>
-                        <i class="fas fa-clock" style="color:rgba(8,205,0,0.5);"></i>
+                        <span class="material-icons" style="color:rgba(8,205,0,0.5); font-size:13px;">schedule</span>
                         {{ round(microtime(true) - LARAVEL_START, 3) }}s
                     </span>
                 </div>
-                <i class="fas fa-tint" style="color:rgba(8,205,0,0.5); margin-right:5px;"></i>
+                <span class="material-icons" style="color:rgba(8,205,0,0.5); margin-right:5px; font-size:13px;">water_drop</span>
                 Copyright &copy; 2022 &ndash; {{ date('Y') }}
                 <a href="https://wiskcraft.com/" style="color:var(--aq-accent);">Aquia Theme</a>.
                 &nbsp;&bull;&nbsp;
