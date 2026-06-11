@@ -46,21 +46,22 @@
 
                 body, *:not(.material-icons) { font-family: 'Inter', system-ui, sans-serif !important; }
                 .material-icons { font-family: 'Material Icons' !important; font-size: 16px; vertical-align: -3px; line-height: 1; display: inline-block; }
-                body { font-size: 16px !important; }
-                .content-header > h1 { font-size: 1.75rem !important; font-weight: 700 !important; }
-                .content-header > .breadcrumb { font-size: 0.9rem !important; }
-                .sidebar-menu > li > a { font-size: 1.05rem !important; padding: 10px 16px !important; }
-                .sidebar-menu > li.header { font-size: 0.78rem !important; letter-spacing: 0.08em !important; }
-                .box-header .box-title { font-size: 1.15rem !important; font-weight: 600 !important; }
+                body { font-size: 17px !important; }
+                .content-header > h1 { font-size: 1.9rem !important; font-weight: 700 !important; }
+                .content-header > .breadcrumb { font-size: 0.95rem !important; }
+                .sidebar-menu > li > a { font-size: 1.08rem !important; padding: 11px 16px !important; }
+                .sidebar-menu > li.header { font-size: 0.8rem !important; letter-spacing: 0.08em !important; padding: 12px 16px 6px !important; }
+                .box-header .box-title { font-size: 1.2rem !important; font-weight: 600 !important; }
                 .table, .table td, .table th { font-size: 1rem !important; }
                 label, .control-label { font-size: 1rem !important; font-weight: 500 !important; }
-                .form-control, select.form-control { font-size: 1rem !important; padding: 8px 12px !important; height: auto !important; }
-                .btn { font-size: 1rem !important; padding: 8px 16px !important; }
-                p, .help-block { font-size: 0.95rem !important; }
-                .nav-tabs > li > a { font-size: 1rem !important; }
-                small, .small { font-size: 0.88rem !important; }
-                .main-header .logo { font-size: 1.1rem !important; }
+                .form-control, select.form-control { font-size: 1rem !important; padding: 9px 12px !important; height: auto !important; }
+                .btn { font-size: 1rem !important; padding: 9px 18px !important; }
+                p, .help-block { font-size: 0.96rem !important; }
+                .nav-tabs > li > a { font-size: 1.05rem !important; }
+                small, .small { font-size: 0.9rem !important; }
+                .main-header .logo strong { font-size: 1.18rem !important; }
                 .navbar-nav > li > a { font-size: 1rem !important; }
+                .user-panel p { font-size: 0.9rem !important; }
 
                 /* Wipe all AdminLTE blue */
                 body, .wrapper, .content-wrapper, .main-footer { background: #0a0f0a !important; }
@@ -215,8 +216,8 @@
 
             {{-- â”€â”€â”€â”€â”€â”€â”€ TOP NAVBAR â”€â”€â”€â”€â”€â”€â”€ --}}
             <header class="main-header">
-                <a href="{{ route('index') }}" class="logo" style="display:flex; align-items:center; gap:0;">
-                    <span class="logo-mini" style="display:flex; align-items:center; justify-content:center;">
+                <a href="{{ route('index') }}" class="logo">
+                    <span class="logo-mini">
                         <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="2" y="5" width="28" height="9" rx="2.5" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
                             <rect x="4" y="7.5" width="12" height="4" rx="1" fill="rgba(8,205,0,0.2)"/>
@@ -228,8 +229,8 @@
                             <circle cx="26.5" cy="21.5" r="2" fill="#08cd00"/>
                         </svg>
                     </span>
-                    <span class="logo-lg" style="display:flex; align-items:center; gap:9px;">
-                        <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <span class="logo-lg">
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle; margin-right:8px;">
                             <rect x="2" y="5" width="28" height="9" rx="2.5" fill="rgba(8,205,0,0.15)" stroke="#08cd00" stroke-width="1"/>
                             <rect x="4" y="7.5" width="12" height="4" rx="1" fill="rgba(8,205,0,0.2)"/>
                             <circle cx="22" cy="9.5" r="2" fill="#08cd00"/>
@@ -238,8 +239,7 @@
                             <rect x="4" y="19.5" width="12" height="4" rx="1" fill="rgba(8,205,0,0.2)"/>
                             <circle cx="22" cy="21.5" r="2" fill="#08cd00" opacity="0.5"/>
                             <circle cx="26.5" cy="21.5" r="2" fill="#08cd00"/>
-                        </svg>
-                        <strong style="font-size:1.1rem; letter-spacing:-0.02em; color:#ffffff;">Aquia<span style="color:#08cd00;">Theme</span></strong>
+                        </svg><strong style="font-size:1.15rem; letter-spacing:-0.02em; color:#ffffff;">Aquia<span style="color:#08cd00;">Theme</span></strong>
                     </span>
                 </a>
 
