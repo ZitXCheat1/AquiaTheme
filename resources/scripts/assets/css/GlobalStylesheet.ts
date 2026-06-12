@@ -5,6 +5,7 @@ export default createGlobalStyle`
 
     *, *::before, *::after {
         font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        letter-spacing: 0 !important;
     }
 
     body {
