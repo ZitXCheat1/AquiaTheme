@@ -67,28 +67,39 @@ const StyledInput = styled.input<{ $hasError?: boolean }>`
     font-size: 0.875rem;
     color: #f1f5f9;
     font-family: 'Inter', sans-serif;
-    outline: none;
+
+    /* Kill ALL browser default outlines — no blue ring ever */
+    outline: none !important;
+    box-shadow: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
     transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
 
-    /* Remove blue selection highlight */
-    -webkit-user-select: text;
-    user-select: text;
+    /* Green cursor with slow delayed blink:
+       visible 65% of the time, then disappears for 35% */
     caret-color: #08cd00;
+    animation: inputCaretDelay 1.3s step-end infinite;
 
-    /* Delayed blinking cursor */
-    animation: none;
-    &:focus {
-        border-color: rgba(8, 205, 0, 0.45);
-        background: rgba(8, 205, 0, 0.02);
-        box-shadow: 0 0 0 3px rgba(8, 205, 0, 0.06);
+    @keyframes inputCaretDelay {
+        0%, 65%  { caret-color: #08cd00; }
+        66%, 100% { caret-color: transparent; }
     }
 
-    /* Remove text selection highlight */
-    ::selection {
+    &:focus {
+        outline: none !important;
+        border-color: rgba(8, 205, 0, 0.45);
+        background: rgba(8, 205, 0, 0.02);
+        box-shadow: 0 0 0 3px rgba(8, 205, 0, 0.06) !important;
+    }
+
+    /* Replace blue selection rect with subtle green tint — no blue ever */
+    &::selection {
         background: rgba(8, 205, 0, 0.18);
         color: #fff;
     }
-    ::-moz-selection {
+    &::-moz-selection {
         background: rgba(8, 205, 0, 0.18);
         color: #fff;
     }

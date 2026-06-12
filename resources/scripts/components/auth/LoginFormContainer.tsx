@@ -23,27 +23,23 @@ const floatUp = keyframes`
 
 /* ─── Global cursor override — delayed blink ─────────────────── */
 const GlobalStyle = styled.div`
+    /* Kill blue focus rings everywhere on this page */
     * {
-        /* Replace default blue selection with green tint */
-        ::selection {
-            background: rgba(8, 205, 0, 0.15) !important;
-            color: #fff !important;
-        }
-        ::-moz-selection {
-            background: rgba(8, 205, 0, 0.15) !important;
-            color: #fff !important;
-        }
+        outline: none !important;
+    }
+    *:focus, *:focus-visible, *:focus-within {
+        outline: none !important;
+        box-shadow: none !important;
     }
 
-    input, textarea {
-        caret-color: #08cd00;
-        /* Slower, delayed cursor blink */
-        animation: caretBlink 1.2s step-end infinite 0.6s;
+    /* Replace every blue selection rect site-wide with green */
+    *::selection {
+        background: rgba(8, 205, 0, 0.16) !important;
+        color: #ffffff !important;
     }
-
-    @keyframes caretBlink {
-        0%, 100% { caret-color: #08cd00; }
-        50% { caret-color: transparent; }
+    *::-moz-selection {
+        background: rgba(8, 205, 0, 0.16) !important;
+        color: #ffffff !important;
     }
 `;
 
