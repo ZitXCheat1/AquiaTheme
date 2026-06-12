@@ -121,8 +121,9 @@ const LogoBadge = styled(motion.div)`
     animation: ${floatUp} 3.5s ease-in-out infinite;
 `;
 
-const Led = styled.circle`animation: ${ledBlink} 2.4s ease-in-out infinite;`;
-const Led2 = styled.circle`animation: ${ledBlink} 2.4s ease-in-out infinite 1.2s;`;
+/* Use styled('circle') not styled.circle — SVG elements need string form to avoid keyframe interpolation errors */
+const Led = styled('circle')`animation: ${ledBlink} 2.4s ease-in-out infinite;`;
+const Led2 = styled('circle')`animation: ${ledBlink} 2.4s ease-in-out infinite 1.2s;`;
 
 const LogoSvg = () => (
     <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">

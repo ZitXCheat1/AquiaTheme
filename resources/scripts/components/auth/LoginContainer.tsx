@@ -3,7 +3,7 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import login from '@/api/auth/login';
 import LoginFormContainer from '@/components/auth/LoginFormContainer';
 import { useStoreState } from 'easy-peasy';
-import { Formik, FormikHelpers, useFormikContext } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import { object, string } from 'yup';
 import { useField } from 'formik';
 import tw from 'twin.macro';
@@ -11,7 +11,13 @@ import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
 import { motion, AnimatePresence } from 'framer-motion';
-import styled, { keyframes, css } from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
+
+/* Keyframe must be defined via styled-components keyframes helper — NOT raw @keyframes inside template */
+const inputCaretBlink = keyframes`
+    0%, 65%  { caret-color: #08cd00; }
+    66%, 100% { caret-color: transparent; }
+`;
 
 interface Values {
     username: string;
@@ -77,15 +83,9 @@ const StyledInput = styled.input<{ $hasError?: boolean }>`
 
     transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
 
-    /* Green cursor with slow delayed blink:
-       visible 65% of the time, then disappears for 35% */
+    /* Green cursor — stays visible 65% of the cycle, blinks off for 35% */
     caret-color: #08cd00;
-    animation: inputCaretDelay 1.3s step-end infinite;
-
-    @keyframes inputCaretDelay {
-        0%, 65%  { caret-color: #08cd00; }
-        66%, 100% { caret-color: transparent; }
-    }
+    animation: ${inputCaretBlink} 1.3s step-end infinite;
 
     &:focus {
         outline: none !important;
