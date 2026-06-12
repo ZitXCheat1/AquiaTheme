@@ -37,43 +37,47 @@ const Btn = styled.button<{ variant: 'start' | 'restart' | 'stop' | 'kill' }>`
     svg { font-size: 0.7rem; }
 
     ${p => p.variant === 'start' && `
-        background: rgba(8, 205, 0, 0.12);
-        border-color: rgba(8, 205, 0, 0.3);
-        color: #08cd00;
+        background: #22c55e;
+        border-color: #22c55e;
+        color: #052e16;
+        font-weight: 700;
         &:hover:not(:disabled) {
-            background: rgba(8, 205, 0, 0.2);
-            border-color: rgba(8, 205, 0, 0.55);
+            background: #16a34a;
+            border-color: #16a34a;
             animation: ${pulse} 1.2s ease-in-out 1;
         }
     `}
 
     ${p => p.variant === 'restart' && `
-        background: rgba(234, 179, 8, 0.1);
-        border-color: rgba(234, 179, 8, 0.25);
-        color: #eab308;
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: #1c0f00;
+        font-weight: 700;
         &:hover:not(:disabled) {
-            background: rgba(234, 179, 8, 0.18);
-            border-color: rgba(234, 179, 8, 0.5);
+            background: #d97706;
+            border-color: #d97706;
         }
     `}
 
     ${p => p.variant === 'stop' && `
-        background: rgba(239, 68, 68, 0.1);
-        border-color: rgba(239, 68, 68, 0.25);
-        color: #ef4444;
+        background: #ef4444;
+        border-color: #ef4444;
+        color: #1a0000;
+        font-weight: 700;
         &:hover:not(:disabled) {
-            background: rgba(239, 68, 68, 0.18);
-            border-color: rgba(239, 68, 68, 0.5);
+            background: #dc2626;
+            border-color: #dc2626;
         }
     `}
 
     ${p => p.variant === 'kill' && `
-        background: rgba(220, 38, 38, 0.15);
-        border-color: rgba(220, 38, 38, 0.4);
-        color: #dc2626;
+        background: #dc2626;
+        border-color: #dc2626;
+        color: #1a0000;
+        font-weight: 700;
         &:hover:not(:disabled) {
-            background: rgba(220, 38, 38, 0.25);
-            border-color: rgba(220, 38, 38, 0.65);
+            background: #b91c1c;
+            border-color: #b91c1c;
         }
     `}
 

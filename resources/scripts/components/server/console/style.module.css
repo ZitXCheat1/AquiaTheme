@@ -1,25 +1,40 @@
 .stat_block {
-    @apply flex items-center rounded-xl relative overflow-hidden;
+    @apply flex items-center relative overflow-hidden;
     @apply col-span-3 md:col-span-2 lg:col-span-6;
-    @apply px-3 py-2 md:p-3 lg:p-4;
-    background: rgba(14, 20, 14, 0.7);
-    border: 1px solid rgba(8, 205, 0, 0.06);
-    backdrop-filter: blur(8px);
+    @apply px-4 py-3;
+    background: #111111;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s, background 0.2s;
+
+    &:hover {
+        background: #161616;
+        border-color: rgba(255,255,255,0.09);
+    }
 
     & > .status_bar {
         @apply w-1 h-full absolute left-0 top-0 rounded-l sm:hidden;
     }
 
     & > .icon {
-        @apply hidden flex-shrink-0 items-center justify-center rounded-xl shadow-md w-11 h-11;
-        @apply transition-colors duration-500;
-        @apply sm:flex sm:mr-4;
-        background: rgba(8, 205, 0, 0.06);
-        border: 1px solid rgba(8, 205, 0, 0.08);
+        @apply flex-shrink-0 flex items-center justify-center rounded-xl;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.07);
+        margin-right: 14px;
+        transition: background 0.2s;
 
         & > svg {
-            @apply w-5 h-5 m-auto;
+            @apply w-4 h-4 m-auto;
         }
+    }
+
+    &:hover > .icon {
+        background: rgba(8, 205, 0, 0.08);
+        border-color: rgba(8, 205, 0, 0.15);
     }
 }
 
@@ -36,8 +51,11 @@
     }
 
     & > .container {
-        @apply rounded-xl p-1 sm:p-2 bg-black min-h-[16rem] flex-1 font-mono text-sm;
-        border: 1px solid rgba(8, 205, 0, 0.06);
+        @apply p-2 sm:p-3 flex-1 font-mono text-sm;
+        background: #0a0a0a;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 10px 10px 0 0;
+        min-height: 20rem;
 
         & #terminal {
             @apply h-full;
@@ -47,27 +65,40 @@
             }
 
             &::-webkit-scrollbar-thumb {
-                @apply bg-slate-800;
+                background: rgba(255,255,255,0.08);
+                border-radius: 4px;
             }
         }
     }
 
     & .command_icon {
         @apply flex items-center top-0 left-0 absolute z-10 select-none h-full px-3 transition-colors duration-100;
+        color: rgba(255,255,255,0.25);
     }
 
     & .command_input {
-        @apply relative bg-gray-900 px-2 text-gray-100 pl-10 pr-4 py-2 w-full font-mono text-sm;
-        border-radius: 0 0 12px 12px;
+        @apply relative px-2 text-gray-100 pl-10 pr-4 py-2.5 w-full font-mono text-sm;
+        background: #111111;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-top: none;
+        border-radius: 0 0 10px 10px;
         @apply focus:ring-0 outline-none focus-visible:outline-none;
-        @apply border-0 border-b-2 border-transparent transition-colors duration-100;
-        @apply active:border-emerald-500 focus:border-emerald-500;
+        transition: background 0.15s;
+
+        &:focus {
+            background: #141414;
+        }
+
+        &::placeholder {
+            color: rgba(255,255,255,0.2);
+        }
     }
 }
 
 .chart_container {
-    @apply rounded-xl pt-2 relative overflow-hidden;
-    background: rgba(14, 20, 14, 0.7);
-    border: 1px solid rgba(8, 205, 0, 0.06);
-    backdrop-filter: blur(8px);
+    @apply pt-2 relative overflow-hidden;
+    background: #111111;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
 }

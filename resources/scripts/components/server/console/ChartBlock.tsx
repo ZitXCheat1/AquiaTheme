@@ -13,7 +13,7 @@ export default ({ title, legend, children }: ChartBlockProps) => (
         <div className={'flex items-center justify-between px-4 py-2.5'}>
             <h3
                 className={'font-header font-medium text-sm transition-colors duration-100'}
-                style={{ color: '#7aab78' }}
+                style={{ color: '#9ca3af', fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}
             >
                 {title}
             </h3>

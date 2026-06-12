@@ -20,12 +20,10 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                header: ['"IBM Plex Sans"', '"Roboto"', 'system-ui', 'sans-serif'],
+                header: ['"Inter"', '"IBM Plex Sans"', 'system-ui', 'sans-serif'],
             },
             colors: {
-                black: '#131a20',
-                // "primary" and "neutral" are deprecated, prefer the use of "blue" and "gray"
-                // in new code.
+                black: '#0a0a0a',
                 primary: colors.blue,
                 orange: colors.orange,
                 gray: gray,
@@ -39,9 +37,9 @@ module.exports = {
                     400: colors.neutral[400],
                     500: colors.neutral[500],
                     600: colors.neutral[600],
-                    700: '#17171B',
-                    800: '#212121',
-                    900: '#121212',
+                    700: '#1a1a1a',
+                    800: '#111111',
+                    900: '#0a0a0a',
                 }
             },
             fontSize: {

@@ -34,28 +34,33 @@ const ServerConsoleContainer = () => {
                         : 'This server is currently being transferred to another node and all actions are unavailable.'}
                 </Alert>
             )}
-            <div className={'grid grid-cols-4 gap-4 mb-4'}>
-                <div className={'hidden sm:block sm:col-span-2 lg:col-span-3 pr-4'}>
-                    <h1 className={'font-header font-medium text-2xl text-gray-50 leading-relaxed line-clamp-1'}>
+            {/* Header row: server name left, power buttons right */}
+            <div className={'flex items-center justify-between mb-4'}>
+                <div className={'hidden sm:block min-w-0 mr-4'}>
+                    <h1 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '1.35rem', color: '#f1f5f9', lineHeight: 1.3, letterSpacing: '-0.02em' }} className={'line-clamp-1'}>
                         {name}
                     </h1>
-                    <p className={'text-sm line-clamp-2'}>{description}</p>
+                    {description && (
+                        <p style={{ fontSize: '0.78rem', color: '#6b7280', fontFamily: 'Inter, sans-serif', marginTop: '2px' }} className={'line-clamp-1'}>{description}</p>
+                    )}
                 </div>
-                <div className={'col-span-4 sm:col-span-2 lg:col-span-1 self-end'}>
+                <div className={'flex-shrink-0'}>
                     <Can action={['control.start', 'control.stop', 'control.restart']} matchAny>
-                        <PowerButtons className={'flex sm:justify-end space-x-2'} />
+                        <PowerButtons className={'flex space-x-2'} />
                     </Can>
                 </div>
             </div>
-            <div className={'grid grid-cols-4 gap-2 sm:gap-4 mb-4'}>
-                <div className={'flex col-span-4 lg:col-span-3'}>
+            {/* Main area: console left, stats right */}
+            <div className={'flex gap-4 mb-4'}>
+                <div className={'flex-1 min-w-0'}>
                     <Spinner.Suspense>
                         <Console />
                     </Spinner.Suspense>
                 </div>
-                <ServerDetailsBlock className={'col-span-4 lg:col-span-1 order-last lg:order-none'} />
+                <ServerDetailsBlock className={'w-52 flex-shrink-0 hidden lg:flex'} />
             </div>
-            <div className={'grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4'}>
+            {/* Charts row */}
+            <div className={'grid grid-cols-1 md:grid-cols-3 gap-3'}>
                 <Spinner.Suspense>
                     <StatGraphs />
                 </Spinner.Suspense>

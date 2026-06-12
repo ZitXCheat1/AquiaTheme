@@ -1,52 +1,52 @@
-/* AquiaTheme — Green Edition */
+/* AquiaTheme — LaxelHost Style */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 :root {
-    /* Palette */
-    --aq-bg:          #0a0f0a;
-    --aq-surface:     #111611;
-    --aq-surface2:    #162016;
-    --aq-border:      rgba(8, 205, 0, 0.12);
+    /* Palette — neutral dark backgrounds, green accent */
+    --aq-bg:          #0a0a0a;
+    --aq-surface:     #111111;
+    --aq-surface2:    #181818;
+    --aq-border:      rgba(8, 205, 0, 0.10);
     --aq-accent:      #08cd00;
     --aq-accent2:     #4ade80;
-    --aq-glow:        rgba(8, 205, 0, 0.18);
+    --aq-glow:        rgba(8, 205, 0, 0.16);
     --aq-red:         #ef4444;
     --aq-red2:        #dc2626;
-    --aq-yellow:      #eab308;
+    --aq-yellow:      #f59e0b;
 
     /* Text */
-    --text-main:      #ffffff;
+    --text-main:      #f1f5f9;
     --text-secondary: #94a3b8;
-    --text-muted:     #64748b;
+    --text-muted:     #4b5563;
 
     /* Sidebar */
-    --sidebar-size:   230px;
-    --sidebar-bg:     #0c110c;
+    --sidebar-size:   200px;
+    --sidebar-bg:     #0d0d0d;
 
     /* Compat */
-    --aquia-bg:       #0a0f0a;
-    --aquia-surface:  #111611;
-    --aquia-surface2: #162016;
-    --aquia-border:   rgba(8, 205, 0, 0.12);
+    --aquia-bg:       #0a0a0a;
+    --aquia-surface:  #111111;
+    --aquia-surface2: #181818;
+    --aquia-border:   rgba(8, 205, 0, 0.10);
     --aquia-accent:   #08cd00;
     --aquia-accent2:  #4ade80;
-    --aquia-glow:     rgba(8, 205, 0, 0.18);
+    --aquia-glow:     rgba(8, 205, 0, 0.16);
     --aquia-red:      #ef4444;
     --aquia-green:    #08cd00;
-    --aquia-yellow:   #eab308;
-    --color-primary:  #111611;
-    --color-secondary:#162016;
-    --color-tertiary: #0a0f0a;
-    --background-color:#0a0f0a;
-    --card-bg:        #111611;
+    --aquia-yellow:   #f59e0b;
+    --color-primary:  #111111;
+    --color-secondary:#181818;
+    --color-tertiary: #0a0a0a;
+    --background-color:#0a0a0a;
+    --card-bg:        #111111;
     --invert:         1000;
-    --button-color:         rgba(8, 205, 0, 0.12);
-    --button-color-hover:   rgba(8, 205, 0, 0.22);
+    --button-color:         rgba(8, 205, 0, 0.10);
+    --button-color-hover:   rgba(8, 205, 0, 0.18);
     --button-color-active:  #08cd00;
     --button-color-text:    #08cd00;
-    --sidebar-btn:          rgba(255,255,255,0.04);
-    --sidebar-btn-hover:    rgba(8, 205, 0, 0.08);
+    --sidebar-btn:          rgba(255,255,255,0.03);
+    --sidebar-btn-hover:    rgba(8, 205, 0, 0.07);
     --sidebar-btn-active:   #08cd00;
 }
 
@@ -221,8 +221,8 @@ html.sidebar-collapsed .sidebar a[title]:hover::after {
     position: absolute;
     left: calc(var(--sidebar-collapsed-size) + 8px);
     top: 50%; transform: translateY(-50%);
-    background: #111611;
-    border: 1px solid rgba(8,205,0,0.2);
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.1);
     color: #fff;
     font-size: 0.75rem;
     padding: 4px 10px;
@@ -271,10 +271,10 @@ body {
     z-index: 9000;
     height: 3.5rem;
     overflow-y: hidden;
-    background: rgba(10, 15, 10, 0.92) !important;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-bottom: 1px solid var(--aq-border);
+    background: rgba(10, 10, 10, 0.95) !important;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     animation: aquiaFadeIn 0.35s ease both;
 }
 
@@ -304,7 +304,7 @@ body {
     overflow-x: hidden;
     z-index: 8999;
     scrollbar-width: thin;
-    scrollbar-color: rgba(8, 205, 0, 0.12) transparent;
+    scrollbar-color: rgba(255,255,255,0.06) transparent;
     animation: aquiaSlideRight 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -312,15 +312,16 @@ body {
     display: flex;
     align-items: center;
     color: var(--text-secondary);
-    padding: 8px 10px;
+    padding: 7px 10px;
     text-decoration: none;
-    border-radius: 8px;
-    margin-bottom: 2px;
-    font-size: 0.82rem;
+    border-radius: 6px;
+    margin-bottom: 1px;
+    font-size: 0.8rem;
     font-weight: 500;
-    transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: all 0.15s ease;
     position: relative;
     letter-spacing: -0.01em;
+    font-family: 'Inter', sans-serif;
 }
 
 .sidebar a::before {
@@ -329,10 +330,10 @@ body {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    height: 60%;
-    width: 3px;
+    height: 55%;
+    width: 2px;
     background: var(--aq-accent);
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 2px 2px 0;
     opacity: 0;
     transition: opacity 0.15s;
 }
@@ -341,53 +342,54 @@ body {
 
 .sidebar a:hover {
     color: var(--text-main);
-    background: rgba(8, 205, 0, 0.06);
+    background: rgba(255,255,255,0.04);
 }
 
 .sidebar a.active {
     color: var(--text-main);
-    background: rgba(8, 205, 0, 0.09);
+    background: rgba(8, 205, 0, 0.08);
 }
 
 .sidebar .active > .icon,
 .sidebar a.active > .icon {
-    background: rgba(8, 205, 0, 0.15);
+    background: rgba(8, 205, 0, 0.12);
     color: var(--aq-accent);
 }
 
 .sidebar a:hover:not(.active) > .icon {
-    background: rgba(8, 205, 0, 0.07);
-    color: var(--aq-accent);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-main);
 }
 
 /* ─── Sidebar section labels ────────────────────────────────── */
 
 .sidebar-section {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);
-    padding: 16px 10px 5px;
+    padding: 14px 10px 4px;
     user-select: none;
+    font-family: 'Inter', sans-serif;
 }
 .sidebar-section:first-child { padding-top: 8px; }
 
 /* ─── Icon badge ─────────────────────────────────────────────── */
 
 .icon {
-    border-radius: 8px;
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--sidebar-btn);
+    background: rgba(255,255,255,0.04);
     color: var(--text-secondary);
-    margin-right: 10px;
-    font-size: 0.78rem;
-    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    margin-right: 9px;
+    font-size: 0.72rem;
+    transition: all 0.15s ease;
 }
 
 /* ─── Content layout ─────────────────────────────────────────── */
@@ -403,13 +405,13 @@ body {
 
 .aquia-card {
     background: var(--aq-surface);
-    border: 1px solid var(--aq-border);
-    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 .aquia-card:hover {
-    border-color: rgba(8, 205, 0, 0.22);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255,255,255,0.10);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 /* ─── Status dots ────────────────────────────────────────────── */
@@ -496,7 +498,7 @@ body {
     background: linear-gradient(
         90deg,
         var(--aq-surface) 25%,
-        rgba(8, 205, 0, 0.04) 50%,
+        rgba(255,255,255,0.03) 50%,
         var(--aq-surface) 75%
     );
     background-size: 400px 100%;
@@ -518,10 +520,10 @@ body {
 #app input[type='text'],
 #app input[type='email'],
 #app input[type='password'] {
-    background: rgba(8, 205, 0, 0.03) !important;
-    border-color: rgba(8, 205, 0, 0.15) !important;
+    background: rgba(255,255,255,0.03) !important;
+    border-color: rgba(255,255,255,0.10) !important;
     color: #ffffff !important;
-    border-radius: 9px !important;
+    border-radius: 8px !important;
     font-family: 'Inter', sans-serif !important;
     transition: border-color 0.18s, box-shadow 0.18s !important;
 }
@@ -533,7 +535,7 @@ body {
     outline: none !important;
 }
 #app input::placeholder {
-    color: #2a3d2a !important;
+    color: #3d4452 !important;
 }
 
 /* Field labels */
