@@ -90,6 +90,10 @@ function extractUsername(raw: string): string {
     return matches?.[matches.length - 1] ?? cleaned;
 }
 
+function commandTarget(raw: string): string {
+    return extractUsername(raw).replace(/[^A-Za-z0-9_]/g, '');
+}
+
 /** Parse ANSI SGR codes into CSS colors */
 function parseAnsiToStyle(codeStr: string): { color?: string; bold?: boolean } {
     const codes = codeStr.split(';').map(Number);
@@ -380,7 +384,7 @@ function CustomCommandBox({ username, send }: { username: string; send: (command
     const run = () => {
         const command = value.trim();
         if (!command) return;
-        send(command.split('{player}').join(username));
+        send(command.split('{player}').join(commandTarget(username)));
         setValue('');
     };
     return (
@@ -517,31 +521,33 @@ export default function PlayerManagerContainer() {
     }, [cmd]);
 
     const fetchPlayerHealth = useCallback((username: string) => {
-        const reqId = `health_${username}_${Date.now()}`;
-        pendingRequestsRef.current.set(reqId, username);
-        setHealthLoading(state => ({ ...state, [username]: true }));
-        cmd(`minecraft:data get entity ${username} Health`);
+        const target = commandTarget(username);
+        const reqId = `health_${target}_${Date.now()}`;
+        pendingRequestsRef.current.set(reqId, target);
+        setHealthLoading(state => ({ ...state, [target]: true }));
+        cmd(`minecraft:data get entity ${target} Health`);
         setTimeout(() => {
             if (pendingRequestsRef.current.has(reqId)) {
                 pendingRequestsRef.current.delete(reqId);
-                setHealthLoading(state => ({ ...state, [username]: false }));
+                setHealthLoading(state => ({ ...state, [target]: false }));
             }
         }, 5000);
     }, [cmd]);
 
     const fetchInventory = useCallback((username: string) => {
-        const reqId = `inventory_${username}_${Date.now()}`;
-        pendingRequestsRef.current.set(reqId, username);
-        setInventoryLoading(state => ({ ...state, [username]: true }));
-        setPlayers(prev => prev.map(p => p.username === username ? {
+        const target = commandTarget(username);
+        const reqId = `inventory_${target}_${Date.now()}`;
+        pendingRequestsRef.current.set(reqId, target);
+        setInventoryLoading(state => ({ ...state, [target]: true }));
+        setPlayers(prev => prev.map(p => p.username === target ? {
             ...p, inventoryStatus: 'Reading inventory from server data...'
         } : p));
-        cmd(`minecraft:data get entity ${username} Inventory`);
+        cmd(`minecraft:data get entity ${target} Inventory`);
         setTimeout(() => {
             if (pendingRequestsRef.current.has(reqId)) {
                 pendingRequestsRef.current.delete(reqId);
-                setInventoryLoading(state => ({ ...state, [username]: false }));
-                setPlayers(prev => prev.map(p => p.username === username ? {
+                setInventoryLoading(state => ({ ...state, [target]: false }));
+                setPlayers(prev => prev.map(p => p.username === target ? {
                     ...p, inventoryStatus: 'No inventory response. Check permissions.'
                 } : p));
             }
@@ -549,83 +555,96 @@ export default function PlayerManagerContainer() {
     }, [cmd]);
 
     const fetchEnderChest = useCallback((username: string) => {
-        const reqId = `echest_${username}_${Date.now()}`;
-        pendingRequestsRef.current.set(reqId, username);
-        setEchestLoading(state => ({ ...state, [username]: true }));
-        setPlayers(prev => prev.map(p => p.username === username ? {
+        const target = commandTarget(username);
+        const reqId = `echest_${target}_${Date.now()}`;
+        pendingRequestsRef.current.set(reqId, target);
+        setEchestLoading(state => ({ ...state, [target]: true }));
+        setPlayers(prev => prev.map(p => p.username === target ? {
             ...p, echestStatus: 'Reading ender chest...'
         } : p));
-        cmd(`minecraft:data get entity ${username} EnderItems`);
+        cmd(`minecraft:data get entity ${target} EnderItems`);
         setTimeout(() => {
             if (pendingRequestsRef.current.has(reqId)) {
                 pendingRequestsRef.current.delete(reqId);
-                setEchestLoading(state => ({ ...state, [username]: false }));
+                setEchestLoading(state => ({ ...state, [target]: false }));
             }
         }, 5000);
     }, [cmd]);
 
     const changeGamemode = useCallback((username: string, gamemode: string) => {
-        cmd(`gamemode ${gamemode} ${username}`);
-        setPlayers(pl => pl.map(p => p.username === username ? { ...p, gamemode } : p));
+        const target = commandTarget(username);
+        cmd(`gamemode ${gamemode} ${target}`);
+        setPlayers(pl => pl.map(p => p.username === target ? { ...p, gamemode } : p));
     }, [cmd]);
 
     const healPlayer = useCallback((username: string) => {
-        cmd(`minecraft:effect give ${username} minecraft:instant_health 1 255`);
-        cmd(`minecraft:effect clear ${username} minecraft:poison`);
-        cmd(`minecraft:effect clear ${username} minecraft:wither`);
-        setTimeout(() => fetchPlayerHealth(username), 500);
-        log(`Healed ${username}`);
+        const target = commandTarget(username);
+        cmd(`minecraft:effect give ${target} minecraft:instant_health 1 255`);
+        cmd(`minecraft:effect clear ${target} minecraft:poison`);
+        cmd(`minecraft:effect clear ${target} minecraft:wither`);
+        setTimeout(() => fetchPlayerHealth(target), 500);
+        log(`Healed ${target}`);
     }, [cmd, fetchPlayerHealth]);
 
     const feedPlayer = useCallback((username: string) => {
-        cmd(`minecraft:effect give ${username} minecraft:saturation 1 255`);
-        log(`Fed ${username}`);
+        const target = commandTarget(username);
+        cmd(`minecraft:effect give ${target} minecraft:saturation 1 255`);
+        log(`Fed ${target}`);
     }, [cmd]);
 
     const killPlayer = useCallback((username: string) => {
-        cmd(`minecraft:kill ${username}`);
-        setPlayers(pl => pl.map(p => p.username === username ? { ...p, health: 0 } : p));
+        const target = commandTarget(username);
+        cmd(`minecraft:kill ${target}`);
+        setPlayers(pl => pl.map(p => p.username === target ? { ...p, health: 0 } : p));
     }, [cmd]);
 
     const kickPlayer = useCallback((username: string) => {
-        cmd(`kick ${username} §cKicked by administrator`);
+        const target = commandTarget(username);
+        cmd(`kick ${target} Kicked by administrator`);
         setTimeout(() => {
-            setPlayers(pl => pl.filter(p => p.username !== username));
+            setPlayers(pl => pl.filter(p => p.username !== target));
         }, 500);
     }, [cmd]);
 
     const banPlayer = useCallback((username: string) => {
-        cmd(`ban ${username} Banned by administrator`);
+        const target = commandTarget(username);
+        cmd(`ban ${target} Banned by administrator`);
         setTimeout(() => {
-            setPlayers(pl => pl.filter(p => p.username !== username));
+            setPlayers(pl => pl.filter(p => p.username !== target));
         }, 500);
     }, [cmd]);
 
     const opPlayer = useCallback((username: string) => {
-        cmd(`op ${username}`);
-        setPlayers(pl => pl.map(p => p.username === username ? { ...p, op: true } : p));
+        const target = commandTarget(username);
+        cmd(`op ${target}`);
+        setPlayers(pl => pl.map(p => p.username === target ? { ...p, op: true } : p));
     }, [cmd]);
 
     const deopPlayer = useCallback((username: string) => {
-        cmd(`deop ${username}`);
-        setPlayers(pl => pl.map(p => p.username === username ? { ...p, op: false } : p));
+        const target = commandTarget(username);
+        cmd(`deop ${target}`);
+        setPlayers(pl => pl.map(p => p.username === target ? { ...p, op: false } : p));
     }, [cmd]);
 
     const clearInventory = useCallback((username: string) => {
-        cmd(`clear ${username}`);
-        setPlayers(pl => pl.map(p => p.username === username ? { ...p, inventory: [], inventoryStatus: 'Inventory cleared' } : p));
+        const target = commandTarget(username);
+        cmd(`clear ${target}`);
+        setPlayers(pl => pl.map(p => p.username === target ? { ...p, inventory: [], inventoryStatus: 'Inventory cleared' } : p));
     }, [cmd]);
 
     const addExperience = useCallback((username: string, levels: number) => {
-        cmd(`minecraft:experience add ${username} ${levels} levels`);
+        const target = commandTarget(username);
+        cmd(`minecraft:experience add ${target} ${levels} levels`);
     }, [cmd]);
 
     const resetExperience = useCallback((username: string) => {
-        cmd(`minecraft:experience set ${username} 0 levels`);
+        const target = commandTarget(username);
+        cmd(`minecraft:experience set ${target} 0 levels`);
     }, [cmd]);
 
     const clearEffects = useCallback((username: string) => {
-        cmd(`minecraft:effect clear ${username}`);
+        const target = commandTarget(username);
+        cmd(`minecraft:effect clear ${target}`);
     }, [cmd]);
 
     const hasFetchedRef = useRef(false);
