@@ -15,15 +15,16 @@ import Avatar from '@/components/Avatar';
 import { motion } from 'framer-motion';
 
 const NavWrapper = styled(motion.div)`
-    background: rgba(10, 10, 10, 0.97);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(12, 15, 20, 0.82);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
     position: sticky;
     top: 0;
     z-index: 9000;
     height: 3.5rem;
     overflow: hidden;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.3);
 `;
 
 /* Sidebar toggle — collapse to icons-only, persisted on <html> class */

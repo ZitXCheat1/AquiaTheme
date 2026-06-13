@@ -3,10 +3,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 :root {
-    /* Palette — neutral dark backgrounds, green accent */
-    --aq-bg:          #0a0a0a;
-    --aq-surface:     #111111;
-    --aq-surface2:    #181818;
+    /* Palette — LaxelHost-style blue-navy darks, green accent */
+    --aq-bg:          #0c0f14;
+    --aq-surface:     #111827;
+    --aq-surface2:    #1a2030;
     --aq-border:      rgba(8, 205, 0, 0.10);
     --aq-accent:      #08cd00;
     --aq-accent2:     #4ade80;
@@ -17,17 +17,17 @@
 
     /* Text */
     --text-main:      #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted:     #4b5563;
+    --text-secondary: #8b9ab5;
+    --text-muted:     #4b5a72;
 
     /* Sidebar */
-    --sidebar-size:   200px;
-    --sidebar-bg:     #0d0d0d;
+    --sidebar-size:   210px;
+    --sidebar-bg:     #0d1117;
 
     /* Compat */
-    --aquia-bg:       #0a0a0a;
-    --aquia-surface:  #111111;
-    --aquia-surface2: #181818;
+    --aquia-bg:       #0c0f14;
+    --aquia-surface:  #111827;
+    --aquia-surface2: #1a2030;
     --aquia-border:   rgba(8, 205, 0, 0.10);
     --aquia-accent:   #08cd00;
     --aquia-accent2:  #4ade80;
@@ -35,11 +35,11 @@
     --aquia-red:      #ef4444;
     --aquia-green:    #08cd00;
     --aquia-yellow:   #f59e0b;
-    --color-primary:  #111111;
-    --color-secondary:#181818;
-    --color-tertiary: #0a0a0a;
-    --background-color:#0a0a0a;
-    --card-bg:        #111111;
+    --color-primary:  #111827;
+    --color-secondary:#1a2030;
+    --color-tertiary: #0c0f14;
+    --background-color:#0c0f14;
+    --card-bg:        #111827;
     --invert:         1000;
     --button-color:         rgba(8, 205, 0, 0.10);
     --button-color-hover:   rgba(8, 205, 0, 0.18);
@@ -235,7 +235,7 @@ html.sidebar-collapsed .sidebar a[title]:hover::after {
 
 /* Content area adjusts */
 html.sidebar-collapsed .content-container {
-    margin-left: calc(var(--sidebar-collapsed-size) + 16px) !important;
+    margin-left: calc(var(--sidebar-collapsed-size) + 28px) !important;
     transition: margin-left 0.3s cubic-bezier(0.22,1,0.36,1);
 }
 html:not(.sidebar-collapsed) .content-container {
@@ -258,6 +258,7 @@ html:not(.sidebar-collapsed) .content-container {
 body {
     background: var(--aq-bg) !important;
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    color: var(--text-main) !important;
 }
 
 /* ─── Topbar ────────────────────────────────────────────────── */
@@ -271,9 +272,9 @@ body {
     z-index: 9000;
     height: 3.5rem;
     overflow-y: hidden;
-    background: rgba(10, 10, 10, 0.95) !important;
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    background: rgba(12, 15, 20, 0.82) !important;
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
     border-bottom: 1px solid rgba(255,255,255,0.06);
     animation: aquiaFadeIn 0.35s ease both;
 }
@@ -288,23 +289,27 @@ body {
 }
 .navbar-button:hover { color: var(--text-main); transform: scale(1.1); }
 
-/* ─── Sidebar ───────────────────────────────────────────────── */
+/* ─── Sidebar — Nebula glassmorphism style ──────────────────── */
 
 .sidebar {
     position: fixed;
-    top: 3.5rem;
-    left: 0;
-    bottom: 0;
+    top: calc(3.5rem + 12px);
+    left: 12px;
+    bottom: 12px;
     margin: 0;
-    padding: 8px 6px;
+    padding: 10px 8px;
     width: var(--sidebar-size);
-    background: var(--sidebar-bg);
-    border-right: 1px solid var(--aq-border);
+    background: rgba(13, 17, 23, 0.72);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 8999;
     scrollbar-width: thin;
     scrollbar-color: rgba(255,255,255,0.06) transparent;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
     animation: aquiaSlideRight 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -312,106 +317,103 @@ body {
     display: flex;
     align-items: center;
     color: var(--text-secondary);
-    padding: 7px 10px;
+    padding: 8px 11px;
     text-decoration: none;
-    border-radius: 6px;
-    margin-bottom: 1px;
+    border-radius: 11px;
+    margin-bottom: 2px;
     font-size: 0.8rem;
     font-weight: 500;
-    transition: all 0.15s ease;
+    transition: all 0.18s cubic-bezier(0.22,1,0.36,1);
     position: relative;
     letter-spacing: -0.01em;
     font-family: 'Inter', sans-serif;
+    gap: 0;
 }
 
 .sidebar a::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 55%;
-    width: 2px;
-    background: var(--aq-accent);
-    border-radius: 0 2px 2px 0;
-    opacity: 0;
-    transition: opacity 0.15s;
+    display: none; /* Nebula style: no left bar indicator, use bg highlight only */
 }
-
-.sidebar a.active::before { opacity: 1; }
 
 .sidebar a:hover {
     color: var(--text-main);
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.06);
 }
 
 .sidebar a.active {
     color: var(--text-main);
-    background: rgba(8, 205, 0, 0.08);
+    background: rgba(8, 205, 0, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(8, 205, 0, 0.18);
 }
 
 .sidebar .active > .icon,
 .sidebar a.active > .icon {
-    background: rgba(8, 205, 0, 0.12);
+    background: rgba(8, 205, 0, 0.18);
     color: var(--aq-accent);
+    box-shadow: 0 0 12px rgba(8, 205, 0, 0.2);
 }
 
 .sidebar a:hover:not(.active) > .icon {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.08);
     color: var(--text-main);
 }
 
-/* ─── Sidebar section labels ────────────────────────────────── */
+/* ─── Sidebar section labels — Nebula style ─────────────────── */
 
 .sidebar-section {
-    font-size: 0.58rem;
+    font-size: 0.575rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 14px 10px 4px;
+    color: rgba(148, 163, 184, 0.45);
+    padding: 18px 11px 5px;
     user-select: none;
     font-family: 'Inter', sans-serif;
 }
-.sidebar-section:first-child { padding-top: 8px; }
+.sidebar-section:first-child { padding-top: 6px; }
 
-/* ─── Icon badge ─────────────────────────────────────────────── */
+/* ─── Icon badge — Nebula rounded style ──────────────────────── */
 
 .icon {
-    border-radius: 6px;
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
+    border-radius: 9px;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
     color: var(--text-secondary);
-    margin-right: 9px;
+    margin-right: 10px;
     font-size: 0.72rem;
-    transition: all 0.15s ease;
+    transition: all 0.18s cubic-bezier(0.22,1,0.36,1);
 }
 
-/* ─── Content layout ─────────────────────────────────────────── */
+/* ─── Content layout — offset for floating sidebar ───────────── */
 
 .content-container {
-    margin-left: calc(var(--sidebar-size) + 24px);
+    margin-left: calc(var(--sidebar-size) + 36px);
     margin-right: 24px;
+    padding-top: 4px;
 }
 
 .content-dashboard { max-width: 1280px; }
 
-/* ─── Cards ──────────────────────────────────────────────────── */
+/* ─── Cards — Nebula elevated glass style ────────────────────── */
 
 .aquia-card {
-    background: var(--aq-surface);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 10px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .aquia-card:hover {
-    border-color: rgba(255,255,255,0.10);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255,255,255,0.13);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+    transform: translateY(-1px);
 }
 
 /* ─── Status dots ────────────────────────────────────────────── */
@@ -481,12 +483,14 @@ body {
 @media screen and (max-width: 1024px) {
     .sidebar {
         left: calc(-1 * var(--sidebar-size) - 20px);
+        top: calc(3.5rem + 8px);
+        bottom: 8px;
         transition: left 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s;
     }
     .content-container { margin-left: 20px; margin-right: 20px; }
     .active-nav {
-        left: 0;
-        box-shadow: 8px 0 40px rgba(0,0,0,0.7);
+        left: 8px;
+        box-shadow: 0 16px 64px rgba(0,0,0,0.8);
     }
     .nav-bar { display: flex; align-items: center; }
     .navbar-button { display: inline; }

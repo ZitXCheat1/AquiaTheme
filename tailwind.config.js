@@ -23,7 +23,7 @@ module.exports = {
                 header: ['"Inter"', '"IBM Plex Sans"', 'system-ui', 'sans-serif'],
             },
             colors: {
-                black: '#0a0a0a',
+                black: '#0c0f14',
                 primary: colors.blue,
                 orange: colors.orange,
                 gray: gray,
@@ -37,9 +37,9 @@ module.exports = {
                     400: colors.neutral[400],
                     500: colors.neutral[500],
                     600: colors.neutral[600],
-                    700: '#1a1a1a',
-                    800: '#111111',
-                    900: '#0a0a0a',
+                    700: '#1a2030',
+                    800: '#111827',
+                    900: '#0c0f14',
                 }
             },
             fontSize: {

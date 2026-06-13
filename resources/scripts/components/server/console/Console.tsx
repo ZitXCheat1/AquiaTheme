@@ -22,7 +22,7 @@ import 'xterm/css/xterm.css';
 import styles from './style.module.css';
 
 const theme = {
-    background: '#0a0a0a',
+    background: '#0c0f14',
     cursor: 'transparent',
     black: '#0a0a0a',
     red: '#f87171',
@@ -136,28 +136,29 @@ export default () => {
             terminal.loadAddon(unicode11Addon);
             terminal.loadAddon(scrollDownHelperAddon);
 
-            terminal.open(ref.current);
+            const openTerminal = () => {
+                if (!ref.current) return;
+                terminal.open(ref.current);
+                terminal.unicode.activeVersion = '11';
+                fitAddon.fit();
+                searchBar.addNewStyle(zIndex);
+                terminal.attachCustomKeyEventHandler((e: KeyboardEvent) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                        document.execCommand('copy');
+                        return false;
+                    } else if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                        e.preventDefault();
+                        searchBar.show();
+                        return false;
+                    } else if (e.key === 'Escape') {
+                        searchBar.hidden();
+                    }
+                    return true;
+                });
+            };
 
-            // Activate Unicode 11 for proper emoji and special character width handling
-            terminal.unicode.activeVersion = '11';
-
-            fitAddon.fit();
-            searchBar.addNewStyle(zIndex);
-
-            // Add support for capturing keys
-            terminal.attachCustomKeyEventHandler((e: KeyboardEvent) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-                    document.execCommand('copy');
-                    return false;
-                } else if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-                    e.preventDefault();
-                    searchBar.show();
-                    return false;
-                } else if (e.key === 'Escape') {
-                    searchBar.hidden();
-                }
-                return true;
-            });
+            // Wait for font to load so xterm measures cell width correctly
+            document.fonts.load("400 13px 'JetBrains Mono'").then(openTerminal).catch(openTerminal);
         }
     }, [terminal, connected]);
 
