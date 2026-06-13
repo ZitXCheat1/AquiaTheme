@@ -159,8 +159,14 @@ export default () => {
                 });
             };
 
-            // Wait for font to load so xterm measures cell width correctly
-            openTerminal();
+            if (document.fonts?.ready) {
+                document.fonts.ready.then(() => {
+                    openTerminal();
+                    requestAnimationFrame(() => terminal.element && fitAddon.fit());
+                });
+            } else {
+                openTerminal();
+            }
         }
     }, [terminal, connected]);
 

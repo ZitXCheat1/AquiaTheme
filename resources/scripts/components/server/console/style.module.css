@@ -91,6 +91,15 @@
     }
 }
 
+:global(.xterm),
+:global(.xterm .xterm-rows),
+:global(.xterm .xterm-rows *) {
+    letter-spacing: normal !important;
+    font-family: monospace !important;
+    font-variant-ligatures: none;
+    text-rendering: optimizeSpeed;
+}
+
 .chart_container {
     @apply pt-2 relative overflow-hidden;
     background: #111827;
