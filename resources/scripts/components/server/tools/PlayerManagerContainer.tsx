@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faSync, faUser, faHeart, faSkull, faBan, faShieldAlt,
     faGamepad, faExclamationTriangle, faStar, faCrosshairs,
-    faPaintBrush, faMap, faEye, faBolt, faUsers, faSearch,
+    faPaintBrush, faMap, faEye, faBolt, faUsers, faSearch, faBoxOpen,
 } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
@@ -50,7 +50,14 @@ interface Player {
     displayName: string;
     gamemode?: string;
     level?: number;
+    inventory?: InventoryItem[];
+    inventoryStatus?: string;
     online: boolean;
+}
+interface InventoryItem {
+    slot: number;
+    id: string;
+    count: number;
 }
 
 /* ── helpers ─────────────────────────────────────────────────────── */
@@ -70,6 +77,36 @@ function extractUsername(raw: string): string {
     const cleaned = stripCodes(raw);
     const tokens = cleaned.split(/\s+/).filter(Boolean);
     return tokens[tokens.length - 1] ?? cleaned;
+}
+
+function itemLabel(id: string): string {
+    return id
+        .replace(/^minecraft:/, '')
+        .split('_')
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
+}
+
+function parseInventoryOutput(raw: string): InventoryItem[] | null {
+    const normalized = stripCodes(raw);
+    const dataIndex = normalized.indexOf('entity data:');
+    if (dataIndex < 0) return null;
+
+    const payload = normalized.slice(dataIndex + 'entity data:'.length);
+    if (payload.trim() === '[]') return [];
+
+    const items: InventoryItem[] = [];
+    const itemPattern = /Slot:\s*(-?\d+)[bBsS]?[\s\S]*?id:\s*"?([a-z0-9_:.\/-]+)"?[\s\S]*?(?:Count|count):\s*(\d+)[bBsS]?/gi;
+    let match: RegExpExecArray | null;
+    while ((match = itemPattern.exec(payload)) !== null) {
+        items.push({
+            slot: Number(match[1]),
+            id: match[2],
+            count: Number(match[3]),
+        });
+    }
+
+    return items.sort((a, b) => a.slot - b.slot);
 }
 
 /** ANSI SGR color palette (xterm bright + standard). */
@@ -251,6 +288,24 @@ const QuickBtn = styled.button<{ $color?: string }>`
     transition:all .12s;
     &:hover{color:${T.text};border-color:${T.lineH};background:#1d2532;}
 `;
+const InvGrid = styled.div`display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px;`;
+const InvSlot = styled.div<{ filled?: boolean }>`
+    aspect-ratio:1;border-radius:5px;
+    background:${p=>p.filled?'#10171f':'#0a0d12'};
+    border:1px solid ${p=>p.filled?'rgba(8,205,0,0.28)':T.line};
+    display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;padding:2px;
+    color:${p=>p.filled?'#a7f3a7':T.mute};
+    font-family:'JetBrains Mono','Menlo',monospace;
+    font-size:.58rem;text-align:center;line-height:1.05;
+`;
+const InvQty = styled.div`
+    position:absolute;bottom:1px;right:3px;font-size:.54rem;color:#fff;font-weight:700;
+    text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;
+`;
+const InvStatus = styled.div`
+    font-size:.7rem;color:${T.mute};margin-bottom:10px;line-height:1.35;
+`;
 const CommandRow = styled.div`display:flex;gap:6px;align-items:stretch;`;
 const CommandInput = styled.input`
     flex:1;background:${T.panel2};border:1px solid ${T.line};border-radius:7px;
@@ -357,6 +412,8 @@ export default function PlayerManagerContainer() {
     const [query,    setQuery]    = useState('');
     const [cmdLog,   setCmdLog]   = useState<{ text:string; ok:boolean }[]>([]);
     const [gmTarget, setGmTarget] = useState<Record<string,string>>({});
+    const [inventoryLoading, setInventoryLoading] = useState<Record<string, boolean>>({});
+    const pendingInventoryRef = useRef<string | null>(null);
 
     const log = useCallback((text: string, ok = true) =>
         setCmdLog(l => [{ text:`[${new Date().toLocaleTimeString()}] ${text}`, ok }, ...l.slice(0,24)]), []);
@@ -371,10 +428,36 @@ export default function PlayerManagerContainer() {
     }, [log]);
 
     useWebsocketEvent(SocketEvent.CONSOLE_OUTPUT, (data: string) => {
+        const cleaned = stripCodes(data);
+        const pendingInventory = pendingInventoryRef.current;
+        if (pendingInventory) {
+            const inventory = parseInventoryOutput(data);
+            const failed = /No entity was found|Unknown or incomplete command|Incorrect argument|Can't get|Cannot get|Found no elements/i.test(cleaned);
+
+            if (inventory !== null || failed) {
+                pendingInventoryRef.current = null;
+                setInventoryLoading(state => ({ ...state, [pendingInventory]: false }));
+                setPlayers(prev => prev.map(p => {
+                    if (p.username !== pendingInventory) return p;
+                    if (inventory !== null) {
+                        return {
+                            ...p,
+                            inventory,
+                            inventoryStatus: inventory.length
+                                ? `Loaded ${inventory.length} real item stack${inventory.length === 1 ? '' : 's'} from server data.`
+                                : 'Server returned an empty inventory.',
+                        };
+                    }
+                    return {
+                        ...p,
+                        inventoryStatus: 'Could not read inventory with minecraft:data. Use invsee/openinv if your server provides it, or add a server-side API.',
+                    };
+                }));
+            }
+        }
         // Match the "There are X of a max of Y players online:" line. The colon and the
         // text after it can include ANSI codes — match against the stripped form to find
         // it, but operate on the raw data so we can split with codes preserved.
-        const cleaned = stripCodes(data);
         if (!/There are \d+ of a max of \d+ players online:/.test(cleaned)) return;
 
         // Find where the player list starts in the RAW string (after the first ":")
@@ -407,6 +490,25 @@ export default function PlayerManagerContainer() {
         setLoading(true);
         cmd('list');
         setTimeout(() => setLoading(false), 3000);
+    }, [cmd]);
+
+    const fetchInventory = useCallback((username: string) => {
+        pendingInventoryRef.current = username;
+        setInventoryLoading(state => ({ ...state, [username]: true }));
+        setPlayers(prev => prev.map(p => p.username === username ? {
+            ...p,
+            inventoryStatus: 'Reading real inventory from server data...',
+        } : p));
+        cmd(`minecraft:data get entity ${username} Inventory`);
+        setTimeout(() => {
+            if (pendingInventoryRef.current !== username) return;
+            pendingInventoryRef.current = null;
+            setInventoryLoading(state => ({ ...state, [username]: false }));
+            setPlayers(prev => prev.map(p => p.username === username ? {
+                ...p,
+                inventoryStatus: 'No inventory response received. Check console permissions or try an invsee/openinv plugin command.',
+            } : p));
+        }, 5000);
     }, [cmd]);
 
     const hasFetchedRef = useRef(false);
@@ -576,8 +678,44 @@ export default function PlayerManagerContainer() {
                                                     Commands target <code>{player.username}</code>
                                                 </ResolvedTag>
                                                 <Note>
-                                                    Inventory and health are not guessed here. This panel sends real server-console commands; live inventory requires an in-game command like invsee or a server-side API/plugin.
+                                                    Inventory is read with the real server command <code>minecraft:data get entity {player.username} Inventory</code>. If the server blocks that command, use a plugin command like invsee/openinv from the custom command box.
                                                 </Note>
+
+                                                <SectionHead>
+                                                    <FontAwesomeIcon icon={faBoxOpen}/> Real Inventory
+                                                </SectionHead>
+                                                <div style={{display:'flex',gap:6,marginBottom:10}}>
+                                                    <QuickBtn
+                                                        onClick={()=>fetchInventory(player.username)}
+                                                        disabled={!!inventoryLoading[player.username]}
+                                                        style={{flex:'0 0 auto',paddingLeft:12,paddingRight:12}}
+                                                    >
+                                                        <FontAwesomeIcon icon={faSync} spin={!!inventoryLoading[player.username]}/>
+                                                        {inventoryLoading[player.username] ? 'Reading...' : 'Fetch Inventory'}
+                                                    </QuickBtn>
+                                                </div>
+                                                <InvGrid>
+                                                    {Array.from({length:36}).map((_, i) => {
+                                                        const item = player.inventory?.find(stack => stack.slot === i);
+                                                        return (
+                                                            <InvSlot key={i} filled={!!item} title={item ? `${itemLabel(item.id)} x${item.count} (slot ${item.slot})` : `Empty slot ${i}`}>
+                                                                {item ? itemLabel(item.id).slice(0, 3).toUpperCase() : ''}
+                                                                {item && item.count > 1 && <InvQty>{item.count}</InvQty>}
+                                                            </InvSlot>
+                                                        );
+                                                    })}
+                                                </InvGrid>
+                                                {player.inventory?.some(item => item.slot < 0 || item.slot >= 36) && (
+                                                    <InvStatus>
+                                                        Other slots: {player.inventory
+                                                            .filter(item => item.slot < 0 || item.slot >= 36)
+                                                            .map(item => `${item.slot}: ${itemLabel(item.id)} x${item.count}`)
+                                                            .join(', ')}
+                                                    </InvStatus>
+                                                )}
+                                                <InvStatus>
+                                                    {player.inventoryStatus ?? 'Click Fetch Inventory to read the player inventory from server data.'}
+                                                </InvStatus>
 
                                                 <SectionHead>
                                                     <FontAwesomeIcon icon={faGamepad}/> Change Gamemode

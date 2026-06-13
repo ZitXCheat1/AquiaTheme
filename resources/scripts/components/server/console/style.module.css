@@ -1,3 +1,13 @@
+@keyframes command_caret {
+    0%, 58% {
+        caret-color: transparent;
+    }
+
+    59%, 100% {
+        caret-color: #a7f3a7;
+    }
+}
+
 .stat_block {
     @apply flex items-center relative overflow-hidden;
     @apply col-span-3 md:col-span-2 lg:col-span-6;
@@ -78,6 +88,9 @@
         background: #111827;
         border-top: 1px solid rgba(255,255,255,0.05);
         border-radius: 0 0 12px 12px;
+        color: #a7f3a7;
+        caret-color: #a7f3a7;
+        animation: command_caret 1.05s step-end infinite;
         @apply focus:ring-0 outline-none focus-visible:outline-none;
         transition: background 0.15s;
 
@@ -87,6 +100,16 @@
 
         &::placeholder {
             color: rgba(255,255,255,0.15);
+        }
+
+        &::selection {
+            background: transparent;
+            color: #a7f3a7;
+        }
+
+        &::-moz-selection {
+            background: transparent;
+            color: #a7f3a7;
         }
     }
 }
