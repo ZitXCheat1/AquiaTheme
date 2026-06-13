@@ -93,9 +93,10 @@
 
 :global(.xterm),
 :global(.xterm .xterm-rows),
-:global(.xterm .xterm-rows *) {
+:global(.xterm .xterm-rows *),
+:global(.xterm .xterm-char-measure-element) {
     letter-spacing: normal !important;
-    font-family: monospace !important;
+    font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Courier New', monospace !important;
     font-variant-ligatures: none;
     text-rendering: optimizeSpeed;
 }

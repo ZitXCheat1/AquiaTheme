@@ -5,6 +5,7 @@ import { SearchAddon } from 'xterm-addon-search';
 import { SearchBarAddon } from 'xterm-addon-search-bar';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { Unicode11Addon } from 'xterm-addon-unicode11';
+import { CanvasAddon } from 'xterm-addon-canvas';
 import { ScrollDownHelperAddon } from '@/plugins/XtermScrollDownHelperAddon';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import { ServerContext } from '@/state/server';
@@ -50,7 +51,7 @@ const terminalProps: ITerminalOptions = {
     fontSize: 13,
     lineHeight: 1.3,
     letterSpacing: 0,
-    fontFamily: 'monospace',
+    fontFamily: "'SFMono-Regular', Menlo, Monaco, Consolas, 'Courier New', monospace",
     fontWeight: '400',
     rows: 30,
     theme: theme,
@@ -141,6 +142,7 @@ export default () => {
             const openTerminal = () => {
                 if (!ref.current) return;
                 terminal.open(ref.current);
+                terminal.loadAddon(new CanvasAddon());
                 fitAddon.fit();
                 requestAnimationFrame(() => fitAddon.fit());
                 searchBar.addNewStyle(zIndex);
