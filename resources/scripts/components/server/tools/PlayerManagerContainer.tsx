@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import styled from 'styled-components/macro';
+import styled, { css, keyframes } from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import { Combobox } from '@/components/elements/ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,16 +21,25 @@ const T = {
     danger:'#ef4444', warn:'#f59e0b', blue:'#3b82f6', purple:'#a855f7',
 };
 
-/* ── MC texture CDN ──────────────────────────────────────────────── */
-const MC_BASE = 'https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21/assets/minecraft/textures';
-const ITEM_TEX: Record<string, string> = {
-    'Diamond Sword':`${MC_BASE}/item/diamond_sword.png`, 'Iron Pickaxe':`${MC_BASE}/item/iron_pickaxe.png`,
-    'Bread':`${MC_BASE}/item/bread.png`, 'Oak Log':`${MC_BASE}/block/oak_log.png`,
-    'Arrow':`${MC_BASE}/item/arrow.png`, 'Torch':`${MC_BASE}/block/torch.png`,
-    'Diamond':`${MC_BASE}/item/diamond.png`, 'Cooked Beef':`${MC_BASE}/item/cooked_beef.png`,
-    'Golden Apple':`${MC_BASE}/item/golden_apple.png`, 'Ender Pearl':`${MC_BASE}/item/ender_pearl.png`,
-    'TNT':`${MC_BASE}/block/tnt_side.png`, 'Iron Sword':`${MC_BASE}/item/iron_sword.png`,
-};
+const delayedCaret = keyframes`
+    0%, 58% { caret-color: transparent; }
+    59%, 100% { caret-color: #a7f3a7; }
+`;
+
+const terminalTextInput = css`
+    caret-color:#a7f3a7;
+    animation:${delayedCaret} 1.05s step-end infinite;
+
+    &::selection {
+        background:transparent;
+        color:#a7f3a7;
+    }
+
+    &::-moz-selection {
+        background:transparent;
+        color:#a7f3a7;
+    }
+`;
 
 interface Player {
     /** real Minecraft username — used in commands and head lookups */
@@ -39,13 +48,10 @@ interface Player {
     ansiRaw: string;
     /** stripped display string for search/sort */
     displayName: string;
-    health?: number;
-    maxHealth?: number;
     gamemode?: string;
     level?: number;
     online: boolean;
 }
-interface InvItem { n: string; q: number; }
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 /** Strip ANSI escape sequences (with or without ESC byte) and MC color codes. */
@@ -163,6 +169,7 @@ const SearchWrap = styled.div`
 const SearchInput = styled.input`
     flex:1;background:transparent;border:0;outline:none;padding:9px 0 9px 8px;
     color:${T.text};font-size:.8rem;font-family:'Inter',sans-serif;
+    ${terminalTextInput}
     &::placeholder{color:${T.mute};}
 `;
 
@@ -220,16 +227,6 @@ const PlayerName = styled.div`
 const PlayerMeta = styled.div`font-size:.7rem;color:${T.dim};display:flex;gap:10px;flex-wrap:wrap;align-items:center;`;
 const PlayerMetaItem = styled.span`display:inline-flex;align-items:center;gap:4px;`;
 
-const HealthBar = styled.div`margin-bottom:12px;`;
-const HealthLabel = styled.div`font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${T.mute};margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;`;
-const HealthTrack = styled.div`height:6px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden;`;
-const HealthFill = styled.div<{ pct:number }>`
-    height:100%;border-radius:999px;
-    width:${p=>p.pct}%;
-    background:${p=>p.pct>50?T.accent:p.pct>25?T.warn:T.danger};
-    transition:width .3s ease;
-`;
-
 const ActionRow = styled.div`display:flex;flex-wrap:wrap;gap:6px;`;
 const ActionBtn = styled.button<{ variant?: 'danger'|'warn'|'green' }>`
     display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;
@@ -240,19 +237,47 @@ const ActionBtn = styled.button<{ variant?: 'danger'|'warn'|'green' }>`
         :`color:#a7f3a7;&:hover{background:rgba(8,205,0,0.08);border-color:rgba(8,205,0,0.3);}`}
 `;
 
-const InvGrid = styled.div`display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:6px;`;
-const InvSlot = styled.div<{ filled?:boolean }>`
-    aspect-ratio:1;border-radius:5px;
-    background:${p=>p.filled?'#0f1318':'#0a0d12'};
-    border:1px solid ${p=>p.filled?T.lineH:T.line};
-    display:flex;align-items:center;justify-content:center;
-    position:relative;overflow:hidden;
-    transition:border-color .1s;
+const SectionHead = styled.div`
+    font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    color:${T.mute};margin-bottom:8px;display:flex;align-items:center;gap:6px;
 `;
-const InvQty = styled.div`
-    position:absolute;bottom:1px;right:2px;font-size:.5rem;color:#fff;font-weight:700;
-    text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;
-    font-family:monospace;
+const QuickGrid = styled.div`display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;`;
+const QuickBtn = styled.button<{ $color?: string }>`
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    padding:9px 6px;border-radius:7px;font-size:.74rem;font-weight:600;
+    cursor:pointer;font-family:'Inter',sans-serif;
+    border:1px solid ${T.line};background:${T.panel2};
+    color:${p=>p.$color ?? T.dim};
+    transition:all .12s;
+    &:hover{color:${T.text};border-color:${T.lineH};background:#1d2532;}
+`;
+const CommandRow = styled.div`display:flex;gap:6px;align-items:stretch;`;
+const CommandInput = styled.input`
+    flex:1;background:${T.panel2};border:1px solid ${T.line};border-radius:7px;
+    padding:9px 12px;font-size:.78rem;color:#a7f3a7;
+    font-family:'JetBrains Mono','Menlo',monospace;outline:none;
+    transition:border-color .12s;
+    ${terminalTextInput}
+    &:focus{border-color:${T.lineH};}
+    &::placeholder{color:${T.mute};}
+`;
+const SendBtn = styled.button`
+    background:${T.accent};color:#06200a;border:0;border-radius:7px;
+    padding:0 14px;font-size:.78rem;font-weight:700;cursor:pointer;
+    font-family:'Inter',sans-serif;
+    &:hover{background:#0ee300;}
+    &:disabled{opacity:.4;cursor:default;}
+`;
+const ResolvedTag = styled.div`
+    display:flex;align-items:center;gap:6px;padding:8px 12px;
+    background:rgba(8,205,0,0.06);border:1px solid rgba(8,205,0,0.18);
+    border-radius:7px;font-size:.72rem;color:${T.dim};margin-bottom:12px;
+    & code{color:${T.accent};font-family:'JetBrains Mono','Menlo',monospace;font-weight:700;}
+`;
+const Note = styled.div`
+    padding:9px 11px;border-radius:7px;margin-bottom:12px;
+    background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.16);
+    color:${T.dim};font-size:.72rem;line-height:1.4;
 `;
 
 const Empty = styled.div`
@@ -276,12 +301,33 @@ const GAMEMODES = [
 ];
 const gmFaIcon: Record<string,any> = { survival:faCrosshairs, creative:faPaintBrush, adventure:faMap, spectator:faEye };
 
-const MOCK_INV: InvItem[] = [
-    {n:'Diamond Sword',q:1},{n:'Iron Pickaxe',q:1},{n:'Bread',q:32},
-    {n:'Oak Log',q:64},{n:'Arrow',q:64},{n:'Torch',q:24},
-    {n:'Diamond',q:8},{n:'Cooked Beef',q:16},{n:'Golden Apple',q:2},
-    {n:'Ender Pearl',q:4},{n:'Iron Sword',q:1},{n:'TNT',q:10},
-];
+function CustomCommandBox({ username, send }: { username: string; send: (command: string) => void }) {
+    const [value, setValue] = useState('');
+
+    const run = () => {
+        const command = value.trim();
+        if (!command) return;
+        send(command.split('{player}').join(username));
+        setValue('');
+    };
+
+    return (
+        <CommandRow>
+            <CommandInput
+                value={value}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        run();
+                    }
+                }}
+                placeholder={`say Hello {player}`}
+            />
+            <SendBtn onClick={run} disabled={!value.trim()}>Send</SendBtn>
+        </CommandRow>
+    );
+}
 
 /* ── command log ──── */
 const LogSection = styled.div`background:${T.panel};border:1px solid ${T.line};border-radius:12px;overflow:hidden;`;
@@ -382,8 +428,8 @@ export default function PlayerManagerContainer() {
 
     const onlineCount = players.filter(p => p.online).length;
 
-    const doKill = (u: string) => cmd(`kill ${u}`);
-    const doHeal = (u: string) => cmd(`effect give ${u} minecraft:instant_health 1 255`);
+    const doKill = (u: string) => cmd(`minecraft:kill ${u}`);
+    const doHeal = (u: string) => cmd(`heal ${u}`);
     const doKick = (u: string) => { cmd(`kick ${u} Kicked by admin`); setPlayers(pl => pl.filter(p => p.username !== u)); };
     const doBan  = (u: string) => { cmd(`ban ${u}`); setPlayers(pl => pl.filter(p => p.username !== u)); };
     const doOp   = (u: string) => cmd(`op ${u}`);
@@ -405,7 +451,7 @@ export default function PlayerManagerContainer() {
                 <Toolbar>
                     <SearchWrap>
                         <FontAwesomeIcon icon={faSearch} style={{color:T.mute,fontSize:'.75rem'}}/>
-                        <SearchInput placeholder='Search by name or rank…' value={query} onChange={e=>setQuery(e.target.value)}/>
+                        <SearchInput placeholder='Search by name or rank…' value={query} onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setQuery(e.target.value)}/>
                     </SearchWrap>
                     <ConnDot ok={connected}><span className='dot'/>{connected ? 'Connected' : 'Not connected'}</ConnDot>
                     <Btn onClick={fetchPlayers} disabled={loading || !connected}>
@@ -428,12 +474,8 @@ export default function PlayerManagerContainer() {
                 <StatCard>
                     <StatIcon $color={T.danger}><FontAwesomeIcon icon={faHeart}/></StatIcon>
                     <div>
-                        <StatLabel>Avg Health</StatLabel>
-                        <StatValue>
-                            {players.length > 0
-                                ? Math.round(players.reduce((a,p)=>a+(p.health??20),0)/players.length)
-                                : '—'}
-                        </StatValue>
+                        <StatLabel>Live Health</StatLabel>
+                        <StatValue>—</StatValue>
                     </div>
                 </StatCard>
                 <StatCard>
@@ -457,8 +499,6 @@ export default function PlayerManagerContainer() {
             ) : (
                 <PlayerGrid>
                     {filtered.map(player => {
-                        const hpPct = player.health != null && player.maxHealth
-                            ? Math.round((player.health/player.maxHealth)*100) : 100;
                         const accent = T.accent;
                         return (
                             <PlayerCard
@@ -506,30 +546,20 @@ export default function PlayerManagerContainer() {
                                     </PlayerInfo>
                                 </PlayerTop>
 
-                                {player.health != null && (
-                                    <HealthBar>
-                                        <HealthLabel>
-                                            <span>Health</span>
-                                            <span style={{color:T.text}}>{player.health}/{player.maxHealth??20}</span>
-                                        </HealthLabel>
-                                        <HealthTrack><HealthFill pct={hpPct}/></HealthTrack>
-                                    </HealthBar>
-                                )}
-
                                 <ActionRow>
-                                    <ActionBtn onClick={e=>{e.stopPropagation();doHeal(player.username);}}>
+                                    <ActionBtn onClick={(e: React.MouseEvent<HTMLButtonElement>)=>{e.stopPropagation();doHeal(player.username);}}>
                                         <FontAwesomeIcon icon={faHeart}/> Heal
                                     </ActionBtn>
-                                    <ActionBtn variant='warn' onClick={e=>{e.stopPropagation();doKick(player.username);}}>
+                                    <ActionBtn variant='warn' onClick={(e: React.MouseEvent<HTMLButtonElement>)=>{e.stopPropagation();doKick(player.username);}}>
                                         <FontAwesomeIcon icon={faBolt}/> Kick
                                     </ActionBtn>
-                                    <ActionBtn variant='danger' onClick={e=>{e.stopPropagation();doKill(player.username);}}>
+                                    <ActionBtn variant='danger' onClick={(e: React.MouseEvent<HTMLButtonElement>)=>{e.stopPropagation();doKill(player.username);}}>
                                         <FontAwesomeIcon icon={faSkull}/> Kill
                                     </ActionBtn>
-                                    <ActionBtn variant='danger' onClick={e=>{e.stopPropagation();doBan(player.username);}}>
+                                    <ActionBtn variant='danger' onClick={(e: React.MouseEvent<HTMLButtonElement>)=>{e.stopPropagation();doBan(player.username);}}>
                                         <FontAwesomeIcon icon={faBan}/> Ban
                                     </ActionBtn>
-                                    <ActionBtn onClick={e=>{e.stopPropagation();doOp(player.username);}}>
+                                    <ActionBtn onClick={(e: React.MouseEvent<HTMLButtonElement>)=>{e.stopPropagation();doOp(player.username);}}>
                                         <FontAwesomeIcon icon={faShieldAlt}/> OP
                                     </ActionBtn>
                                 </ActionRow>
@@ -538,58 +568,69 @@ export default function PlayerManagerContainer() {
                                     {selected===player.username && (
                                         <motion.div
                                             initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}}
-                                            style={{overflow:'hidden'}} onClick={e=>e.stopPropagation()}
+                                            style={{overflow:'hidden'}} onClick={(e: React.MouseEvent<HTMLDivElement>)=>e.stopPropagation()}
                                         >
                                             <div style={{marginTop:14,paddingTop:14,borderTop:`1px solid ${T.line}`}}>
-                                                <div style={{marginBottom:14}}>
-                                                    <div style={{fontSize:'.66rem',fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',color:T.mute,marginBottom:6}}>
-                                                        <FontAwesomeIcon icon={faGamepad} style={{marginRight:5}}/> Change Gamemode
-                                                    </div>
-                                                    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:6}}>
-                                                        {GAMEMODES.map(gm => {
-                                                            const active = (gmTarget[player.username] ?? player.gamemode) === gm.value;
-                                                            return (
-                                                                <button key={gm.value} onClick={()=>{
-                                                                    setGmTarget(g=>({...g,[player.username]:gm.value}));
-                                                                    doGm(player.username, gm.value);
-                                                                }} style={{
-                                                                    display:'flex',alignItems:'center',justifyContent:'center',gap:5,
-                                                                    padding:'8px 6px',borderRadius:7,fontSize:'.72rem',fontWeight:600,
-                                                                    cursor:'pointer',fontFamily:'Inter,sans-serif',
-                                                                    border:`1px solid ${active?T.accent:T.line}`,
-                                                                    background:active?T.accentDim:T.panel2,
-                                                                    color:active?T.accent:T.dim,
-                                                                }}>
-                                                                    <FontAwesomeIcon icon={gmFaIcon[gm.value]}/> {gm.label}
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
+                                                <ResolvedTag>
+                                                    <FontAwesomeIcon icon={faUser} style={{fontSize:'.7rem'}}/>
+                                                    Commands target <code>{player.username}</code>
+                                                </ResolvedTag>
+                                                <Note>
+                                                    Inventory and health are not guessed here. This panel sends real server-console commands; live inventory requires an in-game command like invsee or a server-side API/plugin.
+                                                </Note>
 
-                                                <div style={{fontSize:'.66rem',fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',color:T.mute,marginBottom:8}}>
-                                                    Inventory (simulated)
-                                                </div>
-                                                <InvGrid>
-                                                    {Array.from({length:36}).map((_,i)=>{
-                                                        const item: InvItem|null = i < MOCK_INV.length ? MOCK_INV[i] : null;
-                                                        const tex = item ? ITEM_TEX[item.n] : null;
+                                                <SectionHead>
+                                                    <FontAwesomeIcon icon={faGamepad}/> Change Gamemode
+                                                </SectionHead>
+                                                <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:6,marginBottom:14}}>
+                                                    {GAMEMODES.map(gm => {
+                                                        const active = (gmTarget[player.username] ?? player.gamemode) === gm.value;
                                                         return (
-                                                            <InvSlot key={i} filled={!!item} title={item?.n}>
-                                                                {item && tex && (
-                                                                    <img src={tex} alt={item.n}
-                                                                        style={{width:'80%',height:'80%',imageRendering:'pixelated',objectFit:'contain'}}
-                                                                        onError={e=>{(e.target as HTMLImageElement).style.display='none';}}
-                                                                    />
-                                                                )}
-                                                                {item && <InvQty>{item.q > 1 ? item.q : ''}</InvQty>}
-                                                            </InvSlot>
+                                                            <button key={gm.value} onClick={()=>{
+                                                                setGmTarget(g=>({...g,[player.username]:gm.value}));
+                                                                doGm(player.username, gm.value);
+                                                            }} style={{
+                                                                display:'flex',alignItems:'center',justifyContent:'center',gap:5,
+                                                                padding:'8px 6px',borderRadius:7,fontSize:'.72rem',fontWeight:600,
+                                                                cursor:'pointer',fontFamily:'Inter,sans-serif',
+                                                                border:`1px solid ${active?T.accent:T.line}`,
+                                                                background:active?T.accentDim:T.panel2,
+                                                                color:active?T.accent:T.dim,
+                                                            }}>
+                                                                <FontAwesomeIcon icon={gmFaIcon[gm.value]}/> {gm.label}
+                                                            </button>
                                                         );
                                                     })}
-                                                </InvGrid>
-                                                <div style={{fontSize:'.7rem',color:T.mute,marginTop:6}}>
-                                                    Live inventory requires a server-side plugin
                                                 </div>
+
+                                                <SectionHead>
+                                                    <FontAwesomeIcon icon={faBolt}/> Quick Actions
+                                                </SectionHead>
+                                                <QuickGrid>
+                                                    <QuickBtn onClick={()=>cmd(`feed ${player.username}`)}>
+                                                        <FontAwesomeIcon icon={faHeart}/> Feed
+                                                    </QuickBtn>
+                                                    <QuickBtn onClick={()=>cmd(`minecraft:effect clear ${player.username}`)}>
+                                                        <FontAwesomeIcon icon={faBolt}/> Clear FX
+                                                    </QuickBtn>
+                                                    <QuickBtn onClick={()=>cmd(`clear ${player.username}`)}>
+                                                        <FontAwesomeIcon icon={faBan}/> Clear Inv
+                                                    </QuickBtn>
+                                                    <QuickBtn onClick={()=>cmd(`minecraft:experience add ${player.username} 100 levels`)}>
+                                                        <FontAwesomeIcon icon={faStar}/> +100 Lvl
+                                                    </QuickBtn>
+                                                    <QuickBtn onClick={()=>cmd(`minecraft:experience set ${player.username} 0 levels`)}>
+                                                        <FontAwesomeIcon icon={faStar}/> Reset XP
+                                                    </QuickBtn>
+                                                    <QuickBtn onClick={()=>cmd(`deop ${player.username}`)} $color={T.warn}>
+                                                        <FontAwesomeIcon icon={faShieldAlt}/> De-OP
+                                                    </QuickBtn>
+                                                </QuickGrid>
+
+                                                <SectionHead>
+                                                    <FontAwesomeIcon icon={faGamepad}/> Send Custom Command
+                                                </SectionHead>
+                                                <CustomCommandBox username={player.username} send={cmd}/>
                                             </div>
                                         </motion.div>
                                     )}
