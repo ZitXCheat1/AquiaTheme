@@ -70,6 +70,8 @@ function stripCodes(s: string): string {
     let result = s;
     // Remove ESC [ sequences
     result = result.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '');
+    // Remove caret-rendered ANSI sequences copied from some console renderers.
+    result = result.replace(/\^\[\[[0-9;]*[A-Za-z]/g, '');
     // Remove CSI sequences that start with [ directly (common in Pterodactyl)
     result = result.replace(/\[[0-9;]*m/g, '');
     // Remove Minecraft § codes
@@ -84,9 +86,8 @@ function stripCodes(s: string): string {
 /** Extract clean username from ANSI-coded string */
 function extractUsername(raw: string): string {
     const cleaned = stripCodes(raw);
-    // Get the last word/token as username
-    const matches = cleaned.match(/[a-zA-Z0-9_]+$/);
-    return matches ? matches[0] : cleaned;
+    const matches = cleaned.match(/[A-Za-z0-9_]{3,16}/g);
+    return matches?.[matches.length - 1] ?? cleaned;
 }
 
 /** Parse ANSI SGR codes into CSS colors */
@@ -436,7 +437,7 @@ export default function PlayerManagerContainer() {
         if (pendingKey) {
             const [requestId, username] = pendingKey;
             
-            if (requestId === 'inventory') {
+            if (requestId.startsWith('inventory_')) {
                 const inventory = parseInventoryOutput(data);
                 const failed = /No entity was found|Unknown or incomplete command|Incorrect argument|Cannot get/i.test(cleaned);
                 
@@ -453,7 +454,7 @@ export default function PlayerManagerContainer() {
                 }
             }
             
-            if (requestId === 'echest') {
+            if (requestId.startsWith('echest_')) {
                 const echest = parseEnderChestOutput(data);
                 const failed = /No entity was found|Unknown/i.test(cleaned);
                 
@@ -470,7 +471,7 @@ export default function PlayerManagerContainer() {
                 }
             }
             
-            if (requestId === 'health') {
+            if (requestId.startsWith('health_')) {
                 const health = parseHealthOutput(data);
                 if (health !== null) {
                     pendingRequestsRef.current.delete(requestId);
@@ -487,15 +488,15 @@ export default function PlayerManagerContainer() {
         
         // Parse player list
         if (/There are \d+ of a max of \d+ players online:/.test(cleaned)) {
-            const colonIdx = data.indexOf(':');
-            const rawList = colonIdx >= 0 ? data.slice(colonIdx + 1) : '';
-            const rawEntries = rawList.split(',').map(s => s.trim()).filter(s => stripCodes(s).length > 0);
+            const listMatch = cleaned.match(/There are \d+ of a max of \d+ players online:\s*(.*)$/);
+            const rawList = listMatch?.[1] ?? '';
+            const rawEntries = rawList.split(',').map(s => s.trim()).filter(s => s.length > 0);
             
             const parsed = rawEntries.map(r => ({
                 ansiRaw: r,
-                displayName: stripCodes(r),
+                displayName: r,
                 username: extractUsername(r),
-            }));
+            })).filter(p => /^[A-Za-z0-9_]{3,16}$/.test(p.username));
             
             setPlayers(prev => {
                 const byUser = new Map(prev.map(p => [p.username, p]));
