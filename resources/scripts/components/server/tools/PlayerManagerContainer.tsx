@@ -201,6 +201,32 @@ function itemLabel(id: string): string {
         .join(' ');
 }
 
+function itemTextureName(id: string): string {
+    return id.replace(/^minecraft:/, '').replace(/[^a-z0-9_]/gi, '').toLowerCase();
+}
+
+function itemTextureUrl(id: string, type: 'item' | 'block' = 'item'): string {
+    return `https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20.4/assets/minecraft/textures/${type}/${itemTextureName(id)}.png`;
+}
+
+function MinecraftItemIcon({ item }: { item: InventoryItem }) {
+    const [fallback, setFallback] = useState<'item' | 'block' | 'text'>('item');
+    const label = itemLabel(item.id);
+
+    if (fallback === 'text') {
+        return <InvTextFallback>{label.slice(0, 3).toUpperCase()}</InvTextFallback>;
+    }
+
+    return (
+        <InvIcon
+            src={itemTextureUrl(item.id, fallback)}
+            alt={label}
+            draggable={false}
+            onError={() => setFallback(fallback === 'item' ? 'block' : 'text')}
+        />
+    );
+}
+
 /** Parse NBT inventory data */
 function parseInventoryOutput(raw: string): InventoryItem[] | null {
     const normalized = stripCodes(raw);
@@ -351,6 +377,14 @@ const InvSlot = styled.div<{ filled?: boolean }>`
     display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:2px;
     color:${p=>p.filled?'#a7f3a7':T.mute};font-family:'JetBrains Mono','Menlo',monospace;
     font-size:.58rem;text-align:center;line-height:1.05;
+`;
+const InvIcon = styled.img`
+    width:82%;height:82%;object-fit:contain;image-rendering:pixelated;
+    filter:drop-shadow(1px 1px 0 rgba(0,0,0,0.85));
+    user-select:none;pointer-events:none;
+`;
+const InvTextFallback = styled.span`
+    font-size:.55rem;line-height:1;color:#a7f3a7;font-weight:700;
 `;
 const InvQty = styled.div`position:absolute;bottom:1px;right:3px;font-size:.54rem;color:#fff;font-weight:700;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;`;
 const InvStatus = styled.div`font-size:.7rem;color:${T.mute};margin-bottom:10px;line-height:1.35;`;
@@ -790,7 +824,7 @@ export default function PlayerManagerContainer() {
                                                                 const item = player.inventory?.find(stack => stack.slot === i);
                                                                 return (
                                                                     <InvSlot key={i} filled={!!item} title={item ? `${itemLabel(item.id)} x${item.count}` : `Empty slot ${i}`}>
-                                                                        {item ? itemLabel(item.id).slice(0, 3).toUpperCase() : ''}
+                                                                        {item && <MinecraftItemIcon item={item}/>}
                                                                         {item && item.count > 1 && <InvQty>{item.count}</InvQty>}
                                                                     </InvSlot>
                                                                 );
@@ -807,7 +841,7 @@ export default function PlayerManagerContainer() {
                                                                 const item = player.echest?.find(stack => stack.slot === i);
                                                                 return (
                                                                     <InvSlot key={i} filled={!!item} title={item ? `${itemLabel(item.id)} x${item.count}` : `Empty slot ${i}`}>
-                                                                        {item ? itemLabel(item.id).slice(0, 3).toUpperCase() : ''}
+                                                                        {item && <MinecraftItemIcon item={item}/>}
                                                                         {item && item.count > 1 && <InvQty>{item.count}</InvQty>}
                                                                     </InvSlot>
                                                                 );
