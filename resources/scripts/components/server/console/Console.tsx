@@ -48,12 +48,14 @@ const terminalProps: ITerminalOptions = {
     cursorStyle: 'underline',
     allowTransparency: true,
     fontSize: 13,
-    lineHeight: 1.2,
+    lineHeight: 1.3,
     letterSpacing: 0,
-    fontFamily: "'Courier New', Courier, monospace",
+    fontFamily: 'monospace',
     fontWeight: '400',
     rows: 30,
     theme: theme,
+    convertEol: true,
+    scrollback: 1000,
 };
 
 export default () => {
@@ -139,8 +141,8 @@ export default () => {
             const openTerminal = () => {
                 if (!ref.current) return;
                 terminal.open(ref.current);
-                terminal.unicode.activeVersion = '11';
                 fitAddon.fit();
+                requestAnimationFrame(() => fitAddon.fit());
                 searchBar.addNewStyle(zIndex);
                 terminal.attachCustomKeyEventHandler((e: KeyboardEvent) => {
                     if ((e.ctrlKey || e.metaKey) && e.key === 'c') {

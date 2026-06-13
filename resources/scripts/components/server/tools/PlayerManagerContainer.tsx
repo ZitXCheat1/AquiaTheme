@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import { Combobox } from '@/components/elements/ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync, faUser, faHeart, faSkull, faBan, faShieldAlt, faGamepad, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faSync, faUser, faHeart, faSkull, faBan, faShieldAlt, faGamepad, faExclamationTriangle, faStar, faCrosshairs, faPaintBrush, faMap, faEye } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import { SocketEvent } from '@/components/server/events';
@@ -145,7 +145,7 @@ const GAMEMODES = [
 ];
 
 /* ── helpers ─────────────────────────────────────────────────────── */
-const gmIcon: Record<string,string> = { survival:'⚔️', creative:'🎨', adventure:'🗺️', spectator:'👁️' };
+const gmFaIcon: Record<string, any> = { survival: faCrosshairs, creative: faPaintBrush, adventure: faMap, spectator: faEye };
 
 const parsePlayerList = (output: string): string[] => {
     const match = output.match(/: (.+)$/m);
@@ -240,9 +240,9 @@ export default function PlayerManagerContainer() {
                 </StatCard>
                 <StatCard>
                     <StatLabel>Avg Health</StatLabel>
-                    <StatValue style={{fontSize:'1.1rem'}}>
+                    <StatValue style={{fontSize:'1.1rem',display:'flex',alignItems:'center',gap:6}}>
                         {players.length > 0
-                            ? `${Math.round(players.reduce((a,p) => a + (p.health ?? 20), 0) / players.length)} ❤`
+                            ? <><FontAwesomeIcon icon={faHeart} style={{color:'#ef4444',fontSize:'.9rem'}}/> {Math.round(players.reduce((a,p) => a + (p.health ?? 20), 0) / players.length)}</>
                             : '—'}
                     </StatValue>
                 </StatCard>
@@ -284,8 +284,8 @@ export default function PlayerManagerContainer() {
                                     <PlayerInfo>
                                         <PlayerName>{player.name}</PlayerName>
                                         <PlayerMeta>
-                                            {player.gamemode && <span>{gmIcon[player.gamemode] || '🎮'} {player.gamemode}</span>}
-                                            {player.level != null && <span>⭐ Lvl {player.level}</span>}
+                                            {player.gamemode && <span><FontAwesomeIcon icon={gmFaIcon[player.gamemode] ?? faGamepad} style={{marginRight:4}}/>{player.gamemode}</span>}
+                                            {player.level != null && <span><FontAwesomeIcon icon={faStar} style={{marginRight:4,color:'#f59e0b'}}/>Lvl {player.level}</span>}
                                         </PlayerMeta>
                                     </PlayerInfo>
                                 </PlayerTop>
@@ -294,7 +294,7 @@ export default function PlayerManagerContainer() {
                                     <HealthBar>
                                         <HealthLabel>
                                             <span>Health</span>
-                                            <span>{player.health}/{player.maxHealth ?? 20} ❤</span>
+                                            <span><FontAwesomeIcon icon={faHeart} style={{color:'#ef4444',marginRight:4}}/>{player.health}/{player.maxHealth ?? 20}</span>
                                         </HealthLabel>
                                         <HealthTrack><HealthFill pct={hpPct}/></HealthTrack>
                                     </HealthBar>
