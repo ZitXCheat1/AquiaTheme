@@ -13,14 +13,12 @@ import { httpErrorToHuman } from '@/api/http';
 import { useStoreState } from 'easy-peasy';
 import InstallListener from '@/components/server/InstallListener';
 import ErrorBoundary from '@/components/elements/ErrorBoundary';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { useLocation } from 'react-router';
 import ConflictStateRenderer from '@/components/server/ConflictStateRenderer';
 import PermissionRoute from '@/components/elements/PermissionRoute';
 import routes from '@/routers/routes';
 import Sidebar from '@/components/Sidebar';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 export default () => {
     const match = useRouteMatch<{ id: string }>();
@@ -95,7 +93,7 @@ export default () => {
                                         <Can key={route.path} action={route.permission} matchAny>
                                             <NavLink to={to(route.path, true)} exact={route.exact}>
                                                 <div className='icon'>
-                                                    <FontAwesomeIcon icon={route.iconProp as IconProp} />
+                                                    {route.iconProp && React.createElement(route.iconProp, { style: { width: 16, height: 16 } })}
                                                 </div>
                                                 <span className='nav-label'>{route.name}</span>
                                             </NavLink>
@@ -103,7 +101,7 @@ export default () => {
                                     ) : (
                                         <NavLink key={route.path} to={to(route.path, true)} exact={route.exact}>
                                             <div className='icon'>
-                                                <FontAwesomeIcon icon={route.iconProp as IconProp} />
+                                                {route.iconProp && React.createElement(route.iconProp, { style: { width: 16, height: 16 } })}
                                             </div>
                                             <span className='nav-label'>{route.name}</span>
                                         </NavLink>
@@ -116,7 +114,7 @@ export default () => {
                                         // eslint-disable-next-line react/jsx-no-target-blank
                                         <a key='admin-link' href={`/admin/servers/view/${serverId}`} target={'_blank'}>
                                             <div className='icon'>
-                                                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                                <ExternalLinkIcon style={{ width: 16, height: 16 }} />
                                             </div>
                                             <span className='nav-label'>Admin</span>
                                         </a>

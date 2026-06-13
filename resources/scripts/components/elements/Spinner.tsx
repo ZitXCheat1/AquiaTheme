@@ -16,41 +16,83 @@ interface Spinner extends React.FC<Props> {
     Suspense: React.FC<Props>;
 }
 
-const pulse1 = keyframes`
-    0%, 80%, 100% { transform: scaleY(0.4); opacity: 0.3; }
-    40%            { transform: scaleY(1.0); opacity: 1; }
+const orbit = keyframes`
+    0%   { transform: rotate(0deg)   translateX(var(--r)) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(var(--r)) rotate(-360deg); }
 `;
 
-const pulse2 = keyframes`
-    0%, 80%, 100% { transform: scaleY(0.4); opacity: 0.3; }
-    40%            { transform: scaleY(1.0); opacity: 1; }
+const trail = keyframes`
+    0%   { transform: rotate(0deg)   translateX(var(--r)) rotate(0deg);   opacity: 0.12; }
+    100% { transform: rotate(360deg) translateX(var(--r)) rotate(-360deg); opacity: 0.12; }
 `;
 
-const Wrapper = styled.div<{ size?: SpinnerSize }>`
+const breathe = keyframes`
+    0%, 100% { transform: scale(0.85); opacity: 0.4; }
+    50%       { transform: scale(1.15); opacity: 0.9; }
+`;
+
+const Ring = styled.div<{ size: number }>`
+    position: relative;
+    width:  ${(p) => p.size}px;
+    height: ${(p) => p.size}px;
     display: flex;
     align-items: center;
-    gap: ${(p) => (p.size === 'small' ? '2px' : p.size === 'large' ? '5px' : '3px')};
+    justify-content: center;
 `;
 
-const Bar = styled.div<{ delay: number; size?: SpinnerSize; isBlue?: boolean }>`
-    width:  ${(p) => (p.size === 'small' ? '3px' : p.size === 'large' ? '7px' : '4px')};
-    height: ${(p) => (p.size === 'small' ? '12px' : p.size === 'large' ? '36px' : '20px')};
-    border-radius: 3px;
-    background: ${(p) => (p.isBlue ? 'hsl(212, 92%, 55%)' : '#08cd00')};
-    box-shadow: 0 0 ${(p) => (p.size === 'large' ? '8px' : '4px')} ${(p) => (p.isBlue ? 'hsla(212,92%,55%,0.5)' : 'rgba(8,205,0,0.5)')};
-    animation: ${pulse1} 1.1s ease-in-out ${(p) => p.delay}ms infinite;
-    transform-origin: center bottom;
+const Core = styled.div<{ d: number; blue?: boolean }>`
+    width:  ${(p) => p.d}px;
+    height: ${(p) => p.d}px;
+    border-radius: 50%;
+    background: ${(p) => (p.blue ? 'hsl(212,92%,55%)' : '#08cd00')};
+    box-shadow: 0 0 ${(p) => p.d * 1.4}px ${(p) => (p.blue ? 'hsla(212,92%,55%,0.7)' : 'rgba(8,205,0,0.7)')};
+    animation: ${breathe} 1.6s ease-in-out infinite;
+    position: absolute;
 `;
 
-const SpinnerComponent: React.FC<Props> = ({ size, isBlue }) => (
-    <Wrapper size={size}>
-        <Bar size={size} isBlue={isBlue} delay={0} />
-        <Bar size={size} isBlue={isBlue} delay={110} />
-        <Bar size={size} isBlue={isBlue} delay={220} />
-        <Bar size={size} isBlue={isBlue} delay={330} />
-        <Bar size={size} isBlue={isBlue} delay={440} />
-    </Wrapper>
-);
+const Dot = styled.div<{ delay: number; radius: number; d: number; blue?: boolean }>`
+    --r: ${(p) => p.radius}px;
+    position: absolute;
+    width:  ${(p) => p.d}px;
+    height: ${(p) => p.d}px;
+    border-radius: 50%;
+    background: ${(p) => (p.blue ? 'hsl(212,92%,55%)' : '#08cd00')};
+    box-shadow: 0 0 ${(p) => p.d * 2}px ${(p) => (p.blue ? 'hsla(212,92%,55%,0.8)' : 'rgba(8,205,0,0.8)')};
+    animation: ${orbit} 1.8s linear ${(p) => p.delay}ms infinite;
+`;
+
+const TrailDot = styled.div<{ delay: number; radius: number; d: number; blue?: boolean }>`
+    --r: ${(p) => p.radius}px;
+    position: absolute;
+    width:  ${(p) => p.d * 0.6}px;
+    height: ${(p) => p.d * 0.6}px;
+    border-radius: 50%;
+    background: ${(p) => (p.blue ? 'hsl(212,92%,55%)' : '#08cd00')};
+    opacity: 0.2;
+    animation: ${trail} 1.8s linear ${(p) => p.delay}ms infinite;
+`;
+
+const sizes = {
+    small: { ring: 28, core: 5, dot: 4, radius: 9 },
+    base:  { ring: 44, core: 7, dot: 6, radius: 14 },
+    large: { ring: 72, core: 11, dot: 9, radius: 23 },
+};
+
+const SpinnerComponent: React.FC<Props> = ({ size = 'base', isBlue }) => {
+    const s = sizes[size];
+    const delays = [0, 600, 1200];
+    return (
+        <Ring size={s.ring}>
+            <Core d={s.core} blue={isBlue} />
+            {delays.map((d, i) => (
+                <React.Fragment key={i}>
+                    <TrailDot delay={d - 120} radius={s.radius} d={s.dot} blue={isBlue} />
+                    <Dot delay={d} radius={s.radius} d={s.dot} blue={isBlue} />
+                </React.Fragment>
+            ))}
+        </Ring>
+    );
+};
 
 const Spinner: Spinner = ({ centered, ...props }) =>
     centered ? (

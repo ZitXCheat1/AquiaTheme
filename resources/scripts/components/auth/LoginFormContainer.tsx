@@ -3,8 +3,7 @@ import { Form } from 'formik';
 import { breakpoint } from '@/theme';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import tw from 'twin.macro';
-import styled from 'styled-components/macro';
-import { keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components/macro';
 import { motion } from 'framer-motion';
 
 /* ─── Keyframes ──────────────────────────────────────────────── */

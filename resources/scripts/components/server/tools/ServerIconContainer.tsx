@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import styled from 'styled-components/macro';
-import { keyframes } from 'styled-components';
+import { keyframes } from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import getFileUploadUrl from '@/api/server/files/getFileUploadUrl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

@@ -408,8 +408,8 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                     <OrDivider><span>or</span></OrDivider>
 
                     <motion.div custom={4} variants={fieldVariants} initial="hidden" animate="visible">
-                        <motion.a
-                            href="mailto:admin@wiskcraft.net?subject=Account Request"
+                        <Link
+                            to='/auth/register'
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -427,8 +427,6 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                                 letterSpacing: '0.03em',
                                 transition: 'background 0.15s, border-color 0.15s, color 0.15s',
                             }}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
                             onMouseEnter={e => {
                                 (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
                                 (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.14)';
@@ -440,8 +438,8 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                                 (e.currentTarget as HTMLElement).style.color = '#94a3b8';
                             }}
                         >
-                            Request an Account
-                        </motion.a>
+                            Create Account
+                        </Link>
                     </motion.div>
 
                 </LoginFormContainer>

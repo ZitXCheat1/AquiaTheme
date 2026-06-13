@@ -1,4 +1,3 @@
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import React, { lazy } from 'react';
 import ServerConsole from '@/components/server/console/ServerConsoleContainer';
 import DatabasesContainer from '@/components/server/databases/DatabasesContainer';
@@ -15,25 +14,25 @@ import AccountSSHContainer from '@/components/dashboard/ssh/AccountSSHContainer'
 import ActivityLogContainer from '@/components/dashboard/activity/ActivityLogContainer';
 import ServerActivityLogContainer from '@/components/server/ServerActivityLogContainer';
 import {
-    faBackward,
-    faClock,
-    faCogs,
-    faDatabase,
-    faEdit,
-    faFolder,
-    faImage,
-    faKey,
-    faPaperclip,
-    faPassport,
-    faPlayCircle,
-    faPlug,
-    faScroll,
-    faSlidersH,
-    faTerminal,
-    faUser,
-    faUsers,
-    faCommentDots,
-} from '@fortawesome/free-solid-svg-icons';
+    TerminalIcon,
+    FolderIcon,
+    DatabaseIcon,
+    ArchiveIcon,
+    PuzzleIcon,
+    RefreshIcon,
+    AdjustmentsIcon,
+    ChatAlt2Icon,
+    CalendarIcon,
+    CogIcon,
+    UsersIcon,
+    ClipboardListIcon,
+    UserCircleIcon,
+    ShieldCheckIcon,
+    KeyIcon,
+    CodeIcon,
+    PhotographIcon,
+    ServerIcon,
+} from '@heroicons/react/outline';
 
 // Each of the router files is already code split out appropriately — so
 // all of the items above will only be loaded in when that router is loaded.
@@ -56,7 +55,7 @@ interface RouteDefinition {
     name: string | undefined;
     component: React.ComponentType;
     exact?: boolean;
-    iconProp?: IconProp;
+    iconProp?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
 interface ServerRouteDefinition extends RouteDefinition {
@@ -78,25 +77,25 @@ export default {
             name: 'Account',
             component: AccountOverviewContainer,
             exact: true,
-            iconProp: faUser,
+            iconProp: UserCircleIcon,
         },
         {
             path: '/api',
             name: 'API Credentials',
             component: AccountApiContainer,
-            iconProp: faPassport,
+            iconProp: CodeIcon,
         },
         {
             path: '/ssh',
             name: 'SSH Keys',
             component: AccountSSHContainer,
-            iconProp: faKey,
+            iconProp: KeyIcon,
         },
         {
             path: '/activity',
             name: 'Activity',
             component: ActivityLogContainer,
-            iconProp: faPaperclip,
+            iconProp: ClipboardListIcon,
         },
     ],
     server: [
@@ -107,7 +106,7 @@ export default {
             section: 'GENERAL',
             component: ServerConsole,
             exact: true,
-            iconProp: faTerminal,
+            iconProp: TerminalIcon,
         },
         {
             path: '/files',
@@ -115,14 +114,14 @@ export default {
             name: 'Files',
             section: 'MANAGEMENT',
             component: FileManagerContainer,
-            iconProp: faFolder,
+            iconProp: FolderIcon,
         },
         {
             path: '/files/:action(edit|new)',
             permission: 'file.*',
             name: undefined,
             component: FileEditContainer,
-            iconProp: faEdit,
+            iconProp: CodeIcon,
         },
         {
             path: '/databases',
@@ -130,7 +129,7 @@ export default {
             name: 'Databases',
             section: 'MANAGEMENT',
             component: DatabasesContainer,
-            iconProp: faDatabase,
+            iconProp: DatabaseIcon,
         },
         {
             path: '/backups',
@@ -138,7 +137,7 @@ export default {
             name: 'Backups',
             section: 'MANAGEMENT',
             component: BackupContainer,
-            iconProp: faBackward,
+            iconProp: ArchiveIcon,
         },
         {
             path: '/network',
@@ -152,7 +151,7 @@ export default {
             name: 'Plugins',
             section: 'MANAGEMENT',
             component: PluginsContainer,
-            iconProp: faPlug,
+            iconProp: PuzzleIcon,
         },
         {
             path: '/version',
@@ -160,7 +159,7 @@ export default {
             name: 'Version Changer',
             section: 'CONFIGURATION',
             component: VersionChangerContainer,
-            iconProp: faScroll,
+            iconProp: RefreshIcon,
         },
         {
             path: '/properties',
@@ -168,7 +167,7 @@ export default {
             name: 'Properties',
             section: 'CONFIGURATION',
             component: PropertiesContainer,
-            iconProp: faSlidersH,
+            iconProp: AdjustmentsIcon,
         },
         {
             path: '/motd',
@@ -176,7 +175,7 @@ export default {
             name: 'MOTD Maker',
             section: 'CONFIGURATION',
             component: MotdContainer,
-            iconProp: faCommentDots,
+            iconProp: ChatAlt2Icon,
         },
         {
             path: '/icon',
@@ -190,14 +189,14 @@ export default {
             name: 'Schedules',
             section: 'CONFIGURATION',
             component: ScheduleContainer,
-            iconProp: faClock,
+            iconProp: CalendarIcon,
         },
         {
             path: '/schedules/:id',
             permission: 'schedule.*',
             name: undefined,
             component: ScheduleEditContainer,
-            iconProp: faClock,
+            iconProp: CalendarIcon,
         },
         {
             path: '/users',
@@ -217,7 +216,7 @@ export default {
             name: 'Settings',
             section: 'CONFIGURATION',
             component: SettingsContainer,
-            iconProp: faCogs,
+            iconProp: CogIcon,
         },
         {
             path: '/players',
@@ -225,7 +224,7 @@ export default {
             name: 'Player Manager',
             section: 'CONFIGURATION',
             component: PlayerListContainer,
-            iconProp: faUsers,
+            iconProp: UsersIcon,
         },
         {
             path: '/activity',
@@ -233,7 +232,7 @@ export default {
             name: 'Activity',
             section: 'CONFIGURATION',
             component: ServerActivityLogContainer,
-            iconProp: faPaperclip,
+            iconProp: ClipboardListIcon,
         },
     ],
 } as Routes;

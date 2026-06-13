@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components/macro';
-import { keyframes } from 'styled-components';
+import { keyframes } from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import updateStartupVariable from '@/api/server/updateStartupVariable';
 import reinstallServer from '@/api/server/reinstallServer';

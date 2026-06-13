@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components/macro';
-import { keyframes } from 'styled-components';
+import { keyframes } from 'styled-components/macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faSearch, faDownload, faStar, faExternalLinkAlt,

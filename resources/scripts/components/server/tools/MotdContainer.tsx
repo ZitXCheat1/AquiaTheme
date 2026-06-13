@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import styled from 'styled-components/macro';
-import { keyframes, css } from 'styled-components';
+import { keyframes, css } from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import getFileContents from '@/api/server/files/getFileContents';
 import saveFileContents from '@/api/server/files/saveFileContents';
