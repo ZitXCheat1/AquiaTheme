@@ -35,10 +35,10 @@ const ITEM_TEX: Record<string, string> = {
 interface Player {
     /** real Minecraft username — used in commands and head lookups */
     username: string;
-    /** stripped display string from /list, may include rank prefix like "[OWNER ] ItzNotVexoffx" */
+    /** raw entry from /list with ANSI codes intact, rendered as colored spans */
+    ansiRaw: string;
+    /** stripped display string for search/sort */
     displayName: string;
-    /** optional parsed rank prefix without brackets, e.g. "OWNER" */
-    rank?: string;
     health?: number;
     maxHealth?: number;
     gamemode?: string;
@@ -59,26 +59,71 @@ function stripCodes(s: string): string {
         .trim();
 }
 
-/** Parse one cleaned entry like "[OWNER ] ItzNotVexoffx" into rank + username. */
-function parseEntry(cleaned: string): { displayName: string; username: string; rank?: string } {
+/** Pull the real Minecraft username out of an ANSI/§-tagged entry. */
+function extractUsername(raw: string): string {
+    const cleaned = stripCodes(raw);
     const tokens = cleaned.split(/\s+/).filter(Boolean);
-    const username = tokens[tokens.length - 1] ?? cleaned;
-    const rankMatch = cleaned.match(/^\[([^\]]+)\]/);
-    return {
-        displayName: cleaned,
-        username,
-        rank: rankMatch ? rankMatch[1].trim() : undefined,
-    };
+    return tokens[tokens.length - 1] ?? cleaned;
 }
 
-const RANK_COLOR: Record<string,string> = {
-    OWNER: '#ef4444', ADMIN: '#f59e0b', MOD: '#3b82f6', DEV: '#a855f7',
-    STAFF: '#3b82f6', VIP: '#08cd00', MVP: '#f59e0b',
+/** ANSI SGR color palette (xterm bright + standard). */
+const ANSI_COLORS: Record<number,string> = {
+    30:'#3b3b3b', 31:'#cc4444', 32:'#3fb950', 33:'#d29922', 34:'#3b82f6', 35:'#bf5af2', 36:'#39c5cf', 37:'#dcdcdc',
+    90:'#8b95a7', 91:'#ff6b6b', 92:'#7ee787', 93:'#f0c674', 94:'#79b8ff', 95:'#d2a8ff', 96:'#56d4dd', 97:'#ffffff',
 };
-function rankColor(rank?: string): string {
-    if (!rank) return T.mute;
-    const key = rank.toUpperCase().replace(/[^A-Z]/g, '');
-    return RANK_COLOR[key] ?? T.blue;
+
+/** Parse an ANSI-coded string (with or without ESC bytes) into colored React spans. */
+function renderAnsi(raw: string): React.ReactNode[] {
+    const out: React.ReactNode[] = [];
+    let i = 0, k = 0, buf = '';
+    let color: string | undefined;
+    let bold = false;
+    const flush = () => {
+        if (!buf) return;
+        out.push(
+            <span key={k++} style={{ color: color ?? 'inherit', fontWeight: bold ? 800 : undefined }}>
+                {buf}
+            </span>
+        );
+        buf = '';
+    };
+    const apply = (codeStr: string) => {
+        const codes = codeStr ? codeStr.split(';').map(Number) : [0];
+        for (const c of codes) {
+            if (c === 0) { color = undefined; bold = false; }
+            else if (c === 1) bold = true;
+            else if (c === 22) bold = false;
+            else if (ANSI_COLORS[c]) color = ANSI_COLORS[c];
+        }
+    };
+    while (i < raw.length) {
+        // \x1b[…m
+        if (raw.charCodeAt(i) === 0x1b && raw[i+1] === '[') {
+            const m = raw.slice(i+2).match(/^([\d;]*)m/);
+            if (m) { flush(); apply(m[1]); i += 2 + m[0].length; continue; }
+        }
+        // bare CSI: [97m   (no ESC byte — appears in Pterodactyl websocket output)
+        if (raw[i] === '[') {
+            const m = raw.slice(i+1).match(/^(\d+(?:;\d+)*)m/);
+            if (m) { flush(); apply(m[1]); i += 1 + m[0].length; continue; }
+        }
+        // MC § code → translate to closest ANSI
+        if (raw[i] === '§' && i+1 < raw.length) {
+            const c = raw[i+1].toLowerCase();
+            const mc: Record<string,string> = {
+                '0':'#000000','1':'#0000AA','2':'#00AA00','3':'#00AAAA','4':'#AA0000','5':'#AA00AA',
+                '6':'#FFAA00','7':'#AAAAAA','8':'#555555','9':'#5555FF','a':'#55FF55','b':'#55FFFF',
+                'c':'#FF5555','d':'#FF55FF','e':'#FFFF55','f':'#FFFFFF',
+            };
+            if (mc[c]) { flush(); color = mc[c]; bold = false; i += 2; continue; }
+            if (c === 'l') { flush(); bold = true; i += 2; continue; }
+            if (c === 'r') { flush(); color = undefined; bold = false; i += 2; continue; }
+            if (/[k-o]/.test(c)) { i += 2; continue; }
+        }
+        buf += raw[i++];
+    }
+    flush();
+    return out;
 }
 
 /* ── styled ──────────────────────────────────────────────────────── */
@@ -165,7 +210,13 @@ const RankChip = styled.span<{ $color:string }>`
     font-family:'Inter',sans-serif;
     white-space:nowrap;
 `;
-const PlayerName = styled.div`font-size:.95rem;font-weight:700;color:${T.text};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;`;
+const PlayerName = styled.div`
+    font-size:.95rem;font-weight:700;color:${T.text};
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
+    font-family:'Inter','JetBrains Mono','Menlo',monospace;
+    letter-spacing:.01em;
+    & > span{font-weight:inherit;}
+`;
 const PlayerMeta = styled.div`font-size:.7rem;color:${T.dim};display:flex;gap:10px;flex-wrap:wrap;align-items:center;`;
 const PlayerMetaItem = styled.span`display:inline-flex;align-items:center;gap:4px;`;
 
@@ -274,18 +325,33 @@ export default function PlayerManagerContainer() {
     }, [log]);
 
     useWebsocketEvent(SocketEvent.CONSOLE_OUTPUT, (data: string) => {
+        // Match the "There are X of a max of Y players online:" line. The colon and the
+        // text after it can include ANSI codes — match against the stripped form to find
+        // it, but operate on the raw data so we can split with codes preserved.
         const cleaned = stripCodes(data);
-        const m = cleaned.match(/There are \d+ of a max of \d+ players online:(.*)/);
-        if (!m) return;
-        const raw = m[1].trim();
-        const entries = raw ? raw.split(',').map(s => stripCodes(s)).filter(Boolean) : [];
-        const parsed = entries.map(parseEntry);
+        if (!/There are \d+ of a max of \d+ players online:/.test(cleaned)) return;
+
+        // Find where the player list starts in the RAW string (after the first ":")
+        const colonIdx = data.indexOf(':');
+        const rawList = colonIdx >= 0 ? data.slice(colonIdx + 1) : '';
+
+        // Entries are comma-separated; commas only appear between players (ANSI codes
+        // don't contain commas), so a plain split is safe.
+        const rawEntries = rawList.split(',').map(s => s.trim()).filter(s => stripCodes(s).length > 0);
+
+        const parsed = rawEntries.map(r => ({
+            ansiRaw: r,
+            displayName: stripCodes(r),
+            username: extractUsername(r),
+        }));
 
         setPlayers(prev => {
             const byUser = new Map(prev.map(p => [p.username, p]));
             return parsed.map(p => {
                 const ex = byUser.get(p.username);
-                return ex ? { ...ex, displayName: p.displayName, rank: p.rank } : { ...p, online: true };
+                return ex
+                    ? { ...ex, ansiRaw: p.ansiRaw, displayName: p.displayName }
+                    : { ...p, online: true };
             });
         });
         setLoading(false);
@@ -310,8 +376,7 @@ export default function PlayerManagerContainer() {
         if (!q) return players;
         return players.filter(p =>
             p.username.toLowerCase().includes(q) ||
-            p.displayName.toLowerCase().includes(q) ||
-            (p.rank?.toLowerCase().includes(q) ?? false)
+            p.displayName.toLowerCase().includes(q)
         );
     }, [players, query]);
 
@@ -394,7 +459,7 @@ export default function PlayerManagerContainer() {
                     {filtered.map(player => {
                         const hpPct = player.health != null && player.maxHealth
                             ? Math.round((player.health/player.maxHealth)*100) : 100;
-                        const accent = rankColor(player.rank);
+                        const accent = T.accent;
                         return (
                             <PlayerCard
                                 key={player.username}
@@ -413,10 +478,9 @@ export default function PlayerManagerContainer() {
                                         />
                                     </Avatar>
                                     <PlayerInfo>
-                                        <PlayerNameRow>
-                                            {player.rank && <RankChip $color={accent}>{player.rank}</RankChip>}
-                                            <PlayerName>{player.username}</PlayerName>
-                                        </PlayerNameRow>
+                                        <PlayerName title={player.displayName}>
+                                            {renderAnsi(player.ansiRaw)}
+                                        </PlayerName>
                                         <PlayerMeta>
                                             {player.gamemode && (
                                                 <PlayerMetaItem>
