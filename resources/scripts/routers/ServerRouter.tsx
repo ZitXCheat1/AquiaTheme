@@ -19,6 +19,7 @@ import ConflictStateRenderer from '@/components/server/ConflictStateRenderer';
 import PermissionRoute from '@/components/elements/PermissionRoute';
 import routes from '@/routers/routes';
 import Sidebar from '@/components/Sidebar';
+import AutoServerIconBootstrap from '@/components/server/AutoServerIconBootstrap';
 
 export default () => {
     const match = useRouteMatch<{ id: string }>();
@@ -128,6 +129,7 @@ export default () => {
                     <InstallListener />
                     <TransferListener />
                     <WebsocketHandler />
+                    <AutoServerIconBootstrap />
                     <div className='content-container' style={{ marginLeft: 'calc(var(--sidebar-size, 210px) + 36px)', minHeight: 'calc(100vh - 3.5rem)', paddingRight: '24px', paddingTop: '8px', transition: 'margin-left 0.32s cubic-bezier(0.22,1,0.36,1)' }}>
                         {inConflictState && (!rootAdmin || (rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
                             <ConflictStateRenderer />

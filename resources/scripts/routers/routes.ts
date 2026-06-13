@@ -32,6 +32,8 @@ import {
     CodeIcon,
     PhotographIcon,
     ServerIcon,
+    LightningBoltIcon,
+    SpeakerphoneIcon,
 } from '@heroicons/react/outline';
 
 // Each of the router files is already code split out appropriately — so
@@ -48,6 +50,8 @@ const MotdContainer = lazy(() => import('@/components/server/tools/MotdContainer
 const ServerIconContainer = lazy(() => import('@/components/server/tools/ServerIconContainer'));
 const PlayerListContainer = lazy(() => import('@/components/server/tools/PlayerListContainer'));
 const PlayerManagerContainer = lazy(() => import('@/components/server/tools/PlayerManagerContainer'));
+const ConsoleMacrosContainer = lazy(() => import('@/components/server/tools/ConsoleMacrosContainer'));
+const ScheduledBroadcastsContainer = lazy(() => import('@/components/server/tools/ScheduledBroadcastsContainer'));
 
 interface RouteDefinition {
     path: string;
@@ -226,6 +230,22 @@ export default {
             section: 'CONFIGURATION',
             component: PlayerManagerContainer,
             iconProp: UsersIcon,
+        },
+        {
+            path: '/macros',
+            permission: null,
+            name: 'Console Macros',
+            section: 'CONFIGURATION',
+            component: ConsoleMacrosContainer,
+            iconProp: LightningBoltIcon,
+        },
+        {
+            path: '/broadcasts',
+            permission: null,
+            name: 'Scheduled Broadcasts',
+            section: 'CONFIGURATION',
+            component: ScheduledBroadcastsContainer,
+            iconProp: SpeakerphoneIcon,
         },
         {
             path: '/activity',
