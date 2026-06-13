@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import styled from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import { Combobox } from '@/components/elements/ui';
@@ -6,122 +6,215 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faSync, faUser, faHeart, faSkull, faBan, faShieldAlt,
     faGamepad, faExclamationTriangle, faStar, faCrosshairs,
-    faPaintBrush, faMap, faEye, faKick, faBolt,
+    faPaintBrush, faMap, faEye, faBolt, faUsers, faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import { SocketEvent } from '@/components/server/events';
 
-/* ── MC texture CDN ──────────────────────────────────────────────── */
-const MC_BASE = 'https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21/assets/minecraft/textures';
-
-const ITEM_TEX: Record<string, string> = {
-    'Diamond Sword':  `${MC_BASE}/item/diamond_sword.png`,
-    'Iron Pickaxe':   `${MC_BASE}/item/iron_pickaxe.png`,
-    'Bread':          `${MC_BASE}/item/bread.png`,
-    'Oak Log':        `${MC_BASE}/block/oak_log.png`,
-    'Arrow':          `${MC_BASE}/item/arrow.png`,
-    'Torch':          `${MC_BASE}/block/torch.png`,
-    'Diamond':        `${MC_BASE}/item/diamond.png`,
-    'Cooked Beef':    `${MC_BASE}/item/cooked_beef.png`,
-    'Golden Apple':   `${MC_BASE}/item/golden_apple.png`,
-    'Ender Pearl':    `${MC_BASE}/item/ender_pearl.png`,
-    'TNT':            `${MC_BASE}/block/tnt_side.png`,
-    'Iron Sword':     `${MC_BASE}/item/iron_sword.png`,
+/* ── design tokens ───────────────────────────────────────────────── */
+const T = {
+    bg:'#0b0f14', panel:'#121821', panel2:'#171f2a',
+    line:'rgba(255,255,255,0.06)', lineH:'rgba(255,255,255,0.12)',
+    text:'#e5e7eb', dim:'#8b95a7', mute:'#4b5563',
+    accent:'#08cd00', accentDim:'rgba(8,205,0,0.12)',
+    danger:'#ef4444', warn:'#f59e0b', blue:'#3b82f6', purple:'#a855f7',
 };
 
-/* ── types ───────────────────────────────────────────────────────── */
-interface Player { name: string; health?: number; maxHealth?: number; gamemode?: string; level?: number; online: boolean; }
+/* ── MC texture CDN ──────────────────────────────────────────────── */
+const MC_BASE = 'https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21/assets/minecraft/textures';
+const ITEM_TEX: Record<string, string> = {
+    'Diamond Sword':`${MC_BASE}/item/diamond_sword.png`, 'Iron Pickaxe':`${MC_BASE}/item/iron_pickaxe.png`,
+    'Bread':`${MC_BASE}/item/bread.png`, 'Oak Log':`${MC_BASE}/block/oak_log.png`,
+    'Arrow':`${MC_BASE}/item/arrow.png`, 'Torch':`${MC_BASE}/block/torch.png`,
+    'Diamond':`${MC_BASE}/item/diamond.png`, 'Cooked Beef':`${MC_BASE}/item/cooked_beef.png`,
+    'Golden Apple':`${MC_BASE}/item/golden_apple.png`, 'Ender Pearl':`${MC_BASE}/item/ender_pearl.png`,
+    'TNT':`${MC_BASE}/block/tnt_side.png`, 'Iron Sword':`${MC_BASE}/item/iron_sword.png`,
+};
+
+interface Player {
+    /** real Minecraft username — used in commands and head lookups */
+    username: string;
+    /** stripped display string from /list, may include rank prefix like "[OWNER ] ItzNotVexoffx" */
+    displayName: string;
+    /** optional parsed rank prefix without brackets, e.g. "OWNER" */
+    rank?: string;
+    health?: number;
+    maxHealth?: number;
+    gamemode?: string;
+    level?: number;
+    online: boolean;
+}
 interface InvItem { n: string; q: number; }
 
+/* ── helpers ─────────────────────────────────────────────────────── */
+/** Strip ANSI escape sequences (with or without ESC byte) and MC color codes. */
+function stripCodes(s: string): string {
+    return s
+        .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '')      // ANSI escape sequences
+        .replace(/\[[0-9;]*[A-Za-z]/g, '')     // same, redundant safety
+        .replace(/\[(\d+;?)+m/g, '')                  // bare CSI-stripped color codes that survived
+        .replace(/§[0-9a-fk-or]/gi, '')               // MC formatting codes
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/** Parse one cleaned entry like "[OWNER ] ItzNotVexoffx" into rank + username. */
+function parseEntry(cleaned: string): { displayName: string; username: string; rank?: string } {
+    const tokens = cleaned.split(/\s+/).filter(Boolean);
+    const username = tokens[tokens.length - 1] ?? cleaned;
+    const rankMatch = cleaned.match(/^\[([^\]]+)\]/);
+    return {
+        displayName: cleaned,
+        username,
+        rank: rankMatch ? rankMatch[1].trim() : undefined,
+    };
+}
+
+const RANK_COLOR: Record<string,string> = {
+    OWNER: '#ef4444', ADMIN: '#f59e0b', MOD: '#3b82f6', DEV: '#a855f7',
+    STAFF: '#3b82f6', VIP: '#08cd00', MVP: '#f59e0b',
+};
+function rankColor(rank?: string): string {
+    if (!rank) return T.mute;
+    const key = rank.toUpperCase().replace(/[^A-Z]/g, '');
+    return RANK_COLOR[key] ?? T.blue;
+}
+
 /* ── styled ──────────────────────────────────────────────────────── */
-const Page = styled.div`padding: 24px; color: #fff; font-family: 'Inter', sans-serif;`;
-const Header = styled.div`display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;`;
-const Title = styled.h2`font-size:1rem;font-weight:700;color:#f1f5f9;margin:0;display:flex;align-items:center;gap:8px;`;
+const Page = styled.div`padding:24px;color:${T.text};font-family:'Inter',sans-serif;display:flex;flex-direction:column;gap:18px;`;
+
+const Header = styled.div`display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;`;
+const TitleBlock = styled.div`display:flex;align-items:center;gap:12px;`;
+const TitleIcon = styled.div`
+    width:36px;height:36px;border-radius:9px;
+    background:${T.accentDim};color:${T.accent};
+    display:flex;align-items:center;justify-content:center;font-size:.95rem;
+`;
+const TitleText = styled.div`display:flex;flex-direction:column;gap:2px;`;
+const Title = styled.h2`font-size:1.05rem;font-weight:700;margin:0;letter-spacing:-.01em;color:${T.text};`;
+const Subtitle = styled.p`margin:0;font-size:.78rem;color:${T.dim};`;
+
 const Toolbar = styled.div`display:flex;align-items:center;gap:8px;flex-wrap:wrap;`;
 
-const Btn = styled.button<{ variant?: 'primary'|'danger'|'ghost'|'warn' }>`
-    display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;
-    font-size:.8rem;font-weight:500;cursor:pointer;border:2px solid transparent;
-    transition:all .15s;white-space:nowrap;font-family:'Inter',sans-serif;
-    ${p=>p.variant==='primary'?`background:#08cd00;border-color:#08cd00;color:#050d05;&:hover{background:#07b300;}`
-    :p.variant==='danger'?`background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.4);color:#ef4444;&:hover{background:rgba(239,68,68,0.18);}`
-    :p.variant==='warn'?`background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.4);color:#f59e0b;&:hover{background:rgba(245,158,11,0.18);}`
-    :`background:#0e140e;border-color:rgba(8,205,0,0.3);color:#94a3b8;&:hover{border-color:rgba(8,205,0,0.6);color:#fff;}`}
+const Btn = styled.button<{ kind?: 'primary'|'ghost'|'danger'|'warn' }>`
+    display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:8px;
+    font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid transparent;
+    transition:background .12s, border-color .12s, color .12s;font-family:'Inter',sans-serif;line-height:1;
+    ${p=>p.kind==='primary'?`background:${T.accent};color:#06200a;&:hover{background:#0ee300;}`
+        :p.kind==='danger'?`background:rgba(239,68,68,0.08);color:${T.danger};border-color:rgba(239,68,68,0.3);&:hover{background:rgba(239,68,68,0.16);}`
+        :p.kind==='warn'?`background:rgba(245,158,11,0.08);color:${T.warn};border-color:rgba(245,158,11,0.3);&:hover{background:rgba(245,158,11,0.16);}`
+        :`background:transparent;color:${T.dim};border-color:${T.lineH};&:hover{color:${T.text};border-color:rgba(255,255,255,0.22);}`}
     &:disabled{opacity:.4;cursor:default;}
 `;
 
-const StatsRow = styled.div`display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px;`;
-const StatCard = styled.div`background:#0e140e;border:2px solid rgba(8,205,0,0.18);border-radius:10px;padding:14px 16px;`;
-const StatLabel = styled.div`font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#4b5a72;margin-bottom:4px;`;
-const StatValue = styled.div`font-size:1.4rem;font-weight:700;color:#08cd00;font-variant-numeric:tabular-nums;`;
-
-const PlayerGrid = styled.div`display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;`;
-
-const PlayerCard = styled(motion.div)<{ $selected?: boolean }>`
-    background:#0e140e;
-    border:2px solid ${p=>p.$selected?'rgba(8,205,0,0.6)':'rgba(8,205,0,0.18)'};
-    border-radius:12px;padding:16px;cursor:pointer;transition:border-color .15s;
-    box-shadow:${p=>p.$selected?'0 0 16px rgba(8,205,0,0.12)':'none'};
-    &:hover{border-color:rgba(8,205,0,0.45);}
+const SearchWrap = styled.div`
+    position:relative;display:flex;align-items:center;
+    background:${T.panel};border:1px solid ${T.line};border-radius:8px;
+    padding:0 12px;min-width:240px;
+    transition:border-color .12s;
+    &:focus-within{border-color:${T.lineH};}
+`;
+const SearchInput = styled.input`
+    flex:1;background:transparent;border:0;outline:none;padding:9px 0 9px 8px;
+    color:${T.text};font-size:.8rem;font-family:'Inter',sans-serif;
+    &::placeholder{color:${T.mute};}
 `;
 
-const PlayerTop = styled.div`display:flex;align-items:center;gap:12px;margin-bottom:12px;`;
-const Avatar = styled.div`
-    width:46px;height:46px;border-radius:8px;
-    background:rgba(8,205,0,0.08);border:2px solid rgba(8,205,0,0.3);
+const StatsRow = styled.div`display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;`;
+const StatCard = styled.div`
+    background:${T.panel};border:1px solid ${T.line};border-radius:10px;padding:14px 16px;
+    display:flex;align-items:center;gap:12px;
+`;
+const StatIcon = styled.div<{ $color:string }>`
+    width:38px;height:38px;border-radius:9px;
+    background:${p=>p.$color}1a;color:${p=>p.$color};
+    display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;
+`;
+const StatLabel = styled.div`font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:${T.mute};`;
+const StatValue = styled.div`font-size:1.15rem;font-weight:700;color:${T.text};font-variant-numeric:tabular-nums;margin-top:2px;`;
+
+const PlayerGrid = styled.div`display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;`;
+
+const PlayerCard = styled(motion.div)<{ $selected?: boolean; $accent: string }>`
+    position:relative;background:${T.panel};
+    border:1px solid ${p=>p.$selected?p.$accent+'66':T.line};
+    border-radius:12px;padding:16px;cursor:pointer;transition:border-color .15s, background .15s;
+    box-shadow:${p=>p.$selected?`0 0 0 1px ${p.$accent}33`:'none'};
+    &:hover{border-color:${T.lineH};}
+    &::before{
+        content:'';position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:0 3px 3px 0;
+        background:${p=>p.$accent};opacity:${p=>p.$selected?1:0.7};
+    }
+`;
+
+const PlayerTop = styled.div`display:flex;align-items:center;gap:12px;margin-bottom:14px;`;
+const Avatar = styled.div<{ $ring:string }>`
+    width:46px;height:46px;border-radius:10px;
+    background:${T.panel2};border:1.5px solid ${p=>p.$ring};
     display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;
+    box-shadow:0 0 0 3px ${p=>p.$ring}1a;
 `;
-const PlayerInfo = styled.div`flex:1;min-width:0;`;
-const PlayerName = styled.div`font-size:.9rem;font-weight:700;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
-const PlayerMeta = styled.div`font-size:.72rem;color:#4b5a72;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;`;
+const PlayerInfo = styled.div`flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;`;
+const PlayerNameRow = styled.div`display:flex;align-items:center;gap:6px;flex-wrap:wrap;`;
+const RankChip = styled.span<{ $color:string }>`
+    font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 7px;border-radius:999px;
+    color:${p=>p.$color};background:${p=>p.$color}1a;
+    border:1px solid ${p=>p.$color}40;
+    font-family:'Inter',sans-serif;
+    white-space:nowrap;
+`;
+const PlayerName = styled.div`font-size:.95rem;font-weight:700;color:${T.text};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;`;
+const PlayerMeta = styled.div`font-size:.7rem;color:${T.dim};display:flex;gap:10px;flex-wrap:wrap;align-items:center;`;
+const PlayerMetaItem = styled.span`display:inline-flex;align-items:center;gap:4px;`;
 
-const HealthBar = styled.div`margin-bottom:10px;`;
-const HealthLabel = styled.div`font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4b5a72;margin-bottom:4px;display:flex;justify-content:space-between;`;
-const HealthTrack = styled.div`height:7px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);`;
+const HealthBar = styled.div`margin-bottom:12px;`;
+const HealthLabel = styled.div`font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${T.mute};margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;`;
+const HealthTrack = styled.div`height:6px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden;`;
 const HealthFill = styled.div<{ pct:number }>`
     height:100%;border-radius:999px;
     width:${p=>p.pct}%;
-    background:${p=>p.pct>50?'#08cd00':p.pct>25?'#f59e0b':'#ef4444'};
+    background:${p=>p.pct>50?T.accent:p.pct>25?T.warn:T.danger};
     transition:width .3s ease;
 `;
 
 const ActionRow = styled.div`display:flex;flex-wrap:wrap;gap:6px;`;
 const ActionBtn = styled.button<{ variant?: 'danger'|'warn'|'green' }>`
-    display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;
-    font-size:.72rem;font-weight:600;cursor:pointer;border:2px solid transparent;
-    transition:all .12s;font-family:'Inter',sans-serif;
-    ${p=>p.variant==='danger'?`background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.35);color:#ef4444;&:hover{background:rgba(239,68,68,0.16);}`
-    :p.variant==='warn'?`background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.35);color:#f59e0b;&:hover{background:rgba(245,158,11,0.16);}`
-    :`background:rgba(8,205,0,0.06);border-color:rgba(8,205,0,0.3);color:#4ade80;&:hover{background:rgba(8,205,0,0.12);}`}
+    display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;
+    font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid ${T.line};
+    transition:all .12s;font-family:'Inter',sans-serif;background:${T.panel2};
+    ${p=>p.variant==='danger'?`color:${T.danger};&:hover{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);}`
+        :p.variant==='warn'?`color:${T.warn};&:hover{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);}`
+        :`color:#a7f3a7;&:hover{background:rgba(8,205,0,0.08);border-color:rgba(8,205,0,0.3);}`}
 `;
 
-const InvGrid = styled.div`display:grid;grid-template-columns:repeat(9,1fr);gap:3px;margin-bottom:6px;`;
+const InvGrid = styled.div`display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:6px;`;
 const InvSlot = styled.div<{ filled?:boolean }>`
-    aspect-ratio:1;border-radius:4px;
-    background:${p=>p.filled?'#1a1a1a':'#111'};
-    border:2px solid ${p=>p.filled?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.06)'};
+    aspect-ratio:1;border-radius:5px;
+    background:${p=>p.filled?'#0f1318':'#0a0d12'};
+    border:1px solid ${p=>p.filled?T.lineH:T.line};
     display:flex;align-items:center;justify-content:center;
     position:relative;overflow:hidden;
-    &:hover{border-color:rgba(8,205,0,0.4);}
     transition:border-color .1s;
 `;
 const InvQty = styled.div`
-    position:absolute;bottom:1px;right:2px;
-    font-size:.5rem;color:#fff;font-weight:700;
+    position:absolute;bottom:1px;right:2px;font-size:.5rem;color:#fff;font-weight:700;
     text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;
     font-family:monospace;
 `;
 
-const Empty = styled.div`text-align:center;padding:60px;color:#374151;font-size:.875rem;`;
-const OnlineDot = styled.span`display:inline-block;width:7px;height:7px;border-radius:50%;background:#08cd00;box-shadow:0 0 6px #08cd00;margin-right:5px;`;
+const Empty = styled.div`
+    background:${T.panel};border:1px solid ${T.line};border-radius:12px;
+    text-align:center;padding:80px 24px;color:${T.mute};font-size:.875rem;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+`;
 
-const ConnStatus = styled.div<{ ok:boolean }>`
-    display:inline-flex;align-items:center;gap:6px;
-    font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:6px;
-    border:2px solid ${p=>p.ok?'rgba(8,205,0,0.4)':'rgba(239,68,68,0.4)'};
-    background:${p=>p.ok?'rgba(8,205,0,0.08)':'rgba(239,68,68,0.08)'};
-    color:${p=>p.ok?'#4ade80':'#f87171'};
+const ConnDot = styled.span<{ ok:boolean }>`
+    display:inline-flex;align-items:center;gap:6px;font-size:.72rem;color:${p=>p.ok?'#a7f3a7':'#fca5a5'};font-weight:600;
+    padding:5px 10px;border-radius:999px;background:${p=>p.ok?'rgba(8,205,0,0.1)':'rgba(239,68,68,0.1)'};
+    border:1px solid ${p=>p.ok?'rgba(8,205,0,0.25)':'rgba(239,68,68,0.25)'};
+    & span.dot{width:6px;height:6px;border-radius:50%;background:${p=>p.ok?T.accent:T.danger};}
 `;
 
 const GAMEMODES = [
@@ -130,7 +223,6 @@ const GAMEMODES = [
     { value:'adventure', label:'Adventure' },
     { value:'spectator', label:'Spectator' },
 ];
-
 const gmFaIcon: Record<string,any> = { survival:faCrosshairs, creative:faPaintBrush, adventure:faMap, spectator:faEye };
 
 const MOCK_INV: InvItem[] = [
@@ -140,21 +232,32 @@ const MOCK_INV: InvItem[] = [
     {n:'Ender Pearl',q:4},{n:'Iron Sword',q:1},{n:'TNT',q:10},
 ];
 
+/* ── command log ──── */
+const LogSection = styled.div`background:${T.panel};border:1px solid ${T.line};border-radius:12px;overflow:hidden;`;
+const LogHead = styled.div`
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-bottom:1px solid ${T.line};
+    font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${T.dim};
+`;
+const LogList = styled.div`max-height:180px;overflow-y:auto;padding:8px 0;`;
+const LogLine = styled.div<{ ok:boolean }>`
+    padding:4px 16px;font-family:'JetBrains Mono','Menlo',monospace;font-size:.72rem;
+    color:${p=>p.ok?'#a3e635':'#fca5a5'};
+`;
+
 /* ── component ───────────────────────────────────────────────────── */
 export default function PlayerManagerContainer() {
-    /* Use refs so cmd() never has stale socket values */
     const instanceRef = useRef<any>(null);
     const connectedRef = useRef(false);
-
     const instance  = ServerContext.useStoreState(s => s.socket.instance);
     const connected = ServerContext.useStoreState(s => s.socket.connected);
-
     useEffect(() => { instanceRef.current  = instance;  }, [instance]);
     useEffect(() => { connectedRef.current = connected; }, [connected]);
 
     const [players,  setPlayers]  = useState<Player[]>([]);
     const [loading,  setLoading]  = useState(false);
     const [selected, setSelected] = useState<string | null>(null);
+    const [query,    setQuery]    = useState('');
     const [cmdLog,   setCmdLog]   = useState<{ text:string; ok:boolean }[]>([]);
     const [gmTarget, setGmTarget] = useState<Record<string,string>>({});
 
@@ -171,16 +274,21 @@ export default function PlayerManagerContainer() {
     }, [log]);
 
     useWebsocketEvent(SocketEvent.CONSOLE_OUTPUT, (data: string) => {
-        const m = data.match(/There are \d+ of a max of \d+ players online:(.*)/);
-        if (m) {
-            const raw = m[1].trim();
-            const names = raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
-            setPlayers(prev => {
-                const existing = new Map(prev.map(p => [p.name, p]));
-                return names.map(name => existing.get(name) ?? { name, online: true });
+        const cleaned = stripCodes(data);
+        const m = cleaned.match(/There are \d+ of a max of \d+ players online:(.*)/);
+        if (!m) return;
+        const raw = m[1].trim();
+        const entries = raw ? raw.split(',').map(s => stripCodes(s)).filter(Boolean) : [];
+        const parsed = entries.map(parseEntry);
+
+        setPlayers(prev => {
+            const byUser = new Map(prev.map(p => [p.username, p]));
+            return parsed.map(p => {
+                const ex = byUser.get(p.username);
+                return ex ? { ...ex, displayName: p.displayName, rank: p.rank } : { ...p, online: true };
             });
-            setLoading(false);
-        }
+        });
+        setLoading(false);
     });
 
     const fetchPlayers = useCallback(() => {
@@ -189,37 +297,56 @@ export default function PlayerManagerContainer() {
         setTimeout(() => setLoading(false), 3000);
     }, [cmd]);
 
-    useEffect(() => { fetchPlayers(); }, []);
+    const hasFetchedRef = useRef(false);
+    useEffect(() => {
+        if (connected && instance && !hasFetchedRef.current) {
+            hasFetchedRef.current = true;
+            fetchPlayers();
+        }
+    }, [connected, instance, fetchPlayers]);
+
+    const filtered = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return players;
+        return players.filter(p =>
+            p.username.toLowerCase().includes(q) ||
+            p.displayName.toLowerCase().includes(q) ||
+            (p.rank?.toLowerCase().includes(q) ?? false)
+        );
+    }, [players, query]);
 
     const onlineCount = players.filter(p => p.online).length;
 
-    const doKill = (n: string) => cmd(`kill ${n}`);
-    const doHeal = (n: string) => cmd(`effect give ${n} minecraft:instant_health 1 255`);
-    const doKick = (n: string) => { cmd(`kick ${n} Kicked by admin`); setPlayers(pl => pl.filter(p => p.name !== n)); };
-    const doBan  = (n: string) => { cmd(`ban ${n}`); setPlayers(pl => pl.filter(p => p.name !== n)); };
-    const doOp   = (n: string) => cmd(`op ${n}`);
-    const doGm   = (n: string, gm: string) => {
-        cmd(`gamemode ${gm} ${n}`);
-        setPlayers(pl => pl.map(p => p.name === n ? { ...p, gamemode: gm } : p));
+    const doKill = (u: string) => cmd(`kill ${u}`);
+    const doHeal = (u: string) => cmd(`effect give ${u} minecraft:instant_health 1 255`);
+    const doKick = (u: string) => { cmd(`kick ${u} Kicked by admin`); setPlayers(pl => pl.filter(p => p.username !== u)); };
+    const doBan  = (u: string) => { cmd(`ban ${u}`); setPlayers(pl => pl.filter(p => p.username !== u)); };
+    const doOp   = (u: string) => cmd(`op ${u}`);
+    const doGm   = (u: string, gm: string) => {
+        cmd(`gamemode ${gm} ${u}`);
+        setPlayers(pl => pl.map(p => p.username === u ? { ...p, gamemode: gm } : p));
     };
 
     return (
         <Page>
             <Header>
-                <Title>
-                    <OnlineDot/>
-                    Player Manager
-                    {onlineCount > 0 && <span style={{fontSize:'.75rem',fontWeight:500,color:'#4b5a72'}}>({onlineCount} online)</span>}
-                </Title>
+                <TitleBlock>
+                    <TitleIcon><FontAwesomeIcon icon={faUsers}/></TitleIcon>
+                    <TitleText>
+                        <Title>Player Manager</Title>
+                        <Subtitle>Live roster, gamemode and moderation actions.</Subtitle>
+                    </TitleText>
+                </TitleBlock>
                 <Toolbar>
-                    <ConnStatus ok={connected}>
-                        <span style={{width:6,height:6,borderRadius:'50%',background:connected?'#08cd00':'#ef4444',display:'inline-block'}}/>
-                        {connected ? 'Connected' : 'Not connected'}
-                    </ConnStatus>
+                    <SearchWrap>
+                        <FontAwesomeIcon icon={faSearch} style={{color:T.mute,fontSize:'.75rem'}}/>
+                        <SearchInput placeholder='Search by name or rank…' value={query} onChange={e=>setQuery(e.target.value)}/>
+                    </SearchWrap>
+                    <ConnDot ok={connected}><span className='dot'/>{connected ? 'Connected' : 'Not connected'}</ConnDot>
                     <Btn onClick={fetchPlayers} disabled={loading || !connected}>
                         <FontAwesomeIcon icon={faSync} spin={loading}/> Refresh
                     </Btn>
-                    <Btn variant='warn' onClick={() => cmd('broadcast §cServer restarting soon!')}>
+                    <Btn kind='warn' onClick={() => cmd('broadcast §cServer restarting soon!')}>
                         <FontAwesomeIcon icon={faExclamationTriangle}/> Broadcast
                     </Btn>
                 </Toolbar>
@@ -227,56 +354,90 @@ export default function PlayerManagerContainer() {
 
             <StatsRow>
                 <StatCard>
-                    <StatLabel>Online</StatLabel>
-                    <StatValue>{onlineCount}</StatValue>
+                    <StatIcon $color={T.accent}><FontAwesomeIcon icon={faUser}/></StatIcon>
+                    <div>
+                        <StatLabel>Online</StatLabel>
+                        <StatValue>{onlineCount}</StatValue>
+                    </div>
                 </StatCard>
                 <StatCard>
-                    <StatLabel>Avg Health</StatLabel>
-                    <StatValue style={{fontSize:'1.1rem',display:'flex',alignItems:'center',gap:6}}>
-                        {players.length > 0
-                            ? <><FontAwesomeIcon icon={faHeart} style={{color:'#ef4444',fontSize:'.9rem'}}/>{Math.round(players.reduce((a,p)=>a+(p.health??20),0)/players.length)}</>
-                            : '—'}
-                    </StatValue>
+                    <StatIcon $color={T.danger}><FontAwesomeIcon icon={faHeart}/></StatIcon>
+                    <div>
+                        <StatLabel>Avg Health</StatLabel>
+                        <StatValue>
+                            {players.length > 0
+                                ? Math.round(players.reduce((a,p)=>a+(p.health??20),0)/players.length)
+                                : '—'}
+                        </StatValue>
+                    </div>
                 </StatCard>
                 <StatCard>
-                    <StatLabel>Commands</StatLabel>
-                    <StatValue>{cmdLog.length}</StatValue>
+                    <StatIcon $color={T.blue}><FontAwesomeIcon icon={faBolt}/></StatIcon>
+                    <div>
+                        <StatLabel>Commands</StatLabel>
+                        <StatValue>{cmdLog.length}</StatValue>
+                    </div>
                 </StatCard>
             </StatsRow>
 
-            {players.length === 0 ? (
+            {filtered.length === 0 ? (
                 <Empty>
-                    <FontAwesomeIcon icon={faUser} style={{fontSize:'2rem',display:'block',margin:'0 auto 12px'}}/>
-                    {connected
-                        ? <>Click <strong>Refresh</strong> — sends <code>list</code> to the server.</>
-                        : <>Server is offline or not connected.</>}
+                    <FontAwesomeIcon icon={faUser} style={{fontSize:'2rem'}}/>
+                    {players.length === 0
+                        ? (connected
+                            ? <>Click <strong style={{color:T.text}}>Refresh</strong> to fetch the player list.</>
+                            : <>Server is offline or not connected.</>)
+                        : <>No players match "{query}".</>}
                 </Empty>
             ) : (
                 <PlayerGrid>
-                    {players.map(player => {
+                    {filtered.map(player => {
                         const hpPct = player.health != null && player.maxHealth
                             ? Math.round((player.health/player.maxHealth)*100) : 100;
+                        const accent = rankColor(player.rank);
                         return (
                             <PlayerCard
-                                key={player.name}
-                                $selected={selected===player.name}
-                                onClick={() => setSelected(s => s===player.name ? null : player.name)}
+                                key={player.username}
+                                $selected={selected===player.username}
+                                $accent={accent}
+                                onClick={() => setSelected(s => s===player.username ? null : player.username)}
                                 initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} layout
                             >
                                 <PlayerTop>
-                                    <Avatar>
+                                    <Avatar $ring={accent}>
                                         <img
-                                            src={`https://mc-heads.net/avatar/${player.name}/46`}
-                                            alt={player.name}
+                                            src={`https://mc-heads.net/avatar/${player.username}/46`}
+                                            alt={player.username}
                                             style={{width:'100%',height:'100%',objectFit:'cover',imageRendering:'pixelated'}}
                                             onError={e=>{(e.target as HTMLImageElement).src='https://mc-heads.net/avatar/Steve/46';}}
                                         />
                                     </Avatar>
                                     <PlayerInfo>
-                                        <PlayerName>{player.name}</PlayerName>
+                                        <PlayerNameRow>
+                                            {player.rank && <RankChip $color={accent}>{player.rank}</RankChip>}
+                                            <PlayerName>{player.username}</PlayerName>
+                                        </PlayerNameRow>
                                         <PlayerMeta>
-                                            {player.gamemode && <span><FontAwesomeIcon icon={gmFaIcon[player.gamemode]??faGamepad} style={{marginRight:4}}/>{player.gamemode}</span>}
-                                            {player.level   != null && <span><FontAwesomeIcon icon={faStar} style={{marginRight:4,color:'#f59e0b'}}/>Lvl {player.level}</span>}
+                                            {player.gamemode && (
+                                                <PlayerMetaItem>
+                                                    <FontAwesomeIcon icon={gmFaIcon[player.gamemode]??faGamepad}/>
+                                                    {player.gamemode}
+                                                </PlayerMetaItem>
+                                            )}
+                                            {player.level != null && (
+                                                <PlayerMetaItem>
+                                                    <FontAwesomeIcon icon={faStar} style={{color:T.warn}}/>
+                                                    Lvl {player.level}
+                                                </PlayerMetaItem>
+                                            )}
+                                            <PlayerMetaItem style={{color:T.mute,fontVariantNumeric:'tabular-nums'}}>
+                                                <span style={{
+                                                    display:'inline-block',width:6,height:6,borderRadius:'50%',
+                                                    background:player.online?T.accent:T.mute,
+                                                    boxShadow:player.online?`0 0 6px ${T.accent}`:undefined,
+                                                }}/>
+                                                {player.online ? 'Online' : 'Offline'}
+                                            </PlayerMetaItem>
                                         </PlayerMeta>
                                     </PlayerInfo>
                                 </PlayerTop>
@@ -285,50 +446,64 @@ export default function PlayerManagerContainer() {
                                     <HealthBar>
                                         <HealthLabel>
                                             <span>Health</span>
-                                            <span><FontAwesomeIcon icon={faHeart} style={{color:'#ef4444',marginRight:4}}/>{player.health}/{player.maxHealth??20}</span>
+                                            <span style={{color:T.text}}>{player.health}/{player.maxHealth??20}</span>
                                         </HealthLabel>
                                         <HealthTrack><HealthFill pct={hpPct}/></HealthTrack>
                                     </HealthBar>
                                 )}
 
                                 <ActionRow>
-                                    <ActionBtn onClick={e=>{e.stopPropagation();doHeal(player.name);}}>
+                                    <ActionBtn onClick={e=>{e.stopPropagation();doHeal(player.username);}}>
                                         <FontAwesomeIcon icon={faHeart}/> Heal
                                     </ActionBtn>
-                                    <ActionBtn variant='warn' onClick={e=>{e.stopPropagation();doKick(player.name);}}>
+                                    <ActionBtn variant='warn' onClick={e=>{e.stopPropagation();doKick(player.username);}}>
                                         <FontAwesomeIcon icon={faBolt}/> Kick
                                     </ActionBtn>
-                                    <ActionBtn variant='danger' onClick={e=>{e.stopPropagation();doKill(player.name);}}>
+                                    <ActionBtn variant='danger' onClick={e=>{e.stopPropagation();doKill(player.username);}}>
                                         <FontAwesomeIcon icon={faSkull}/> Kill
                                     </ActionBtn>
-                                    <ActionBtn variant='danger' onClick={e=>{e.stopPropagation();doBan(player.name);}}>
+                                    <ActionBtn variant='danger' onClick={e=>{e.stopPropagation();doBan(player.username);}}>
                                         <FontAwesomeIcon icon={faBan}/> Ban
                                     </ActionBtn>
-                                    <ActionBtn onClick={e=>{e.stopPropagation();doOp(player.name);}}>
+                                    <ActionBtn onClick={e=>{e.stopPropagation();doOp(player.username);}}>
                                         <FontAwesomeIcon icon={faShieldAlt}/> OP
                                     </ActionBtn>
                                 </ActionRow>
 
                                 <AnimatePresence>
-                                    {selected===player.name && (
+                                    {selected===player.username && (
                                         <motion.div
                                             initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}}
                                             style={{overflow:'hidden'}} onClick={e=>e.stopPropagation()}
                                         >
-                                            <div style={{marginTop:14,paddingTop:14,borderTop:'2px solid rgba(8,205,0,0.15)'}}>
+                                            <div style={{marginTop:14,paddingTop:14,borderTop:`1px solid ${T.line}`}}>
                                                 <div style={{marginBottom:14}}>
-                                                    <div style={{fontSize:'.68rem',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase',color:'#4b5a72',marginBottom:6}}>
+                                                    <div style={{fontSize:'.66rem',fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',color:T.mute,marginBottom:6}}>
                                                         <FontAwesomeIcon icon={faGamepad} style={{marginRight:5}}/> Change Gamemode
                                                     </div>
-                                                    <Combobox
-                                                        options={GAMEMODES}
-                                                        value={gmTarget[player.name]??player.gamemode??''}
-                                                        onChange={v=>{setGmTarget(g=>({...g,[player.name]:v}));doGm(player.name,v);}}
-                                                        placeholder='Select gamemode…'
-                                                    />
+                                                    <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:6}}>
+                                                        {GAMEMODES.map(gm => {
+                                                            const active = (gmTarget[player.username] ?? player.gamemode) === gm.value;
+                                                            return (
+                                                                <button key={gm.value} onClick={()=>{
+                                                                    setGmTarget(g=>({...g,[player.username]:gm.value}));
+                                                                    doGm(player.username, gm.value);
+                                                                }} style={{
+                                                                    display:'flex',alignItems:'center',justifyContent:'center',gap:5,
+                                                                    padding:'8px 6px',borderRadius:7,fontSize:'.72rem',fontWeight:600,
+                                                                    cursor:'pointer',fontFamily:'Inter,sans-serif',
+                                                                    border:`1px solid ${active?T.accent:T.line}`,
+                                                                    background:active?T.accentDim:T.panel2,
+                                                                    color:active?T.accent:T.dim,
+                                                                }}>
+                                                                    <FontAwesomeIcon icon={gmFaIcon[gm.value]}/> {gm.label}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
                                                 </div>
 
-                                                <div style={{fontSize:'.68rem',fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase',color:'#4b5a72',marginBottom:8}}>
+                                                <div style={{fontSize:'.66rem',fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',color:T.mute,marginBottom:8}}>
                                                     Inventory (simulated)
                                                 </div>
                                                 <InvGrid>
@@ -338,9 +513,7 @@ export default function PlayerManagerContainer() {
                                                         return (
                                                             <InvSlot key={i} filled={!!item} title={item?.n}>
                                                                 {item && tex && (
-                                                                    <img
-                                                                        src={tex}
-                                                                        alt={item.n}
+                                                                    <img src={tex} alt={item.n}
                                                                         style={{width:'80%',height:'80%',imageRendering:'pixelated',objectFit:'contain'}}
                                                                         onError={e=>{(e.target as HTMLImageElement).style.display='none';}}
                                                                     />
@@ -350,7 +523,7 @@ export default function PlayerManagerContainer() {
                                                         );
                                                     })}
                                                 </InvGrid>
-                                                <div style={{fontSize:'.65rem',color:'#374151',marginTop:4}}>
+                                                <div style={{fontSize:'.7rem',color:T.mute,marginTop:6}}>
                                                     Live inventory requires a server-side plugin
                                                 </div>
                                             </div>
@@ -364,14 +537,17 @@ export default function PlayerManagerContainer() {
             )}
 
             {cmdLog.length > 0 && (
-                <div style={{marginTop:20}}>
-                    <div style={{fontSize:'.68rem',fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',color:'#4b5a72',marginBottom:8}}>Command Log</div>
-                    <div style={{background:'#080d08',border:'2px solid rgba(8,205,0,0.18)',borderRadius:8,padding:'10px 14px',maxHeight:150,overflowY:'auto'}}>
+                <LogSection>
+                    <LogHead>
+                        <span>Command Log</span>
+                        <Btn onClick={()=>setCmdLog([])} style={{padding:'4px 10px',fontSize:'.7rem'}}>Clear</Btn>
+                    </LogHead>
+                    <LogList>
                         {cmdLog.map((l,i)=>(
-                            <div key={i} style={{fontSize:'.75rem',color:l.ok?'#4ade80':'#f87171',fontFamily:'monospace',marginBottom:2,opacity:Math.max(0.3,1-i*0.04)}}>{l.text}</div>
+                            <LogLine key={i} ok={l.ok}>{l.text}</LogLine>
                         ))}
-                    </div>
-                </div>
+                    </LogList>
+                </LogSection>
             )}
         </Page>
     );
