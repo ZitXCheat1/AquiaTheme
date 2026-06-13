@@ -47,6 +47,7 @@ const PropertiesContainer = lazy(() => import('@/components/server/tools/Propert
 const MotdContainer = lazy(() => import('@/components/server/tools/MotdContainer'));
 const ServerIconContainer = lazy(() => import('@/components/server/tools/ServerIconContainer'));
 const PlayerListContainer = lazy(() => import('@/components/server/tools/PlayerListContainer'));
+const PlayerManagerContainer = lazy(() => import('@/components/server/tools/PlayerManagerContainer'));
 
 interface RouteDefinition {
     path: string;
@@ -223,7 +224,7 @@ export default {
             permission: 'file.*',
             name: 'Player Manager',
             section: 'CONFIGURATION',
-            component: PlayerListContainer,
+            component: PlayerManagerContainer,
             iconProp: UsersIcon,
         },
         {

@@ -6,6 +6,7 @@ import saveFileContents from '@/api/server/files/saveFileContents';
 import getFileUploadUrl from '@/api/server/files/getFileUploadUrl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSync, faSave, faImage, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { Combobox } from '@/components/elements/ui';
 
 /* â”€â”€â”€ Property type detection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 type PropType = 'boolean' | 'enum' | 'number' | 'string';
@@ -463,17 +464,14 @@ export default function PropertiesContainer() {
                                         <ToggleSlider />
                                     </ToggleWrap>
                                 ) : type === 'enum' ? (
-                                    <EnumWrap>
-                                        {ENUM_PROPS[key].map(opt => (
-                                            <EnumBtn
-                                                key={opt}
-                                                active={value === opt}
-                                                onClick={() => update(key, opt)}
-                                            >
-                                                {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                                            </EnumBtn>
-                                        ))}
-                                    </EnumWrap>
+                                    <div style={{ minWidth: 160 }}>
+                                        <Combobox
+                                            options={ENUM_PROPS[key].map(opt => ({ value: opt, label: opt.charAt(0).toUpperCase() + opt.slice(1) }))}
+                                            value={value}
+                                            onChange={v => update(key, v)}
+                                            placeholder='Select…'
+                                        />
+                                    </div>
                                 ) : (
                                     <PropInput
                                         type={type === 'number' ? 'number' : 'text'}

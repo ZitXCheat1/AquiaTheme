@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components/macro';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /* ── types ─────────────────────────────────────────────────────────────── */
 interface SliderProps {
@@ -205,5 +205,4 @@ const Slider: React.FC<SliderProps> = ({
     );
 };
 
-import { AnimatePresence } from 'framer-motion';
 export default Slider;

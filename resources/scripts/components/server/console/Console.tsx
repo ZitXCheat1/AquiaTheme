@@ -49,8 +49,8 @@ const terminalProps: ITerminalOptions = {
     allowTransparency: true,
     fontSize: 13,
     lineHeight: 1.2,
-    letterSpacing: -0.5,
-    fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Courier New', monospace",
+    letterSpacing: 0,
+    fontFamily: "'Courier New', Courier, monospace",
     fontWeight: '400',
     rows: 30,
     theme: theme,
@@ -158,7 +158,7 @@ export default () => {
             };
 
             // Wait for font to load so xterm measures cell width correctly
-            document.fonts.load("400 13px 'JetBrains Mono'").then(openTerminal).catch(openTerminal);
+            openTerminal();
         }
     }, [terminal, connected]);
 
