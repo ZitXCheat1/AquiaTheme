@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Field as FormikField, FieldProps } from 'formik';
-import Input from '@/components/elements/Input';
+import SmoothInput from '@/components/elements/ui/SmoothInput';
 import Label from '@/components/elements/Label';
 
 interface OwnProps {
@@ -23,7 +23,7 @@ const Field = forwardRef<HTMLInputElement, Props>(
                             {label}
                         </Label>
                     )}
-                    <Input
+                    <SmoothInput
                         id={id}
                         {...field}
                         {...props}
