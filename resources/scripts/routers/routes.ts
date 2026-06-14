@@ -12,6 +12,7 @@ import AccountOverviewContainer from '@/components/dashboard/AccountOverviewCont
 import AccountApiContainer from '@/components/dashboard/AccountApiContainer';
 import AccountSSHContainer from '@/components/dashboard/ssh/AccountSSHContainer';
 import ActivityLogContainer from '@/components/dashboard/activity/ActivityLogContainer';
+import ThemePreferencesContainer from '@/components/dashboard/ThemePreferencesContainer';
 import ServerActivityLogContainer from '@/components/server/ServerActivityLogContainer';
 import {
     TerminalIcon,
@@ -34,6 +35,11 @@ import {
     ServerIcon,
     LightningBoltIcon,
     SpeakerphoneIcon,
+    GlobeAltIcon,
+    ChartBarIcon,
+    ExclamationIcon,
+    CubeTransparentIcon,
+    ColorSwatchIcon,
 } from '@heroicons/react/outline';
 
 // Each of the router files is already code split out appropriately — so
@@ -52,6 +58,10 @@ const PlayerListContainer = lazy(() => import('@/components/server/tools/PlayerL
 const PlayerManagerContainer = lazy(() => import('@/components/server/tools/PlayerManagerContainer'));
 const ConsoleMacrosContainer = lazy(() => import('@/components/server/tools/ConsoleMacrosContainer'));
 const ScheduledBroadcastsContainer = lazy(() => import('@/components/server/tools/ScheduledBroadcastsContainer'));
+const WorldManagerContainer = lazy(() => import('@/components/server/tools/WorldManagerContainer'));
+const TpsMonitorContainer = lazy(() => import('@/components/server/tools/TpsMonitorContainer'));
+const CrashReportsContainer = lazy(() => import('@/components/server/tools/CrashReportsContainer'));
+const DataPackManagerContainer = lazy(() => import('@/components/server/tools/DataPackManagerContainer'));
 
 interface RouteDefinition {
     path: string;
@@ -101,6 +111,12 @@ export default {
             name: 'Activity',
             component: ActivityLogContainer,
             iconProp: ClipboardListIcon,
+        },
+        {
+            path: '/theme',
+            name: 'Theme',
+            component: ThemePreferencesContainer,
+            iconProp: ColorSwatchIcon,
         },
     ],
     server: [
@@ -246,6 +262,38 @@ export default {
             section: 'CONFIGURATION',
             component: ScheduledBroadcastsContainer,
             iconProp: SpeakerphoneIcon,
+        },
+        {
+            path: '/worlds',
+            permission: 'file.*',
+            name: 'Worlds',
+            section: 'MANAGEMENT',
+            component: WorldManagerContainer,
+            iconProp: GlobeAltIcon,
+        },
+        {
+            path: '/datapacks',
+            permission: 'file.*',
+            name: 'DataPacks',
+            section: 'MANAGEMENT',
+            component: DataPackManagerContainer,
+            iconProp: CubeTransparentIcon,
+        },
+        {
+            path: '/performance',
+            permission: null,
+            name: 'Performance',
+            section: 'MANAGEMENT',
+            component: TpsMonitorContainer,
+            iconProp: ChartBarIcon,
+        },
+        {
+            path: '/crash-reports',
+            permission: 'file.*',
+            name: 'Crash Reports',
+            section: 'MANAGEMENT',
+            component: CrashReportsContainer,
+            iconProp: ExclamationIcon,
         },
         {
             path: '/activity',

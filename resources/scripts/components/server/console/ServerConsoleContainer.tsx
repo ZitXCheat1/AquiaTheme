@@ -9,6 +9,7 @@ import Console from '@/components/server/console/Console';
 import StatGraphs from '@/components/server/console/StatGraphs';
 import PowerButtons from '@/components/server/console/PowerButtons';
 import ServerDetailsBlock from '@/components/server/console/ServerDetailsBlock';
+import NextScheduleWidget from '@/components/server/console/NextScheduleWidget';
 import { Alert } from '@/components/elements/alert';
 
 export type PowerAction = 'start' | 'stop' | 'restart' | 'kill';
@@ -58,6 +59,10 @@ const ServerConsoleContainer = () => {
                     </Spinner.Suspense>
                 </div>
                 <ServerDetailsBlock className={'w-52 flex-shrink-0 hidden lg:flex'} />
+            </div>
+            {/* Next scheduled task widget */}
+            <div className={'mb-3'}>
+                <NextScheduleWidget />
             </div>
             {/* Charts row */}
             <div className={'grid grid-cols-1 md:grid-cols-3 gap-3'}>

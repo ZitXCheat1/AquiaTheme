@@ -6,6 +6,7 @@ import updateStartupVariable from '@/api/server/updateStartupVariable';
 import reinstallServer from '@/api/server/reinstallServer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationTriangle, faCheck } from '@fortawesome/free-solid-svg-icons';
+import Combobox from '@/components/elements/ui/Combobox';
 
 type Software = 'paper' | 'purpur' | 'vanilla' | 'spigot' | 'fabric' | 'forge';
 
@@ -111,17 +112,6 @@ const Card = styled.div`
     background:#0e140e;border:1px solid rgba(8,205,0,0.1);border-radius:12px;padding:18px;margin-bottom:12px;
 `;
 const CardTitle = styled.div`font-size:0.78rem;font-weight:600;color:#7aab78;margin-bottom:10px;`;
-const Sel = styled.select`
-    width:100%;background:#0a0f0a;border:1px solid rgba(8,205,0,0.14);border-radius:8px;
-    color:#e8f5e8;font-size:0.8rem;font-family:'Inter',sans-serif;
-    padding:8px 32px 8px 10px;outline:none;cursor:pointer;transition:border-color 0.15s;
-    appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%233d5c3d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right 10px center;
-    &:hover,&:focus{border-color:rgba(8,205,0,0.3);}
-    option{background:#0a0f0a;}
-    &:disabled{opacity:0.45;cursor:default;}
-`;
 const DangerBox = styled.div`
     background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.16);
     border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;
@@ -227,11 +217,14 @@ export default function VersionChangerContainer() {
 
             <Card>
                 <CardTitle>Minecraft Version</CardTitle>
-                <Sel value={sel} onChange={e=>setSel(e.target.value)} disabled={fetching||!versions.length}>
-                    {fetching ? <option>Fetching...</option>
-                    : !versions.length ? <option>No versions</option>
-                    : versions.map(v=><option key={v} value={v}>{v}</option>)}
-                </Sel>
+                <Combobox
+                    options={versions.map(v => ({ value: v, label: v }))}
+                    value={sel}
+                    onChange={setSel}
+                    placeholder={fetching ? 'Fetching versions…' : !versions.length ? 'No versions available' : 'Select a version'}
+                    searchPlaceholder='Search versions…'
+                    disabled={fetching || !versions.length}
+                />
             </Card>
 
             <DangerBox>

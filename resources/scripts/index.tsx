@@ -6,6 +6,9 @@ import { setConfig } from 'react-hot-loader';
 // Enable language support.
 import './i18n';
 
+// Apply user's theme preferences (accent / font size / density) before render.
+import '@/components/dashboard/ThemePreferencesContainer';
+
 // Prevents page reloads while making component changes which
 // also avoids triggering constant loading indicators all over
 // the place in development.

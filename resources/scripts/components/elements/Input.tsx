@@ -7,11 +7,11 @@ export interface Props {
 }
 
 const light = css<Props>`
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(0,212,255,0.2);
-    color: #e2e8f0;
+    background: rgba(8,205,0,0.05);
+    border-color: rgba(8,205,0,0.18);
+    color: #e8f5e8;
     &:focus {
-        border-color: rgba(0,212,255,0.5);
+        border-color: rgba(8,205,0,0.45);
     }
 
     &:disabled {
@@ -41,14 +41,16 @@ const checkboxStyle = css<Props>`
 const inputStyle = css<Props>`
     resize: none;
     ${tw`appearance-none outline-none w-full min-w-0`};
-    ${tw`p-3 rounded text-sm transition-all duration-150`};
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(99, 102, 241, 0.18);
-    color: #e2e8f0;
+    ${tw`rounded text-sm transition-all duration-150`};
+    padding: 9px 12px;
+    font-family: 'Inter', sans-serif;
+    background: #0a0f0a;
+    border: 1px solid rgba(8, 205, 0, 0.14);
+    color: #e8f5e8;
     box-shadow: none;
 
     &::placeholder {
-        color: rgba(148, 163, 184, 0.5);
+        color: #2a3d2a;
     }
 
     & + .input-help {
@@ -62,15 +64,21 @@ const inputStyle = css<Props>`
     }
 
     &:hover:not(:disabled):not(:read-only) {
-        border-color: rgba(99, 102, 241, 0.35);
-        background: rgba(99, 102, 241, 0.05);
+        border-color: rgba(8, 205, 0, 0.3);
+        background: #0e140e;
     }
 
     &:not(:disabled):not(:read-only):focus {
-        border-color: rgba(99, 102, 241, 0.55);
-        background: rgba(99, 102, 241, 0.06);
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        border-color: rgba(8, 205, 0, 0.45);
+        background: #0e140e;
+        box-shadow: 0 0 0 3px rgba(8, 205, 0, 0.12);
         ${(props) => props.hasError && 'border-color: rgba(239,68,68,0.6); box-shadow: 0 0 0 3px rgba(239,68,68,0.1);'};
+    }
+
+    &:read-only {
+        background: #0a0f0a;
+        color: #94a3b8;
+        cursor: text;
     }
 
     &:disabled {
