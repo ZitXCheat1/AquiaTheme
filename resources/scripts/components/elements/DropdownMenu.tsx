@@ -9,16 +9,17 @@ interface Props {
 }
 
 export const DropdownButtonRow = styled.button<{ danger?: boolean }>`
-    ${tw`p-2 flex items-center rounded w-full text-neutral-500`};
+    ${tw`px-3 py-2 flex items-center rounded-md w-full text-neutral-200 text-sm`};
     transition: 150ms all ease;
 
     &:hover {
-        ${(props) => (props.danger ? tw`text-red-700 bg-red-100` : tw`text-neutral-700 bg-neutral-100`)};
+        ${(props) => (props.danger ? tw`text-red-200 bg-red-500/20` : tw`text-white bg-neutral-700`)};
     }
 `;
 
 interface State {
     posX: number;
+    posY: number;
     visible: boolean;
 }
 
@@ -27,6 +28,7 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 
     state: State = {
         posX: 0,
+        posY: 0,
         visible: false,
     };
 
@@ -40,7 +42,23 @@ class DropdownMenu extends React.PureComponent<Props, State> {
         if (this.state.visible && !prevState.visible && menu) {
             document.addEventListener('click', this.windowListener);
             document.addEventListener('contextmenu', this.contextMenuListener);
-            menu.style.left = `${Math.round(this.state.posX - menu.clientWidth)}px`;
+
+            const width = menu.clientWidth;
+            const height = menu.clientHeight;
+            const margin = 8;
+
+            let left = this.state.posX - width;
+            if (left < margin) left = margin;
+            if (left + width > window.innerWidth - margin) left = window.innerWidth - width - margin;
+
+            let top = this.state.posY + 8;
+            if (top + height > window.innerHeight - margin) {
+                top = this.state.posY - height - 8;
+            }
+            if (top < margin) top = margin;
+
+            menu.style.left = `${Math.round(left)}px`;
+            menu.style.top = `${Math.round(top)}px`;
         }
 
         if (!this.state.visible && prevState.visible) {
@@ -55,7 +73,9 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 
     onClickHandler = (e: React.MouseEvent<any, MouseEvent>) => {
         e.preventDefault();
-        this.triggerMenu(e.clientX);
+        e.stopPropagation();
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        this.triggerMenu(rect.right, rect.bottom);
     };
 
     contextMenuListener = () => this.setState({ visible: false });
@@ -76,9 +96,10 @@ class DropdownMenu extends React.PureComponent<Props, State> {
         }
     };
 
-    triggerMenu = (posX: number) =>
+    triggerMenu = (posX: number, posY: number) =>
         this.setState((s) => ({
             posX: !s.visible ? posX : s.posX,
+            posY: !s.visible ? posY : s.posY,
             visible: !s.visible,
         }));
 
@@ -93,8 +114,8 @@ class DropdownMenu extends React.PureComponent<Props, State> {
                             e.stopPropagation();
                             this.setState({ visible: false });
                         }}
-                        style={{ width: '12rem' }}
-                        css={tw`absolute bg-white p-2 rounded border border-neutral-700 shadow-lg text-neutral-500 z-50`}
+                        style={{ width: '13rem', position: 'fixed' }}
+                        css={tw`bg-neutral-800 p-1.5 rounded-lg border border-neutral-700 shadow-2xl text-neutral-200 z-50`}
                     >
                         {this.props.children}
                     </div>

@@ -167,7 +167,8 @@ export default ({ backup }: Props) => {
                     renderToggle={(onClick) => (
                         <button
                             onClick={onClick}
-                            css={tw`text-gray-200 transition-colors duration-150 hover:text-gray-100 p-2`}
+                            aria-label={'Backup options'}
+                            css={tw`w-9 h-9 flex items-center justify-center rounded-md text-neutral-300 transition-colors duration-150 hover:text-white hover:bg-neutral-600 focus:outline-none focus:bg-neutral-600`}
                         >
                             <FontAwesomeIcon icon={faEllipsisH} />
                         </button>
@@ -209,7 +210,8 @@ export default ({ backup }: Props) => {
             ) : (
                 <button
                     onClick={() => setModal('delete')}
-                    css={tw`text-gray-200 transition-colors duration-150 hover:text-gray-100 p-2`}
+                    aria-label={'Delete failed backup'}
+                    css={tw`w-9 h-9 flex items-center justify-center rounded-md text-neutral-300 transition-colors duration-150 hover:text-red-300 hover:bg-red-500/20 focus:outline-none`}
                 >
                     <FontAwesomeIcon icon={faTrashAlt} />
                 </button>
