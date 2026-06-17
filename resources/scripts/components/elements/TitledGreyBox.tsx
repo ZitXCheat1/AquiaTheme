@@ -30,11 +30,12 @@ const TitledGreyBox = ({ icon, title, children, className }: Props) => (
         >
             {typeof title === 'string' ? (
                 <p
-                    css={tw`text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-300 flex items-center`}
+                    css={tw`text-2xs font-semibold uppercase text-neutral-300 flex items-center`}
+                    style={{ letterSpacing: '0.12em' }}
                 >
                     {icon && (
                         <span
-                            css={tw`mr-2.5 w-6 h-6 rounded-md flex items-center justify-center text-neutral-300`}
+                            css={tw`mr-2 w-6 h-6 rounded-md flex items-center justify-center text-neutral-300`}
                             style={{ background: 'rgba(8, 205, 0, 0.1)', color: '#08cd00' }}
                         >
                             <FontAwesomeIcon icon={icon} css={tw`text-2xs`} />
