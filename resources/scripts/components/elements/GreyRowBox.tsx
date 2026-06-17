@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
 import tw from 'twin.macro';
 
 export default styled.div<{ $hoverable?: boolean }>`
@@ -9,11 +9,13 @@ export default styled.div<{ $hoverable?: boolean }>`
 
     ${(props) =>
         props.$hoverable !== false &&
-        `&:hover {
-            background: rgba(22, 28, 38, 0.75);
-            border-color: rgba(255, 255, 255, 0.09);
-            transform: translateY(-1px);
-        }`};
+        css`
+            &:hover {
+                background: rgba(22, 28, 38, 0.75);
+                border-color: rgba(255, 255, 255, 0.09);
+                transform: translateY(-1px);
+            }
+        `};
 
     & .icon {
         ${tw`rounded-xl w-14 h-14 flex items-center justify-center p-3`};
