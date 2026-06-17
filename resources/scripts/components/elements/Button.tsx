@@ -11,27 +11,35 @@ interface Props {
 }
 
 const ButtonStyle = styled.button<Omit<Props, 'isLoading'>>`
-    ${tw`relative inline-block rounded p-2 uppercase tracking-wide text-sm transition-all duration-150 border`};
+    ${tw`relative inline-flex items-center justify-center rounded-lg p-2 text-sm transition-all duration-150 border`};
+    font-weight: 600;
+    letter-spacing: 0.01em;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
 
     ${(props) =>
         ((!props.isSecondary && !props.color) || props.color === 'primary') &&
         css<Props>`
             ${(props) => !props.isSecondary && css`
-                background: #6366f1;
-                border-color: #6366f1;
+                background: linear-gradient(135deg, #6366f1, #4f46e5);
+                border-color: rgba(99, 102, 241, 0.6);
                 color: #fff;
-                font-weight: 600;
-                letter-spacing: 0.04em;
+                box-shadow: 0 4px 16px -6px rgba(99, 102, 241, 0.6);
             `};
 
             &:hover:not(:disabled) {
-                background: #5558e8;
-                border-color: #5558e8;
+                background: linear-gradient(135deg, #5558e8, #4338ca);
+                border-color: rgba(99, 102, 241, 0.8);
             }
 
             &:active:not(:disabled) {
-                background: #4a4dd4;
-                border-color: #4a4dd4;
+                background: linear-gradient(135deg, #4a4dd4, #3730a3);
             }
         `};
 

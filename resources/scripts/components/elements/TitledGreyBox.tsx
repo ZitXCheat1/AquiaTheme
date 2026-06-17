@@ -13,31 +13,40 @@ interface Props {
 
 const TitledGreyBox = ({ icon, title, children, className }: Props) => (
     <div
-        css={tw`rounded-xl overflow-hidden`}
+        css={tw`rounded-2xl overflow-hidden`}
         className={className}
         style={{
-            background: 'rgba(14, 20, 14, 0.8)',
-            border: '1px solid rgba(8, 205, 0, 0.08)',
-            backdropFilter: 'blur(8px)',
+            background: 'rgba(17, 22, 30, 0.75)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 1px 0 rgba(255,255,255,0.03) inset, 0 16px 40px -24px rgba(0,0,0,0.6)',
         }}
     >
         <div
-            css={tw`px-4 py-3`}
+            css={tw`px-5 py-3.5 flex items-center justify-between`}
             style={{
-                background: 'rgba(8, 205, 0, 0.03)',
-                borderBottom: '1px solid rgba(8, 205, 0, 0.06)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
             }}
         >
             {typeof title === 'string' ? (
-                <p css={tw`text-xs font-semibold uppercase tracking-wider`} style={{ color: '#7aab78' }}>
-                    {icon && <FontAwesomeIcon icon={icon} css={tw`mr-2 text-neutral-400`} />}
+                <p
+                    css={tw`text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-300 flex items-center`}
+                >
+                    {icon && (
+                        <span
+                            css={tw`mr-2.5 w-6 h-6 rounded-md flex items-center justify-center text-neutral-300`}
+                            style={{ background: 'rgba(8, 205, 0, 0.1)', color: '#08cd00' }}
+                        >
+                            <FontAwesomeIcon icon={icon} css={tw`text-2xs`} />
+                        </span>
+                    )}
                     {title}
                 </p>
             ) : (
                 title
             )}
         </div>
-        <div css={tw`p-4`}>{children}</div>
+        <div css={tw`p-5`}>{children}</div>
     </div>
 );
 
