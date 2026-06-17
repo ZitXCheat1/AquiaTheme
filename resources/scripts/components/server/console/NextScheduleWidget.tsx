@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
+import styled, { css, keyframes } from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import getServerSchedules, { Schedule } from '@/api/server/schedules/getServerSchedules';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,7 +16,7 @@ const IconBox = styled.div<{ $imminent?: boolean }>`
     width:38px;height:38px;border-radius:9px;flex-shrink:0;
     background:rgba(8,205,0,0.12);color:#08cd00;
     display:flex;align-items:center;justify-content:center;font-size:0.95rem;
-    ${p => p.$imminent && `animation:${pulse} 1.5s ease-in-out infinite;`}
+    ${p => p.$imminent && css`animation:${pulse} 1.5s ease-in-out infinite;`}
 `;
 const Body = styled.div`flex:1;min-width:0;`;
 const Label = styled.div`
