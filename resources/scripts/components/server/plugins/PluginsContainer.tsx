@@ -302,8 +302,6 @@ const PageInfo = styled.div`
 `;
 
 /* ─── Helpers ────────────────────────────────────────────────── */
-const PAGE_SIZE = 50;
-
 /* Build a compact page list like: 1 … 4 5 [6] 7 8 … 12 */
 function pageList(current: number, total: number): (number | '…')[] {
     if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
@@ -332,14 +330,29 @@ const rel = (iso: string) => {
 const fmtBytes = (b: number) => b>=1048576 ? `${(b/1048576).toFixed(1)} MiB` : b>=1024 ? `${(b/1024).toFixed(1)} KiB` : `${b} B`;
 
 /* ─── API helpers ────────────────────────────────────────────── */
-async function fetchModrinth(query: string, type: 'plugin' | 'modpack'): Promise<Plugin[]> {
+/* Per-source page sizes. A combined browse page shows roughly the sum of these. */
+const MODRINTH_PER = 40;
+const HANGAR_PER = 20;
+
+interface SourcePage {
+    items: Plugin[];
+    total: number; // total matching results the source reports
+}
+
+async function fetchModrinth(query: string, type: 'plugin' | 'modpack', offset: number): Promise<SourcePage> {
     try {
         const facets = JSON.stringify([[ `project_type:${type}`]]);
-        const params = new URLSearchParams({ query, limit: '100', facets });
+        const params = new URLSearchParams({
+            query,
+            limit: String(MODRINTH_PER),
+            offset: String(offset),
+            index: 'downloads',
+            facets,
+        });
         const res = await fetch(`https://api.modrinth.com/v2/search?${params}`);
-        if (!res.ok) return [];
+        if (!res.ok) return { items: [], total: 0 };
         const data = await res.json();
-        return (data.hits || []).map((h: any) => ({
+        const items = (data.hits || []).map((h: any) => ({
             id: `modrinth-${h.project_id}`,
             name: h.title,
             author: h.author,
@@ -352,19 +365,20 @@ async function fetchModrinth(query: string, type: 'plugin' | 'modpack'): Promise
             url: `https://modrinth.com/${type}/${h.slug}`,
             projectId: h.project_id || h.slug,
         }));
-    } catch { return []; }
+        return { items, total: data.total_hits || items.length };
+    } catch { return { items: [], total: 0 }; }
 }
 
-async function fetchHangar(query: string): Promise<Plugin[]> {
+async function fetchHangar(query: string, offset: number): Promise<SourcePage> {
     try {
         // Hangar's search param is `q`, and it sorts with `-downloads`. Passing an
         // invalid `category` (e.g. "plugins") makes the API return zero results.
-        const params = new URLSearchParams({ limit: '25', offset: '0', sort: '-downloads' });
+        const params = new URLSearchParams({ limit: String(HANGAR_PER), offset: String(offset), sort: '-downloads' });
         if (query) params.set('q', query);
         const res = await fetch(`https://hangar.papermc.io/api/v1/projects?${params}`);
-        if (!res.ok) return [];
+        if (!res.ok) return { items: [], total: 0 };
         const data = await res.json();
-        return (data.result || []).map((p: any) => ({
+        const items = (data.result || []).map((p: any) => ({
             id: `hangar-${p.namespace?.owner}-${p.name}`,
             name: p.name,
             author: p.namespace?.owner || 'Unknown',
@@ -378,7 +392,8 @@ async function fetchHangar(query: string): Promise<Plugin[]> {
             owner: p.namespace?.owner,
             slug: p.namespace?.slug || p.name,
         }));
-    } catch { return []; }
+        return { items, total: data.pagination?.count || items.length };
+    } catch { return { items: [], total: 0 }; }
 }
 
 /* ─── Install resolvers ──────────────────────────────────────── */
@@ -420,6 +435,7 @@ export default function PluginsContainer() {
     const [debQuery, setDebQuery] = useState('');
     const [results, setResults] = useState<Plugin[]>([]);
     const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [installState, setInstallState] = useState<Record<string, 'installing' | 'done' | 'error'>>({});
     const [installError, setInstallError] = useState<string | null>(null);
@@ -432,22 +448,37 @@ export default function PluginsContainer() {
         return () => clearTimeout(t);
     }, [query]);
 
-    const fetchBrowse = useCallback(async (type: 'plugin' | 'modpack') => {
+    const fetchBrowse = useCallback(async (type: 'plugin' | 'modpack', pageNum: number) => {
         setLoading(true);
+        const mrOffset = (pageNum - 1) * MODRINTH_PER;
+        const hgOffset = (pageNum - 1) * HANGAR_PER;
         const [mr, hg] = await Promise.all([
-            fetchModrinth(debQuery, type),
-            type === 'plugin' ? fetchHangar(debQuery) : Promise.resolve([]),
+            fetchModrinth(debQuery, type, mrOffset),
+            // Hangar has no modpacks; only query it for plugins.
+            type === 'plugin' ? fetchHangar(debQuery, hgOffset) : Promise.resolve({ items: [], total: 0 } as SourcePage),
         ]);
-        const merged = [...mr, ...hg].sort((a, b) => b.downloads - a.downloads);
+        const merged = [...mr.items, ...hg.items].sort((a, b) => b.downloads - a.downloads);
         setResults(merged);
-        setPage(1);
+        // Total pages = however many pages the deepest source can fill.
+        const pages = Math.max(
+            Math.ceil(mr.total / MODRINTH_PER),
+            Math.ceil(hg.total / HANGAR_PER),
+            1
+        );
+        setTotalPages(pages);
         setLoading(false);
     }, [debQuery]);
 
+    // Reset to the first page whenever the search term or tab changes.
     useEffect(() => {
-        if (tab === 'browse') fetchBrowse('plugin');
-        else if (tab === 'modpacks') fetchBrowse('modpack');
-    }, [tab, fetchBrowse]);
+        setPage(1);
+    }, [debQuery, tab]);
+
+    // Fetch the current page for browse/modpacks tabs.
+    useEffect(() => {
+        if (tab === 'browse') fetchBrowse('plugin', page);
+        else if (tab === 'modpacks') fetchBrowse('modpack', page);
+    }, [tab, page, fetchBrowse]);
 
     const loadInstalled = useCallback(async () => {
         setLoadingInstalled(true);
@@ -489,11 +520,11 @@ export default function PluginsContainer() {
 
     const isModpackTab = tab === 'modpacks';
 
-    // Client-side pagination over the merged result pool.
-    const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+    // Results already hold the current page (fetched server-side per source).
     const current = Math.min(page, totalPages);
-    const paged = results.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
+    const paged = results;
     const goto = (p: number) => {
+        if (p === page) return;
         setPage(Math.min(Math.max(1, p), totalPages));
         document.querySelector('.aq-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
@@ -560,7 +591,7 @@ export default function PluginsContainer() {
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
                             />
                         </SearchWrap>
-                        <RefreshBtn onClick={() => fetchBrowse(isModpackTab ? 'modpack' : 'plugin')} disabled={loading}>
+                        <RefreshBtn onClick={() => fetchBrowse(isModpackTab ? 'modpack' : 'plugin', page)} disabled={loading}>
                             <FontAwesomeIcon icon={faSync} spin={loading}/>
                         </RefreshBtn>
                     </TopBar>
@@ -610,8 +641,7 @@ export default function PluginsContainer() {
                                         </PageBtn>
                                     </Pager>
                                     <PageInfo>
-                                        Showing {(current - 1) * PAGE_SIZE + 1}–
-                                        {Math.min(current * PAGE_SIZE, results.length)} of {results.length}
+                                        Page {current} of {totalPages}
                                     </PageInfo>
                                 </>
                             )}
