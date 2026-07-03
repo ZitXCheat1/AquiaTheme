@@ -297,7 +297,7 @@ const fmtBytes = (b: number) => b>=1048576 ? `${(b/1048576).toFixed(1)} MiB` : b
 async function fetchModrinth(query: string, type: 'plugin' | 'modpack'): Promise<Plugin[]> {
     try {
         const facets = JSON.stringify([[ `project_type:${type}`]]);
-        const params = new URLSearchParams({ query, limit: '24', facets });
+        const params = new URLSearchParams({ query, limit: '40', facets });
         const res = await fetch(`https://api.modrinth.com/v2/search?${params}`);
         if (!res.ok) return [];
         const data = await res.json();
@@ -319,7 +319,10 @@ async function fetchModrinth(query: string, type: 'plugin' | 'modpack'): Promise
 
 async function fetchHangar(query: string): Promise<Plugin[]> {
     try {
-        const params = new URLSearchParams({ query, limit: '20', category: 'plugins' });
+        // Hangar's search param is `q`, and it sorts with `-downloads`. Passing an
+        // invalid `category` (e.g. "plugins") makes the API return zero results.
+        const params = new URLSearchParams({ limit: '25', offset: '0', sort: '-downloads' });
+        if (query) params.set('q', query);
         const res = await fetch(`https://hangar.papermc.io/api/v1/projects?${params}`);
         if (!res.ok) return [];
         const data = await res.json();
@@ -328,7 +331,7 @@ async function fetchHangar(query: string): Promise<Plugin[]> {
             name: p.name,
             author: p.namespace?.owner || 'Unknown',
             description: p.description || '',
-            icon: p.avatarUrl || null,
+            icon: p.avatarUrl || `https://hangar.papermc.io/api/v1/projects/${p.namespace?.owner}/${p.namespace?.slug || p.name}/icon`,
             downloads: p.stats?.downloads || 0,
             stars: p.stats?.stars || 0,
             updated: p.lastUpdated || new Date().toISOString(),
