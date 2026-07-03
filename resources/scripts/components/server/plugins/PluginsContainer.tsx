@@ -302,7 +302,7 @@ const PageInfo = styled.div`
 `;
 
 /* ─── Helpers ────────────────────────────────────────────────── */
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 50;
 
 /* Build a compact page list like: 1 … 4 5 [6] 7 8 … 12 */
 function pageList(current: number, total: number): (number | '…')[] {
