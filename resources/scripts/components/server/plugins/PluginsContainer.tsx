@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faSearch, faDownload, faStar, faExternalLinkAlt,
     faSync, faTrash, faPlug, faBoxOpen, faCubes,
+    faChevronLeft, faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { ServerContext } from '@/state/server';
 import loadDirectory, { FileObject } from '@/api/server/files/loadDirectory';
@@ -278,7 +279,44 @@ const EmptyState = styled.div`
     color:#2a3d2a;font-size:0.825rem;
 `;
 
+/* Pagination */
+const Pager = styled.div`
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    margin-top:22px;flex-wrap:wrap;
+`;
+const PageBtn = styled.button<{ $active?: boolean }>`
+    min-width:34px;height:34px;padding:0 10px;
+    border-radius:8px;font-size:0.78rem;font-weight:600;
+    font-family:'Inter',sans-serif;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    transition:all 0.15s;
+    ${p => p.$active
+        ? 'background:#08cd00;border:1px solid #08cd00;color:#0a0f0a;font-weight:700;'
+        : 'background:#0e140e;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;&:hover:not(:disabled){border-color:rgba(8,205,0,0.4);color:#08cd00;}'
+    }
+    &:disabled{opacity:0.35;cursor:default;}
+`;
+const PageEllipsis = styled.span`color:#4b6b4b;font-size:0.78rem;padding:0 2px;`;
+const PageInfo = styled.div`
+    text-align:center;margin-top:10px;color:#4b6b4b;font-size:0.7rem;
+`;
+
 /* ─── Helpers ────────────────────────────────────────────────── */
+const PAGE_SIZE = 12;
+
+/* Build a compact page list like: 1 … 4 5 [6] 7 8 … 12 */
+function pageList(current: number, total: number): (number | '…')[] {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const out: (number | '…')[] = [1];
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+    if (start > 2) out.push('…');
+    for (let i = start; i <= end; i++) out.push(i);
+    if (end < total - 1) out.push('…');
+    out.push(total);
+    return out;
+}
+
 const fmt = (n: number) => n>=1_000_000 ? `${(n/1_000_000).toFixed(1)}M` : n>=1_000 ? `${(n/1_000).toFixed(1)}k` : String(n);
 
 const rel = (iso: string) => {
@@ -297,7 +335,7 @@ const fmtBytes = (b: number) => b>=1048576 ? `${(b/1048576).toFixed(1)} MiB` : b
 async function fetchModrinth(query: string, type: 'plugin' | 'modpack'): Promise<Plugin[]> {
     try {
         const facets = JSON.stringify([[ `project_type:${type}`]]);
-        const params = new URLSearchParams({ query, limit: '40', facets });
+        const params = new URLSearchParams({ query, limit: '100', facets });
         const res = await fetch(`https://api.modrinth.com/v2/search?${params}`);
         if (!res.ok) return [];
         const data = await res.json();
@@ -381,6 +419,7 @@ export default function PluginsContainer() {
     const [query, setQuery] = useState('');
     const [debQuery, setDebQuery] = useState('');
     const [results, setResults] = useState<Plugin[]>([]);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [installState, setInstallState] = useState<Record<string, 'installing' | 'done' | 'error'>>({});
     const [installError, setInstallError] = useState<string | null>(null);
@@ -401,6 +440,7 @@ export default function PluginsContainer() {
         ]);
         const merged = [...mr, ...hg].sort((a, b) => b.downloads - a.downloads);
         setResults(merged);
+        setPage(1);
         setLoading(false);
     }, [debQuery]);
 
@@ -448,6 +488,15 @@ export default function PluginsContainer() {
     };
 
     const isModpackTab = tab === 'modpacks';
+
+    // Client-side pagination over the merged result pool.
+    const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+    const current = Math.min(page, totalPages);
+    const paged = results.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
+    const goto = (p: number) => {
+        setPage(Math.min(Math.max(1, p), totalPages));
+        document.querySelector('.aq-tab-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     return (
         <Page>
@@ -528,17 +577,45 @@ export default function PluginsContainer() {
                             {isModpackTab ? 'No modpacks found.' : 'No plugins found.'} Try a different search.
                         </EmptyState>
                     ) : (
-                        <Grid>
-                            {results.map((plugin, i) => (
-                                <PluginCard
-                                    key={plugin.id}
-                                    plugin={plugin}
-                                    status={installState[plugin.id]}
-                                    delay={i * 35}
-                                    onInstall={() => handleInstall(plugin)}
-                                />
-                            ))}
-                        </Grid>
+                        <>
+                            <Grid>
+                                {paged.map((plugin, i) => (
+                                    <PluginCard
+                                        key={plugin.id}
+                                        plugin={plugin}
+                                        status={installState[plugin.id]}
+                                        delay={i * 35}
+                                        onInstall={() => handleInstall(plugin)}
+                                    />
+                                ))}
+                            </Grid>
+
+                            {totalPages > 1 && (
+                                <>
+                                    <Pager>
+                                        <PageBtn onClick={() => goto(current - 1)} disabled={current === 1}>
+                                            <FontAwesomeIcon icon={faChevronLeft} style={{ fontSize: '0.65rem' }} />
+                                        </PageBtn>
+                                        {pageList(current, totalPages).map((p, idx) =>
+                                            p === '…' ? (
+                                                <PageEllipsis key={`e${idx}`}>…</PageEllipsis>
+                                            ) : (
+                                                <PageBtn key={p} $active={p === current} onClick={() => goto(p)}>
+                                                    {p}
+                                                </PageBtn>
+                                            )
+                                        )}
+                                        <PageBtn onClick={() => goto(current + 1)} disabled={current === totalPages}>
+                                            <FontAwesomeIcon icon={faChevronRight} style={{ fontSize: '0.65rem' }} />
+                                        </PageBtn>
+                                    </Pager>
+                                    <PageInfo>
+                                        Showing {(current - 1) * PAGE_SIZE + 1}–
+                                        {Math.min(current * PAGE_SIZE, results.length)} of {results.length}
+                                    </PageInfo>
+                                </>
+                            )}
+                        </>
                     )}
                 </>
             )}
