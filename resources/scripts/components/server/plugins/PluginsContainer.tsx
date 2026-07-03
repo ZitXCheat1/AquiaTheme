@@ -9,6 +9,7 @@ import {
 import { ServerContext } from '@/state/server';
 import loadDirectory, { FileObject } from '@/api/server/files/loadDirectory';
 import deleteFiles from '@/api/server/files/deleteFiles';
+import pullFile from '@/api/server/files/pullFile';
 
 /* ─── Grass Block missing icon ───────────────────────────────── */
 const GrassBlockIcon = () => (
@@ -50,6 +51,10 @@ interface Plugin {
     updated: string;
     source: 'modrinth' | 'hangar' | 'spigot' | 'modpack';
     url: string;
+    // Identifiers used to resolve a direct download URL at install time.
+    projectId?: string; // modrinth project id / slug
+    owner?: string; // hangar project owner
+    slug?: string; // hangar project slug
 }
 
 /* ─── Keyframes ──────────────────────────────────────────────── */
@@ -158,11 +163,12 @@ const Card = styled.div<{ $delay?: number }>`
 const CardTop = styled.div`display:flex;align-items:flex-start;gap:12px;`;
 
 const PluginIcon = styled.div`
-    width: 42px; height: 42px; border-radius: 8px;
-    background: rgba(8,205,0,0.08);
+    width: 42px; height: 42px; border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; overflow: hidden; color: #94a3b8; font-size: 1rem;
-    img { width:100%;height:100%;object-fit:cover;border-radius:8px; }
+    flex-shrink: 0; overflow: hidden; color: #ffffff; font-size: 1rem;
+    img { width:100%;height:100%;object-fit:cover;border-radius:9px; }
 `;
 
 const CardInfo = styled.div`flex:1;min-width:0;`;
@@ -191,10 +197,13 @@ const CardDesc = styled.p`
 `;
 
 const CardMeta = styled.div`
-    display:flex;align-items:center;gap:12px;font-size:0.7rem;color:#2a3d2a;
+    display:flex;align-items:center;gap:12px;font-size:0.7rem;color:#94a3b8;
 `;
 
-const MetaItem = styled.span`display:flex;align-items:center;gap:4px;`;
+const MetaItem = styled.span`
+    display:flex;align-items:center;gap:4px;
+    svg { color:#e2e8f0; }
+`;
 
 const InstallBtn = styled.button<{ $installed?: boolean }>`
     margin-top:4px;
@@ -203,10 +212,19 @@ const InstallBtn = styled.button<{ $installed?: boolean }>`
     font-family: 'Inter', sans-serif;
     cursor: pointer; border: 1px solid transparent;
     transition: all 0.15s; align-self: flex-end;
+    display: inline-flex; align-items: center; gap: 6px;
     ${p => p.$installed
         ? 'background:rgba(8,205,0,0.1);border-color:rgba(8,205,0,0.3);color:#08cd00;cursor:default;'
         : 'background:#08cd00;border-color:#08cd00;color:#0a0f0a;font-weight:700;&:hover{background:#07b300;}'
     }
+    &:disabled { cursor: default; }
+`;
+
+const ErrorBanner = styled.div`
+    display:flex;align-items:center;gap:8px;
+    background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);
+    color:#fca5a5;border-radius:8px;padding:10px 14px;margin-bottom:14px;
+    font-size:0.775rem;
 `;
 
 /* Installed tab */
@@ -221,10 +239,11 @@ const InstalledRow = styled.div<{ $delay?: number }>`
 `;
 
 const IIcon = styled.div`
-    width:40px;height:40px;border-radius:8px;
-    background:rgba(8,205,0,0.08);
+    width:40px;height:40px;border-radius:10px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.08);
     display:flex;align-items:center;justify-content:center;
-    color:#08cd00;font-size:0.95rem;flex-shrink:0;
+    color:#ffffff;font-size:0.95rem;flex-shrink:0;
 `;
 
 const IInfo = styled.div`flex:1;min-width:0;`;
@@ -293,6 +312,7 @@ async function fetchModrinth(query: string, type: 'plugin' | 'modpack'): Promise
             updated: h.date_modified,
             source: type === 'modpack' ? 'modpack' as const : 'modrinth' as const,
             url: `https://modrinth.com/${type}/${h.slug}`,
+            projectId: h.project_id || h.slug,
         }));
     } catch { return []; }
 }
@@ -314,8 +334,41 @@ async function fetchHangar(query: string): Promise<Plugin[]> {
             updated: p.lastUpdated || new Date().toISOString(),
             source: 'hangar' as const,
             url: `https://hangar.papermc.io/${p.namespace?.owner}/${p.name}`,
+            owner: p.namespace?.owner,
+            slug: p.namespace?.slug || p.name,
         }));
     } catch { return []; }
+}
+
+/* ─── Install resolvers ──────────────────────────────────────── */
+/* Resolve a direct .jar download URL + filename for a plugin so wings can pull it. */
+async function resolveDownload(plugin: Plugin): Promise<{ url: string; filename: string }> {
+    if (plugin.source === 'modrinth' || plugin.source === 'modpack') {
+        if (!plugin.projectId) throw new Error('Missing project id.');
+        const res = await fetch(`https://api.modrinth.com/v2/project/${plugin.projectId}/version`);
+        if (!res.ok) throw new Error('Could not load versions from Modrinth.');
+        const versions = await res.json();
+        if (!Array.isArray(versions) || versions.length === 0) throw new Error('No downloadable versions found.');
+        // Prefer the primary file of the latest version.
+        const files = versions[0].files || [];
+        const file = files.find((f: any) => f.primary) || files[0];
+        if (!file?.url) throw new Error('No downloadable file found.');
+        return { url: file.url, filename: file.filename || `${plugin.slug || plugin.name}.jar` };
+    }
+
+    if (plugin.source === 'hangar') {
+        if (!plugin.owner || !plugin.slug) throw new Error('Missing Hangar project reference.');
+        const verRes = await fetch(
+            `https://hangar.papermc.io/api/v1/projects/${plugin.owner}/${plugin.slug}/latestrelease`
+        );
+        if (!verRes.ok) throw new Error('Could not load latest Hangar release.');
+        const version = (await verRes.text()).trim().replace(/^"|"$/g, '');
+        if (!version) throw new Error('No released version found.');
+        const url = `https://hangar.papermc.io/api/v1/projects/${plugin.owner}/${plugin.slug}/versions/${version}/PAPER/download`;
+        return { url, filename: `${plugin.slug}-${version}.jar` };
+    }
+
+    throw new Error('This source cannot be installed automatically.');
 }
 
 /* ─── Main component ─────────────────────────────────────────── */
@@ -326,7 +379,8 @@ export default function PluginsContainer() {
     const [debQuery, setDebQuery] = useState('');
     const [results, setResults] = useState<Plugin[]>([]);
     const [loading, setLoading] = useState(false);
-    const [installed, setInstalled] = useState<Record<string, boolean>>({});
+    const [installState, setInstallState] = useState<Record<string, 'installing' | 'done' | 'error'>>({});
+    const [installError, setInstallError] = useState<string | null>(null);
     const [installedFiles, setInstalledFiles] = useState<FileObject[]>([]);
     const [loadingInstalled, setLoadingInstalled] = useState(false);
     const [deletingFile, setDeletingFile] = useState<string | null>(null);
@@ -364,6 +418,23 @@ export default function PluginsContainer() {
     useEffect(() => {
         if (tab === 'installed') loadInstalled();
     }, [tab, loadInstalled]);
+
+    const handleInstall = useCallback(async (plugin: Plugin) => {
+        setInstallError(null);
+        setInstallState((s) => ({ ...s, [plugin.id]: 'installing' }));
+        try {
+            const { url, filename } = await resolveDownload(plugin);
+            await pullFile(uuid, url, '/plugins', filename);
+            setInstallState((s) => ({ ...s, [plugin.id]: 'done' }));
+            // Refresh the installed list in the background so the count/badge stays accurate.
+            loadDirectory(uuid, '/plugins')
+                .then((files) => setInstalledFiles(files.filter((f) => f.isFile && f.name.endsWith('.jar'))))
+                .catch(() => undefined);
+        } catch (e: any) {
+            setInstallState((s) => ({ ...s, [plugin.id]: 'error' }));
+            setInstallError(e?.message || `Failed to install ${plugin.name}.`);
+        }
+    }, [uuid]);
 
     const handleDelete = async (name: string) => {
         setDeletingFile(name);
@@ -434,13 +505,15 @@ export default function PluginsContainer() {
                                 type='text'
                                 placeholder={isModpackTab ? 'Search modpacks...' : 'Search plugins...'}
                                 value={query}
-                                onChange={e => setQuery(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
                             />
                         </SearchWrap>
                         <RefreshBtn onClick={() => fetchBrowse(isModpackTab ? 'modpack' : 'plugin')} disabled={loading}>
                             <FontAwesomeIcon icon={faSync} spin={loading}/>
                         </RefreshBtn>
                     </TopBar>
+
+                    {installError && <ErrorBanner>{installError}</ErrorBanner>}
 
                     {loading ? (
                         <LoadingState>
@@ -457,9 +530,9 @@ export default function PluginsContainer() {
                                 <PluginCard
                                     key={plugin.id}
                                     plugin={plugin}
-                                    isInstalled={!!installed[plugin.id]}
+                                    status={installState[plugin.id]}
                                     delay={i * 35}
-                                    onInstall={() => setInstalled(p => ({...p, [plugin.id]: true}))}
+                                    onInstall={() => handleInstall(plugin)}
                                 />
                             ))}
                         </Grid>
@@ -472,12 +545,14 @@ export default function PluginsContainer() {
 }
 
 /* ─── Plugin card ────────────────────────────────────────────── */
-function PluginCard({ plugin, isInstalled, onInstall, delay }: {
+function PluginCard({ plugin, status, onInstall, delay }: {
     plugin: Plugin;
-    isInstalled: boolean;
+    status?: 'installing' | 'done' | 'error';
     onInstall: () => void;
     delay?: number;
 }) {
+    const installing = status === 'installing';
+    const done = status === 'done';
     return (
         <Card $delay={delay}>
             <CardTop>
@@ -491,7 +566,7 @@ function PluginCard({ plugin, isInstalled, onInstall, delay }: {
                 <CardInfo>
                     <CardName>
                         <a href={plugin.url} target='_blank' rel='noopener noreferrer'>{plugin.name}</a>
-                        <a href={plugin.url} target='_blank' rel='noopener noreferrer' style={{color:'#2a3d2a'}}>
+                        <a href={plugin.url} target='_blank' rel='noopener noreferrer' style={{color:'#cbd5e1'}}>
                             <FontAwesomeIcon icon={faExternalLinkAlt} style={{fontSize:'0.6rem'}}/>
                         </a>
                         <SourceBadge $src={plugin.source}>{plugin.source}</SourceBadge>
@@ -508,8 +583,19 @@ function PluginCard({ plugin, isInstalled, onInstall, delay }: {
                 <MetaItem>{rel(plugin.updated)}</MetaItem>
             </CardMeta>
 
-            <InstallBtn $installed={isInstalled} onClick={() => !isInstalled && onInstall()}>
-                {isInstalled ? 'Installed' : 'Install'}
+            <InstallBtn
+                $installed={done}
+                disabled={installing || done}
+                onClick={() => !installing && !done && onInstall()}
+            >
+                {installing
+                    ? <><FontAwesomeIcon icon={faSync} spin/> Installing</>
+                    : done
+                    ? <><FontAwesomeIcon icon={faBoxOpen}/> Installed</>
+                    : status === 'error'
+                    ? 'Retry'
+                    : <><FontAwesomeIcon icon={faDownload}/> Install</>
+                }
             </InstallBtn>
         </Card>
     );

@@ -1,4 +1,5 @@
 import React, { createRef } from 'react';
+import ReactDOM from 'react-dom';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import Fade from '@/components/elements/Fade';
@@ -47,10 +48,12 @@ class DropdownMenu extends React.PureComponent<Props, State> {
             const height = menu.clientHeight;
             const margin = 8;
 
+            // Right-align the menu to the anchor point, then clamp inside the viewport.
             let left = this.state.posX - width;
             if (left < margin) left = margin;
             if (left + width > window.innerWidth - margin) left = window.innerWidth - width - margin;
 
+            // Prefer opening below the anchor; flip above if it would overflow.
             let top = this.state.posY + 8;
             if (top + height > window.innerHeight - margin) {
                 top = this.state.posY - height - 8;
@@ -96,10 +99,12 @@ class DropdownMenu extends React.PureComponent<Props, State> {
         }
     };
 
-    triggerMenu = (posX: number, posY: number) =>
+    triggerMenu = (posX: number, posY?: number) =>
         this.setState((s) => ({
             posX: !s.visible ? posX : s.posX,
-            posY: !s.visible ? posY : s.posY,
+            // When only a single coordinate is provided (e.g. legacy right-click handlers),
+            // fall back to the cursor's vertical position so the menu never lands off-screen.
+            posY: !s.visible ? (typeof posY === 'number' ? posY : posX) : s.posY,
             visible: !s.visible,
         }));
 
@@ -107,19 +112,22 @@ class DropdownMenu extends React.PureComponent<Props, State> {
         return (
             <div>
                 {this.props.renderToggle(this.onClickHandler)}
-                <Fade timeout={150} in={this.state.visible} unmountOnExit>
-                    <div
-                        ref={this.menu}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            this.setState({ visible: false });
-                        }}
-                        style={{ width: '13rem', position: 'fixed' }}
-                        css={tw`bg-neutral-800 p-1.5 rounded-lg border border-neutral-700 shadow-2xl text-neutral-200 z-50`}
-                    >
-                        {this.props.children}
-                    </div>
-                </Fade>
+                {ReactDOM.createPortal(
+                    <Fade timeout={150} in={this.state.visible} unmountOnExit>
+                        <div
+                            ref={this.menu}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                this.setState({ visible: false });
+                            }}
+                            style={{ width: '13rem', position: 'fixed', top: 0, left: 0 }}
+                            css={tw`bg-neutral-800 p-1.5 rounded-lg border border-neutral-700 shadow-2xl text-neutral-200 z-50`}
+                        >
+                            {this.props.children}
+                        </div>
+                    </Fade>,
+                    document.body
+                )}
             </div>
         );
     }

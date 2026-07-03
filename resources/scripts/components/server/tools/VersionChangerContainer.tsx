@@ -4,6 +4,8 @@ import { keyframes } from 'styled-components/macro';
 import { ServerContext } from '@/state/server';
 import updateStartupVariable from '@/api/server/updateStartupVariable';
 import reinstallServer from '@/api/server/reinstallServer';
+import loadDirectory from '@/api/server/files/loadDirectory';
+import deleteFiles from '@/api/server/files/deleteFiles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationTriangle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Combobox from '@/components/elements/ui/Combobox';
@@ -190,12 +192,31 @@ export default function VersionChangerContainer() {
         if (!sel) return;
         setLoading(true); setToast(null);
         try {
+            // Point the egg's install script at the requested version. BUILD_NUMBER only
+            // exists on some eggs (Paper/Purpur), so don't let a missing variable abort.
             await updateStartupVariable(uuid, 'MINECRAFT_VERSION', sel);
-            await updateStartupVariable(uuid, 'BUILD_NUMBER', 'latest');
-            if (reset) await reinstallServer(uuid);
-            setToast({ msg: `${SOFTWARE.find(s=>s.id===sw)?.label} ${sel} installed.`, ok: true });
+            try {
+                await updateStartupVariable(uuid, 'BUILD_NUMBER', 'latest');
+            } catch { /* variable not present on this egg */ }
+
+            // Optionally wipe every file in the server root before reinstalling.
+            if (reset) {
+                const rootFiles = await loadDirectory(uuid, '/');
+                if (rootFiles.length) {
+                    await deleteFiles(uuid, '/', rootFiles.map((f) => f.name));
+                }
+            }
+
+            // Reinstalling re-runs the egg install script, which is what actually downloads
+            // the jar for the selected version. Setting the variable alone changes nothing.
+            await reinstallServer(uuid);
+
+            setToast({
+                msg: `${SOFTWARE.find((s) => s.id === sw)?.label} ${sel} is installing. The server will reinstall — this may take a minute.`,
+                ok: true,
+            });
         } catch (e: any) {
-            setToast({ msg: e?.message || 'Failed to update version.', ok: false });
+            setToast({ msg: e?.message || 'Failed to change version.', ok: false });
         } finally { setLoading(false); }
     };
 
